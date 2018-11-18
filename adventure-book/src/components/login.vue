@@ -13,25 +13,20 @@
         
 
 <script>
-    
-    export default {
-        
-        data: function(){
-            return {
-                mail_: "",
-                pass_: "",    
-            };
-        },
-        
-        
-        methods: {
-            get_credentials: function(mail, pass){
-                this.mail_ = mail,
-                this.pass_ = pass
-                
-                alert(JSON.stringify(this.$data, null, 2));
-            }
-        }
+export default {
+  data: function() {
+    return {
+      mail_: "",
+      pass_: ""
     };
-    
+  },
+
+  methods: {
+    get_credentials: function(mail, pass) {
+      (this.mail_ = mail),
+        (this.pass_ = pass),
+        alert(JSON.stringify(this.$data, null, 2));
+    }
+  }
+};
 </script>

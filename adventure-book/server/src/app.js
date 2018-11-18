@@ -3,25 +3,26 @@ var bodyParse = require('body-parser')
 var cors = require('cors')
 var morgan = require('morgan')
 var Mongoose = require('mongoose');
+var path = require("path");
+var fs = require("fs");
 
 Mongoose.connect('mongodb://localhost:27017/test');
 var app = express()
-app.use(morgan('combined'))+
+app.use(morgan('combined'))
 
 app.use(bodyParse.urlencoded({
     extended:true
 }));
-app.use(bodyParse.json())
-app.use(cors())
+app.use(bodyParse.json());
+app.use(cors());
 
 
-// Entender esta vaina ///
+/* Creando los esquemas de los datos */
 var Schema = Mongoose.Schema;
 var UserDataSchema = new Schema({
         name: String,
         password: String
 }, {collection: 'user-data'});
-///////////////////////////////
 
 var UserData = Mongoose.model('UserData',UserDataSchema);
 
@@ -32,23 +33,22 @@ var SiteDataSchema = new Schema({
 }, {collection: 'site-data'});
 
 var SiteData = Mongoose.model('SiteData',SiteDataSchema);
-
+ 
+/*Aquí empieza la aplicación*/
 
 
 app.get('/', (req, res) => {
-    var directorio = __dirname
-    var aux = __dirname.split('server')
-    console.log(aux[0])
-    res.sendFile(aux[0] + '/client/' + 'index.html')
+    var directorio = __dirname;
+    var aux = __dirname.split('server');
+    console.log(aux[0]);
+    res.sendFile(aux[0] + '/client/' + 'index.html');
 })
 
 app.post('/registrar', (req, res) => {
-    var aux = req.url.split('?')
-    var user = aux[1].split('=')
-    var pass = aux[2].split('=')
-    userr = user[1]
-    passw = pass[1] 
-
+    
+    /*curl -X POST -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/registrar*/
+    userr = req.body.name;
+    passw = req.body.pass;
     var datos = {
         name: userr,
         password: passw
@@ -63,11 +63,9 @@ app.post('/registrar', (req, res) => {
 
 
 app.get('/comprobar', (req, res) => {
-    var aux = req.url.split('?');
-    var user = aux[1].split('=');
-    var pass = aux[2].split('=');
-    userr = user[1];
-    passw = pass[1];
+    
+    userr = req.body.name;
+    passw = req.body.pass;
 
     UserData.findOne({name: userr},function(err,docs){
         if(docs == null)
@@ -79,19 +77,38 @@ app.get('/comprobar', (req, res) => {
     });
 });
 
-
-
 app.get('/subir_foto',(req,res) =>{  
     res.sendFile(__dirname + "/foto.html");
 });
 
-app.post('/foto',function(req,res){
-    console.log(req.body);
-    res.send("Subiendo foto");
+
+app.post('/foto/:image', bodyParse.raw({
+        limit : "10mb",
+        type : "image/*"
+}),(req,res) =>{
+
+       /*
+    curl -X POST -H 'Content-Type: applicurl -X POST -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/foto
+    Desde el directorio de donde está la foto: 
+    curl -X POST -H 'Content-Type: image/png' --data-binary @solare.jpg http://localhost:8081/foto/solare.jpg
+    */
+
+    var aux = __dirname.split('src');
+    
+    var fd = fs.createWriteStream(path.join(aux[0],"uploads",req.params.image),{
+        flags: "w+",
+        encoding: "binary"
+    });
+
+    fd.write(req.body);
+    fd.end();
+    fd.on("close",() =>{
+        res.send("Subiendo foto");
+    });
 });
 
 
 
-app.listen(process.env.PORT || 8081, function (err) {
+app.listen(process.env.PORT || 8081,(err) => {
 console.log("Escuchando en el Puerto 8081");
 });

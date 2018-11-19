@@ -1,24 +1,20 @@
 <template>
   <div>
-    <h1>Hola</h1>
-    <app-Signup></app-Signup>
-    <app-Login></app-Login>
+    <h1>Adventure Book</h1>
+    <p> La red social en la que compartir tus experiencias y encontrar nuevas aventuras</p>
+    <router-link to='/login'> Iniciar Sesión </router-link>
+    <router-link to='/signup'> Crear una cuenta </router-link>
+
+    <router-view></router-view>	
+
   </div>
 </template>
 
 <script>
-import Login from './components/login.vue'
-import Signup from './components/signup.vue'
 
 export default {
   
-  name: 'App',
-  
-  components: {
-    'app-Login': Login,
-    'app-Singup': Signup
-  },
-  
+  name: 'App',  
   data(){
     return{
       

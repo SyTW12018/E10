@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import Login from './components/login.vue'
-import Signup from './components/signup.vue'
+import Login from './components/Login.vue'
+import Signup from './components/Signup.vue'
 
 export default {
   

@@ -76,14 +76,14 @@ app.post('/registrar', (req, res) => {
             //the token expires in 24 hours -> 86400seconds
             let token = jwt.sign({id:user.id}, config.secret, {expiresIn: 86400});
 
-            res.status(200).send({auth: true, token: token, user:user});
+            res.status(200).send({auth: true, token: token, user: user});
         })
     });
 });
 
 
 app.post('/login', (req, res) => {
-    UserData.findOne({'name': name}, 'name', function (err, user){
+    UserData.findOne({name: userr}, function (err, user){
         //Server error
         if (err){
             console.log(err);

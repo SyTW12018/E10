@@ -1,3 +1,3 @@
-module.expots = {
+module.exports = {
     'secret': 'supersecret'
 };

@@ -28,8 +28,9 @@ app.use(cors())
 var Schema = Mongoose.Schema;
 var UserDataSchema = new Schema({
         name: String,
-        password: String
-}, {collection: 'user-data'});
+        password: String,
+        mail: String
+}, {collection: 'userData'});
 
 var UserData = Mongoose.model('UserData',UserDataSchema);
 
@@ -37,7 +38,7 @@ var SiteDataSchema = new Schema({
     name: String,
     author: String,
     photos: String
-}, {collection: 'site-data'});
+}, {collection: 'siteData'});
 
 var SiteData = Mongoose.model('SiteData',SiteDataSchema);
  
@@ -51,38 +52,50 @@ app.get('/', (req, res) => {
     res.sendFile(aux[0] + '/client/' + 'index.html');
 })
 
-app.post('/registrar', (req, res) => {
-    
+app.post('/signup', (req, res) => {
+    console.log("Estamos en el server");
     /*curl -X POST -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/registrar*/
-    userr = req.body.name;
-    passw = req.body.pass;
-    var datos = {
+    var userr = req.body.name_;
+    var passw = req.body.pass_;
+    var mail = req.body.mail_;
+    console.log(userr);
+    console.log(passw);
+    console.log(mail);
+    var data = new UserData({
         name: userr,
-        password: bcrypt.hashSync(passw, 8)
-    };
-    var data = new UserData(datos);
+        password: bcrypt.hashSync(passw,8),
+        mail: mail
+    });
     //Introducing the user in our database
-    data.save().then(function(err){
+    data.save().then(function(info, err){
+        console.log(data.name)
         if(err){
+            console.log("error 1");
             return res.status(500).send("Hubo un problema en el registro de usuario")
         }
         //If the user is registered successfully we create his token
-        UserData.findOne({'name': name}, 'name', function (err, user){
+        UserData.findOne({"name": data.name}, function (err, user){
+            console.log(user._id);
+
             if (err){
+                console.log("error 2");
                 console.log(err);
                 return res.status(500).send("Problema para encontrar el usuario")
             }
             //create the authentication token for the user with the jwt package
             //the token expires in 24 hours -> 86400seconds
-            let token = jwt.sign({id:user.id}, config.secret, {expiresIn: 86400});
+            let token = jwt.sign({id:user._id}, config.secret, {expiresIn: 86400});
 
             res.status(200).send({auth: true, token: token, user: user});
         })
+        console.log("esto no tira")
     });
 });
 
 
 app.post('/login', (req, res) => {
+    var userr = req.body.name;
+    var passw = req.body.pass; 
     UserData.findOne({name: userr}, function (err, user){
         //Server error
         if (err){
@@ -111,15 +124,18 @@ app.post('/login', (req, res) => {
 
 app.get('/comprobar', (req, res) => {
     
-    userr = req.body.name;
-    passw = req.body.pass;
-
+    var userr = req.body.name;
+    var passw = req.body.pass;
+    console.log("documento:" );
     UserData.findOne({name: userr},function(err,docs){
-        if(docs == null)
-            res.send("Usuario no resgistrado");
+        if(docs == null){
+            console.log("documento:" );
+            res.send(docs);
+        }
         else{
-            console.log(docs);
-            res.send("Usuario está registrado");
+            console.log("documento:");
+            res.send(docs);
+            //res.send("Usuario está registrado");
         }
     });
 });

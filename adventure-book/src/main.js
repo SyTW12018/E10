@@ -29,7 +29,6 @@ Vue.config.productionTip = false
 
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
-Vue.config.productionTip = false;
 
 const routes = [
     { path: '/login',  component: Login},

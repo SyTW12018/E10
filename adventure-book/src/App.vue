@@ -4,6 +4,7 @@
     <p> La red social en la que compartir tus experiencias y encontrar nuevas aventuras</p>
     <router-link to='/login'> Iniciar Sesión </router-link>
     <router-link to='/signup'> Crear una cuenta </router-link>
+    <router-link to='/dashboard'> dashboard </router-link>
 
     <router-view></router-view>	
 
@@ -13,7 +14,7 @@
 <script>
 import Login from './components/Login.vue'
 import Signup from './components/Signup.vue'
-
+import Userboard from './components/Userboard.vue'
 export default {
   
   name: 'App',  

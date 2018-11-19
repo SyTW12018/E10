@@ -48,9 +48,6 @@ export default {
           console.log(err.response);
         })
       }
-      (this.mail_ = mail),
-        (this.pass_ = pass),
-        alert(JSON.stringify(this.$data, null, 2));
     }
   }
 };

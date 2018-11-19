@@ -2,7 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 import HelloWorld from "@/components/HelloWorld";
 import Login from "@/components/Login";
-import Sigup from "@/components/Sigup";
+import Signup from "@/components/Signup";
 import UserBoard from "@/components/Userboard"
 
 Vue.use(Router);
@@ -27,7 +27,7 @@ let router = new Router({
     },
 
     {
-      path: "/registrar",
+      path: "/signup",
       name: "signup",
       component: Signup,
       meta: {

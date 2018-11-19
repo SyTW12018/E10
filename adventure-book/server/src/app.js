@@ -88,12 +88,14 @@ app.post('/foto/:image', bodyParse.raw({
 }),(req,res) =>{
 
        /*
-    curl -X POST -H 'Content-Type: applicurl -X POST -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/foto
+    curl -X GET -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/comprobar
     Desde el directorio de donde está la foto: 
     curl -X POST -H 'Content-Type: image/png' --data-binary @solare.jpg http://localhost:8081/foto/solare.jpg
     */
 
     var aux = __dirname.split('src');
+    console.log(req.params.image);
+
     
     var fd = fs.createWriteStream(path.join(aux[0],"uploads",req.params.image),{
         flags: "w+",

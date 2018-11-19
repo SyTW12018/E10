@@ -4,6 +4,12 @@ import Vue from 'vue'
 import App from './App'
 //import store from './store'
 import Axios from 'axios'
+import BootstrapVue from 'bootstrap-vue';
+import VueRouter from 'vue-router';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
+import Login from './components/Login.vue';
+import Signup from './components/Signup.vue';
 
 //Vue authentication 
 Vue.prototype.$http = Axios;
@@ -20,9 +26,25 @@ if(token){
 //Vue default
 Vue.config.productionTip = false
 
+
+Vue.use(BootstrapVue);
+Vue.use(VueRouter);
+Vue.config.productionTip = false;
+
+const routes = [
+    { path: '/login',  component: Login},
+    { path: '/signup', component: Signup}
+]
+
+const router = new VueRouter({
+    routes,
+    mode: 'history'
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  router,
   components: { App },
   template: '<App/>'
 })

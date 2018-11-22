@@ -30,20 +30,16 @@ export default {
           pass: this.pass_
         })
         .then(response => {
-          console.log("entra");
+          console.log("entra ene l then")
+          console.log(response.data.user)
           localStorage.setItem('user', JSON.stringify(response.data.user))
-          console.log("tokn: "  + response.data.token);
           localStorage.setItem('jwt', response.data.token)
-          console.log("localStorage: " + localStorage.getItem('jwt'))
           if(localStorage.getItem('jwt') != null){
             this.$emit('loggenIn')
+            console.log(localStorage)
 
-            if(this.$route.params.nextUrl != null){
-              this.$router.push(this.$route.params.nextUrl)
-            }
-            else{
-              this.$router.push('/dashboard')
-            }
+            var user2=localStorage
+            this.$router.push('/dashboard');           
           }
         })
         .catch(function(err){

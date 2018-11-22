@@ -40,9 +40,8 @@
                         pass_: this.pass_
                     })
                     .then(response => {
-                        console.log("En el then")
                         localStorage.setItem('user', JSON.stringify(response.data.user))
-                        console.log(response.data.token);
+                        
                         localStorage.setItem('jwt', response.data.token)
 
                         if(localStorage.getItem('jwt') != null){

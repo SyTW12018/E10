@@ -7,12 +7,25 @@
 
 <script>
     export default{
-        props:['msg'],
         data: function(){
             return{
-            
+                msg: "mensajito",
+                auth_: true
             }
         },
+        mounted(){
+            console.log("mounted: ")
+            console.log(localStorage.getItem('jwt'))
+            this.$http.post('http://localhost:8081/dashboard',{
+                auth_: this.auth_,
+                token_: localStorage.getItem('jwt')
+            })
+            .then( response => {
+                var path = response.data.path
+                this.$router.push(path)
+            }
+            )
+        }
 
     }
 </script>

@@ -41,7 +41,7 @@ let router = new Router({
 
     {
       path: "/dashboard",
-      name: "userboard",
+      name: "dashboard",
       component: UserBoard,
       meta: {
         //a user authorization is required to access to dashboard

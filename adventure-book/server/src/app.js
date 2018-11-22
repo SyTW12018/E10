@@ -58,14 +58,13 @@ app.post('/signup', (req, res) => {
     var userr = req.body.name_;
     var passw = req.body.pass_;
     var mail = req.body.mail_;
-    console.log(userr);
-    console.log(passw);
-    console.log(mail);
+
     var data = new UserData({
         name: userr,
         password: bcrypt.hashSync(passw,8),
         mail: mail
     });
+
     //Introducing the user in our database
     data.save().then(function(info, err){
         console.log(data.name)
@@ -95,7 +94,7 @@ app.post('/signup', (req, res) => {
 app.post('/login', (req, res) => {
     var userr = req.body.name;
     var passw = req.body.pass; 
-    
+
     UserData.findOne({'name': userr}, function (err, user){
         
         //Server error
@@ -118,9 +117,24 @@ app.post('/login', (req, res) => {
         //create the authentication token for the user with the jwt package
         //the token expires in 24 hours -> 86400seconds
         let token = jwt.sign({id:user.id}, config.secret, {expiresIn: 10});
-        console.log("token: " + token);
+        
         res.status(200).send({auth: true, token: token, user:user});
     });
+})
+
+
+app.post('/dashboard', (req,res) => {
+    var token = req.body.token_
+    console.log(token)
+    if((token == null) || (token == 'undefined')){
+        console.log(token)
+        console.log("usuario sin token")
+        res.send({path:'/login'})
+    }
+    else{
+        console.log("el token tiene algo" + token);
+        res.status(200)
+    }
 })
 
 

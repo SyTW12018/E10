@@ -33,7 +33,7 @@
             handleSubmit(e){
                 e.preventDefault()
                 if(this.pass_ == this.pass_rep && this.pass_.length > 0){
-                    let url = "http://localhost:8081/registrar";
+                    let url = "http://localhost:8081/signup";
                     this.$http.post(url, {
                         name_: this.name_,
                         mail_: this.mail_,
@@ -42,6 +42,7 @@
                     .then(response => {
                         console.log("En el then")
                         localStorage.setItem('user', JSON.stringify(response.data.user))
+                        console.log(response.data.token);
                         localStorage.setItem('jwt', response.data.token)
 
                         if(localStorage.getItem('jwt') != null){
@@ -50,7 +51,7 @@
                                 this.$router.push(this.$route.params.nextUrl);
                             }
                             else{
-                                this.$router.push('/');
+                                this.$router.push('/dashboard');
                             }
                         }
                     })

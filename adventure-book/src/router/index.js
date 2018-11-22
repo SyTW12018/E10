@@ -13,7 +13,10 @@ let router = new Router({
     {
       path: "/",
       name: "HelloWorld",
-      component: HelloWorld
+      component: HelloWorld,
+      meta: {
+
+      }
     },
 
     {
@@ -48,26 +51,32 @@ let router = new Router({
   ]
 });
 
-router.beforeEach((to, from, next) => {
+/*router.beforeEach((to, from, next) => {
+  console.log("require auth" + record.meta.requiresAuth)
   if(to.matched.some(record => record.meta.requiresAuth)){
-    if(localStorage.getItem('jwt') = null){
+    console.log("localstorag" + localStorage.getItem('jwt'));
+    //localStorage.getItem('jwt') != null
+    if(localStorage.getItem('jwt') == 'undefined'){
       next({
         path: '/login',
         params: {nextUrl: to.fullPath}
       })
     }
     else{
-      next()
+      next({
+        path: '/dashboard',
+        params:{nextUrl: to.fullPath, msg: "tok: "}
+      })
     }
   }
   else if(to.matched.some(record => record.meta.guest)){
-    if(localStorage.getItem('jwt') = null){
+    if(localStorage.getItem('jwt') == null){
       next()
     }
     else{
       next()
     }
   }
-})
+})*/
 
 export default router

@@ -7,10 +7,12 @@
 
 <script>
     export default{
+        props:['msg'],
         data: function(){
             return{
-                msg: "mensajito"
+            
             }
-        }
+        },
+
     }
 </script>

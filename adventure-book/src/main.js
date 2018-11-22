@@ -10,6 +10,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import Login from './components/Login.vue';
 import Signup from './components/Signup.vue';
+import Userboard from './components/Userboard.vue';
 
 //Vue authentication 
 Vue.prototype.$http = Axios;
@@ -32,7 +33,8 @@ Vue.use(VueRouter);
 
 const routes = [
     { path: '/login',  component: Login},
-    { path: '/signup', component: Signup}
+    { path: '/signup', component: Signup},
+    { path: '/dashboard', component: Userboard}
 ]
 
 const router = new VueRouter({

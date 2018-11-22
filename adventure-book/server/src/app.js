@@ -84,11 +84,10 @@ app.post('/signup', (req, res) => {
             }
             //create the authentication token for the user with the jwt package
             //the token expires in 24 hours -> 86400seconds
-            let token = jwt.sign({id:user._id}, config.secret, {expiresIn: 86400});
-
+            let token = jwt.sign({id:user._id}, config.secret, {expiresIn: 10});
+            console.log("token_sigup: " + token)
             res.status(200).send({auth: true, token: token, user: user});
         })
-        console.log("esto no tira")
     });
 });
 
@@ -96,7 +95,9 @@ app.post('/signup', (req, res) => {
 app.post('/login', (req, res) => {
     var userr = req.body.name;
     var passw = req.body.pass; 
-    UserData.findOne({name: userr}, function (err, user){
+    
+    UserData.findOne({'name': userr}, function (err, user){
+        
         //Server error
         if (err){
             console.log(err);
@@ -104,26 +105,26 @@ app.post('/login', (req, res) => {
         }
         //user not found
         if(!user){
+            console.log("usuario no registrado");
             return res.status(404).send("Usuario no registrado");
         }
-
+        console.log("vamos a mostrar el password valid")
         //Useing bcrypt to compare our hashed password with the user supplied password
-        let passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
-
+        let passwordIsValid = bcrypt.compareSync(req.body.pass, user.password);
+        console.log(passwordIsValid);
         if(!passwordIsValid){
             return res.status(401).send({auth: false, token: null});
         }
         //create the authentication token for the user with the jwt package
         //the token expires in 24 hours -> 86400seconds
-        let token = jwt.sign({id:user.id}, config.secret, {expiresIn: 86400});
-
+        let token = jwt.sign({id:user.id}, config.secret, {expiresIn: 10});
+        console.log("token: " + token);
         res.status(200).send({auth: true, token: token, user:user});
     });
 })
 
 
-app.get('/comprobar', (req, res) => {
-    
+app.get('/comprobar', (req, res) => {    
     var userr = req.body.name;
     var passw = req.body.pass;
     console.log("documento:" );

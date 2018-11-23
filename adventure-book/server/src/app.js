@@ -123,7 +123,7 @@ app.post('/login', (req, res) => {
 })
 
 
-app.post('/dashboard', (req,res) => {
+app.post('/waiting', (req,res) => {
     var token = req.body.token_
     console.log(token)
     if((token == null) || (token == 'undefined')){
@@ -133,7 +133,7 @@ app.post('/dashboard', (req,res) => {
     }
     else{
         console.log("el token tiene algo" + token);
-        res.status(200)
+        res.status(200).send({path:'/dashboard'})
     }
 })
 

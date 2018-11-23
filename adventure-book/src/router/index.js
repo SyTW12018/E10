@@ -4,6 +4,7 @@ import HelloWorld from "@/components/HelloWorld";
 import Login from "@/components/Login";
 import Signup from "@/components/Signup";
 import UserBoard from "@/components/Userboard"
+import Waiting from "@/components/Waiting"
 
 Vue.use(Router);
 
@@ -46,6 +47,16 @@ let router = new Router({
       meta: {
         //a user authorization is required to access to dashboard
         requiresAuth: true
+      }
+    },
+
+    {
+      path: "/waiting",
+      name: "waiting",
+      component: Waiting,
+      meta: {
+        //a user authorization is required to access to dashboard
+        guest: true
       }
     }
   ]

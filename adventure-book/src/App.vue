@@ -1,20 +1,70 @@
+<style>
+
+	body {
+		height:100%;
+		background-image:url('C.jpg');
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-attachment: fixed;
+		background-size: cover;
+	}
+
+	#mainrow{	
+		text-align: center;
+		padding:40px;
+		background-color: white;
+	}
+	#dif{
+		display: flex;
+  		align-items: center;
+		transform: translatey(10%);
+	}
+
+	@media (min-width: 768px) {
+		#contenedor{
+				transform: translatey(100%);
+		}
+
+	}
+
+</style>
  
 <template>
-<div class="h-100">
- <b-card overlay img-src="https://picsum.photos/600/300/?image=25">    
-   <b-container style="margin-top:250px;">
-      <b-row style=" background-color: white">
-       <b-col md="4" offset-md="4">
-                 <h1> <img src="../src/assets/avion.png" height="60" />Adventure Book</h1>
-                 <p> La red social en la que compartir tus experiencias y encontrar nuevas aventuras</p>
-                 <router-link to='/login'> Iniciar Sesión </router-link>
-                 <router-link to='/signup'> Crear una cuenta </router-link>
-                 <router-view></router-view>
-     </b-col>
-    </b-row>
- </b-container>
-</b-card>
-</div>
+	<div id="contenedor" class="h-100">
+		<b-row id="mainrow">
+			<b-col md="3" offset-md="4">
+				<b-row> 
+					<b-col>
+						<img src="../src/assets/avion.png" height="100px"/>
+					</b-col>
+				</b-row>	
+				<b-row> 
+					<b-col>
+						<h1> Adventure Book </h1>	
+					</b-col>
+				</b-row>	
+				<b-row> 
+					<b-col md="10" offset-md="1">
+						<p> La red social en la que compartir tus experiencias y encontrar nuevas aventuras</p>	
+						<b-row> 
+							<b-col>
+								<router-link to='/login'> Iniciar Sesión </router-link>
+							</b-col>
+							<b-col>
+								<router-link to='/signup'> Registrarse </router-link>
+							</b-col>
+						</b-row>
+					</b-col>
+				</b-row>
+
+			</b-col>
+			<b-col md="2" offset-md="1" id="dif">
+				<b-row> 
+					<router-view></router-view>
+				</b-row>
+			</b-col>
+		</b-row>
+	</div>
 </template>
 
 
@@ -29,7 +79,6 @@ export default {
     }
   }
 }
-
 
 
 </scrip>

@@ -1,15 +1,12 @@
 <template>
-    <span>
-        <h2> Crear una cuenta </h2>
-        <input type="text" placeholder="Nombre" v-model="name">
-        <br>
-        <input type="text" placeholder="E-mail" v-model="mail">
-        <br>
-        <input type="text" placeholder="Contraseña" v-model="pass">
-        <br>
-        <br>
-        <button type="submit" class="btn btn-primary btn-block" style="margin-bottom:10px;" @click(name,mail,pass)> Crear </button>
-    </span>
+	<b-row align-h="center"> 
+		    <h2> Crear una cuenta </h2>
+		    <b-form-input type="text" placeholder="Nombre" v-model="name"></b-form-input>
+		    <b-form-input type="text" placeholder="E-mail" v-model="mail"></b-form-input>
+		    <b-form-input type="text" placeholder="Contraseña" v-model="pass"></b-form-input>
+		    <button type="submit" value="Crear" @click="get_credentials(name, mail, pass)" class="btn btn-primary btn-block" style="margin-bottom:10px;"> Crear </button>
+
+	</b-row>
 </template>
 
         

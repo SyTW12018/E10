@@ -67,15 +67,13 @@ app.post('/signup', (req, res) => {
 
     //Introducing the user in our database
     data.save().then(function(info, err){
-        console.log(data.name)
+        
         if(err){
             console.log("error 1");
             return res.status(500).send("Hubo un problema en el registro de usuario")
         }
         //If the user is registered successfully we create his token
         UserData.findOne({"name": data.name}, function (err, user){
-            console.log(user._id);
-
             if (err){
                 console.log("error 2");
                 console.log(err);
@@ -84,7 +82,7 @@ app.post('/signup', (req, res) => {
             //create the authentication token for the user with the jwt package
             //the token expires in 24 hours -> 86400seconds
             let token = jwt.sign({id:user._id}, config.secret, {expiresIn: 10});
-            console.log("token_sigup: " + token)
+            
             res.status(200).send({auth: true, token: token, user: user});
         })
     });

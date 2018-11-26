@@ -140,15 +140,14 @@ app.post('/waiting', (req,res) => {
 
 app.get('/comprobar', (req, res) => {    
     var userr = req.body.name;
-    var passw = req.body.pass;
-    console.log("documento:" );
-    UserData.findOne({name: userr},function(err,docs){
+    console.log(userr);
+    UserData.findOne({"name": userr},function(err,docs){
         if(docs == null){
-            console.log("documento:" );
+            console.log("documento:" + docs);
             res.send(docs);
         }
         else{
-            console.log("documento:");
+            console.log("documento:"+ docs);
             res.send(docs);
             //res.send("Usuario está registrado");
         }

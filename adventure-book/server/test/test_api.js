@@ -8,13 +8,12 @@
 
  describe('Comprobar', function() {
      describe('GET', function(){
-         it('Should return json as default data format', function(done){
-            let user = {"name":"sergio"} 
-            console.log(user.type)
+         it('Should return json as default data format', function(done){ 
             request.get('/comprobar')
-                .send(user)
+                .send({"name":"sergio", "pass":"12345"})
                 .expect('Content-Type', /json/)
                 //.expect(200, done);
+                done();
          });
      });
  });

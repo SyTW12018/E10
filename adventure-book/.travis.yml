@@ -4,3 +4,5 @@ node_js:
 branches:
   only:
   - desarrollo
+script:
+  - ember test --server

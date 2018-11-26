@@ -19,7 +19,8 @@
   "devDependencies": {},
   "scripts": {
     "start": "nodemon src/app.js --exec  \"npm run lint && node\"",
-    "lint": "eslint src/**/*.js"
+    "lint": "eslint src/**/*.js",
+    
   },
   "author": "",
   "license": "ISC"

@@ -5,4 +5,4 @@ branches:
   only:
   - desarrollo
 script:
-  - mocha server/test_api.js
+  - npm test

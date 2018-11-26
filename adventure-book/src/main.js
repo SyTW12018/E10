@@ -5,7 +5,7 @@ import BootstrapVue from 'bootstrap-vue';
 import VueRouter from 'vue-router';
 import App from './App';
 import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+//import 'bootstrap-vue/dist/bootstrap-vue.css';
 import Login from './components/login.vue';
 import Signup from './components/signup.vue';
 

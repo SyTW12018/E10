@@ -7,7 +7,7 @@
         <input type="text" placeholder="Contraseña" v-model="pass">
         <br>
         <br>
-        <input type="submit" value="Entrar" @click="get_credentials(mail, pass)">
+	<button type="submit" class="btn btn-primary btn-block" style="margin-bottom:10px;"> Entrar </button>
     </span>
 </template>
         

@@ -9,7 +9,7 @@
     "start": "npm run dev",
     "server": "node server/src/app",
     "build": "node build/build.js",
-    "test": "mocha"
+    "test": "cd server && mocha"
   },
   "dependencies": {
     "axios": "^0.18.0",

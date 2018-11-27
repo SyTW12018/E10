@@ -22,7 +22,7 @@
 
 	@media (min-width: 768px) {
 		#contenedor{
-				transform: translatey(100%);
+				transform: translatey(50%);
 		}
 
 	}

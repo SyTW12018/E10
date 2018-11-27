@@ -9,7 +9,7 @@
     "start": "npm run dev",
     "server": "node server/src/app",
     "build": "node build/build.js",
-    "test": "cd server && mocha"
+    "test": "cd server && mocha --exit"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -62,7 +62,8 @@
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-server": "^2.9.1",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "supertest":"3.3.0"
   },
   "engines": {
     "node": ">= 6.0.0",

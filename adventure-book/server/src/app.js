@@ -53,7 +53,6 @@ app.get('/', (req, res) => {
 })
 
 app.post('/signup', (req, res) => {
-    console.log("Estamos en el server");
     /*curl -X POST -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/registrar*/
     var userr = req.body.name_;
     var passw = req.body.pass_;
@@ -90,10 +89,8 @@ app.post('/signup', (req, res) => {
 
 
 app.post('/login', (req, res) => {
-    var userr = req.body.name;
-    var passw = req.body.pass; 
 
-    UserData.findOne({'name': userr}, function (err, user){
+    UserData.findOne({'name': req.body.name}, function (err, user){
         
         //Server error
         if (err){
@@ -115,7 +112,7 @@ app.post('/login', (req, res) => {
         //create the authentication token for the user with the jwt package
         //the token expires in 24 hours -> 86400seconds
         let token = jwt.sign({id:user.id}, config.secret, {expiresIn: 10});
-        
+
         res.status(200).send({auth: true, token: token, user:user});
     });
 })
@@ -133,6 +130,16 @@ app.post('/waiting', (req,res) => {
         console.log("el token tiene algo" + token);
         res.status(200).send({path:'/dashboard'})
     }
+})
+
+
+
+app.post('/dashboard', (req, res) => {
+
+    //Buscamos los datos del usuario a partir de su _id
+    SiteData.findOne({'_id': JSON.parse(req.body.user_)._id}, function(err, user_data){
+
+    })
 })
 
 

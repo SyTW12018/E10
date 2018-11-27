@@ -31,9 +31,10 @@
             .send({"name_":"Bea", "pass_":"1234", "mail_":"beita@gmail.com"})
             .end(function(err, res){
                 //var name_res = res.user;
-                var toJSON = JSON.stringify(res.text)
-                console.log("Usuario en mocha " + toJSON)
+                var data = JSON.parse(res.text)
                 expect(res).to.have.status(200)
+                expect(data).to.be.a('object')
+                expect(data.user.name).to.equal('Bea')
                 
                 
                 done(err);

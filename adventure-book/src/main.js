@@ -6,16 +6,16 @@ import VueRouter from 'vue-router';
 import App from './App';
 import 'bootstrap/dist/css/bootstrap.css';
 //import 'bootstrap-vue/dist/bootstrap-vue.css';
-import Login from './components/login.vue';
-import Signup from './components/signup.vue';
+import Login from './components/Login.vue';
+import Signup from './components/Signup.vue';
 
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 Vue.config.productionTip = false;
 
 const routes = [
-    { path: '/login',  component: Login},
-    { path: '/signup', component: Signup}
+    { path: '/Login',  component: Login},
+    { path: '/Signup', component: Signup}
 ]
 
 const router = new VueRouter({

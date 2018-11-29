@@ -48,10 +48,10 @@
 						<p> La red social en la que compartir tus experiencias y encontrar nuevas aventuras</p>	
 						<b-row> 
 							<b-col>
-								<router-link to='/login'> Iniciar Sesión </router-link>
+								<router-link to='/Login'> Iniciar Sesión </router-link>
 							</b-col>
 							<b-col>
-								<router-link to='/signup'> Registrarse </router-link>
+								<router-link to='/Signup'> Registrarse </router-link>
 							</b-col>
 						</b-row>
 					</b-col>

@@ -4,7 +4,7 @@
     <h2>{{user_data}}</h2>
     <button @click="!b_creat_alb">Crea tu album</button>
     <div>
-      <form enctype="multipart/form-data" novalidate >
+      <form enctype="multipart/form-data" novalidate>
         <h1>Upload images</h1>
         <div class="dropbox">
           <input

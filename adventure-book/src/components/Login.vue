@@ -1,14 +1,10 @@
 <template>
-    <span>
+	<b-row align-h="center"> 
         <h2> Iniciar Sesión </h2>
-
-        <input name="name" type="text" placeholder="E-mail" v-model="name_">
-        <br>
-        <input name="pass" type="text" placeholder="Contraseña" v-model="pass_">
-        <br>
-        <br>
-        <input type="submit" value="Iniciar Sesión" @click="handleSubmit">
-    </span>
+        <b-form-input type="text" placeholder="Nombre de usuario" v-model="name_"></b-form-input>
+        <b-form-input type="password" placeholder="Contraseña" v-model="pass_"></b-form-input>
+	<button type="submit" value="Entrar" @click="handleSubmit" class="btn btn-primary btn-block" style="margin-bottom:10px;"> Entrar </button>
+	</b-row>
 </template>
         
 

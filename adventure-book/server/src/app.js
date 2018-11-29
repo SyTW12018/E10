@@ -29,18 +29,21 @@ var Schema = Mongoose.Schema;
 var UserDataSchema = new Schema({
         name: String,
         password: String,
-        mail: String
+        mail: String,
+        visited_places: Array,
+        wished_places: Array
 }, {collection: 'userData'});
 
 var UserData = Mongoose.model('UserData',UserDataSchema);
 
-var SiteDataSchema = new Schema({
+var PlaceDataSchema = new Schema({
     name: String,
-    author: String,
+    author_id: String,
+    author_name: String,
     photos: String
-}, {collection: 'siteData'});
+}, {collection: 'placeData'});
 
-var SiteData = Mongoose.model('SiteData',SiteDataSchema);
+var PlaceData = Mongoose.model('PlaceData',PlaceDataSchema);
  
 /*Aquí empieza la aplicación*/
 
@@ -136,7 +139,7 @@ app.post('/waiting', (req,res) => {
 app.post('/dashboard', (req, res) => {
 
     //Buscamos los datos del usuario a partir de su _id
-    SiteData.findOne({'_id': JSON.parse(req.body.user)._id}, function(err, user_data){
+    PlaceData.find({'author_id': JSON.parse(req.body.user)._id}, function(err, user_data){
 
     })
 })

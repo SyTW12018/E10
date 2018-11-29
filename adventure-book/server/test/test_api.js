@@ -28,7 +28,7 @@
  describe('Sign UP', function(){
      it('Should return the user and his token', function(done){
          request.post('/signup')
-            .send({"name_":"Bea", "pass_":"1234", "mail_":"beita@gmail.com"})
+            .send({"name":"Bea", "pass":"1234", "mail":"beita@gmail.com"})
             .end(function(err, res){
                 //var name_res = res.user;
                 var data = JSON.parse(res.text)

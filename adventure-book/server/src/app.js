@@ -54,9 +54,9 @@ app.get('/', (req, res) => {
 
 app.post('/signup', (req, res) => {
     /*curl -X POST -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/registrar*/
-    var userr = req.body.name_;
-    var passw = req.body.pass_;
-    var mail = req.body.mail_;
+    var userr = req.body.name;
+    var passw = req.body.pass;
+    var mail = req.body.mail;
 
     var data = new UserData({
         name: userr,
@@ -72,7 +72,7 @@ app.post('/signup', (req, res) => {
             return res.status(500).send("Hubo un problema en el registro de usuario")
         }
         //If the user is registered successfully we create his token
-        UserData.findOne({"name": data.name}, function (err, user){
+        UserData.findOne({'name': data.name}, function (err, user){
             if (err){
                 console.log("error 2");
                 console.log(err);
@@ -89,7 +89,7 @@ app.post('/signup', (req, res) => {
 
 
 app.post('/login', (req, res) => {
-
+    console.log(req.body.name)
     UserData.findOne({'name': req.body.name}, function (err, user){
         
         //Server error
@@ -119,8 +119,7 @@ app.post('/login', (req, res) => {
 
 
 app.post('/waiting', (req,res) => {
-    var token = req.body.token_
-    console.log(token)
+    var token = req.body.token
     if((token == null) || (token == 'undefined')){
         console.log(token)
         console.log("usuario sin token")
@@ -137,16 +136,16 @@ app.post('/waiting', (req,res) => {
 app.post('/dashboard', (req, res) => {
 
     //Buscamos los datos del usuario a partir de su _id
-    SiteData.findOne({'_id': JSON.parse(req.body.user_)._id}, function(err, user_data){
+    SiteData.findOne({'_id': JSON.parse(req.body.user)._id}, function(err, user_data){
 
     })
 })
 
 
 app.get('/comprobar', (req, res) => {    
-    var userr = req.body.name;
-    console.log(userr);
-    UserData.findOne({"name": userr},function(err,docs){
+    var name = req.body.name;
+    console.log(name);
+    UserData.findOne({'name': name},function(err,docs){
         if(docs == null){
             console.log("documento:" + docs);
             res.send(docs);

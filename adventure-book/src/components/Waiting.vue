@@ -16,7 +16,7 @@
             console.log("mounted: ")
             console.log(localStorage.getItem('jwt'))
             this.$http.post('http://localhost:8081/waiting',{
-                token_: localStorage.getItem('jwt')
+                token: localStorage.getItem('jwt')
             })
             .then( response => {
                 var path = response.data.path

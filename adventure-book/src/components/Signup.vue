@@ -35,9 +35,9 @@
                 if(this.pass_ == this.pass_rep && this.pass_.length > 0){
                     let url = "http://localhost:8081/signup";
                     this.$http.post(url, {
-                        name_: this.name_,
-                        mail_: this.mail_,
-                        pass_: this.pass_
+                        name: this.name_,
+                        mail: this.mail_,
+                        pass: this.pass_
                     })
                     .then(response => {
                         localStorage.setItem('user', JSON.stringify(response.data.user))
@@ -55,7 +55,6 @@
                         }
                     })
                     .catch(err => {
-                        console.log("entra en este catch");
                         console.error(err);
                     });
                 }

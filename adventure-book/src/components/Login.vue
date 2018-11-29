@@ -2,7 +2,7 @@
     <span>
         <h2> Iniciar Sesión </h2>
 
-        <input name="name" type="text" placeholder="E-mail" v-model="mail_">
+        <input name="name" type="text" placeholder="E-mail" v-model="name_">
         <br>
         <input name="pass" type="text" placeholder="Contraseña" v-model="pass_">
         <br>
@@ -16,7 +16,7 @@
 export default {
   data: function() {
     return {
-      mail_: "",
+      name_: "",
       pass_: ""
     };
   },
@@ -26,7 +26,7 @@ export default {
       e.preventDefault()
       if(this.pass_.length > 0){
         this.$http.post('http://localhost:8081/login', {
-          name: this.mail_,
+          name: this.name_,
           pass: this.pass_
         })
         .then(response => {

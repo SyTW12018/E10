@@ -10,7 +10,7 @@
     export default{
         data: function(){
             return{
-                user_data: JSON.parse(localStorage.getItem('user')).name
+                user: JSON.parse(localStorage.getItem('user'))
             }
         },
         methods:{

@@ -8,8 +8,7 @@ import VueRouter from 'vue-router';
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-import Login from './components/Login.vue';
-import Signup from './components/Signup.vue';
+import Welcome from './components/welcome.vue';
 import Userboard from './components/Userboard.vue';
 import Waiting from './components/Waiting.vue'
 
@@ -33,9 +32,9 @@ Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 
 const routes = [
-    { path: '/login',  component: Login},
-    { path: '/signup', component: Signup},
-    { path: '/dashboard', component: Userboard},
+    { path: '/',  component: Welcome},
+    { path: '/welcome',  component: Welcome},
+    { path: '/userboard', component: Userboard},
     { path: '/waiting', component: Waiting}
 ]
 

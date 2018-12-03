@@ -31,7 +31,8 @@ var UserDataSchema = new Schema({
         password: String,
         mail: String,
         visited_places: Array,
-        wished_places: Array
+        wished_places: Array,
+        uploadsphotos: Array
 }, {collection: 'userData'});
 
 var UserData = Mongoose.model('UserData',UserDataSchema);
@@ -130,7 +131,7 @@ app.post('/waiting', (req,res) => {
     }
     else{
         console.log("el token tiene algo" + token);
-        res.status(200).send({path:'/dashboard'})
+        res.status(200).send({path:'/dashboard'}) //Aqui hay que pasar el user
     }
 })
 
@@ -140,7 +141,7 @@ app.post('/dashboard', (req, res) => {
 
     //Buscamos los datos del usuario a partir de su _id
     PlaceData.find({'author_id': JSON.parse(req.body.user)._id}, function(err, user_data){
-
+        console.log(user_data);
     })
 })
 
@@ -161,12 +162,8 @@ app.get('/comprobar', (req, res) => {
     });
 });
 
-app.get('/subir_foto',(req,res) =>{  
-    res.sendFile(__dirname + "/foto.html");
-});
 
-
-app.post('/foto/:image', bodyParse.raw({
+app.post('/foto/:image/:name/:place', bodyParse.raw({
         limit : "10mb",
         type : "image/*"
 }),(req,res) =>{
@@ -174,14 +171,23 @@ app.post('/foto/:image', bodyParse.raw({
        /*
     curl -X GET -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/comprobar
     Desde el directorio de donde está la foto: 
-    curl -X POST -H 'Content-Type: image/png' --data-binary @solare.jpg http://localhost:8081/foto/solare.jpg
+    curl -X POST -H 'Content-Type: image/png' --data-binary @solare.jpg http://localhost:8081/foto/solare.jpg/sergio/tenerife
     */
 
-    var aux = __dirname.split('src');
+    var aux_ = __dirname.split('src');
     console.log(req.params.image);
+    console.log(req.params.name);
+    console.log(req.params.place);
+
+    UserData.findOneAndUpdate({'name':req.params.name},{$push: {visited_places: req.params.place, uploadsphotos: aux_[0] + 'uploads/' + req.params.image} },function(err,doc){
+        console.log("Modificando registro ...");
+    }).then(UserData.findOne({'name':req.params.name},function(err,doc){
+        console.log(doc.visited_places)
+        console.log(doc.uploadsphotos)
+    }))
 
     
-    var fd = fs.createWriteStream(path.join(aux[0],"uploads",req.params.image),{
+    var fd = fs.createWriteStream(path.join(aux_[0],"uploads",req.params.image),{
         flags: "w+",
         encoding: "binary"
     });

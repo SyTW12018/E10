@@ -1,11 +1,9 @@
-
-
 <style>
 
   #nav{
     background-color: white;
     margin: 0 0 20px 0px;
-    padding:15px;
+    padding:15px 15px 0px 15px;
   }
 
   #header{
@@ -23,9 +21,35 @@
 	color: #54C2C3;
   }
 
+  h2, h3{
+	color: #6c6c6c;
+  }
+
   .item {
     margin: 7px 10px 0px 10px;
     font-size: 16px;
+  }
+
+  #links{
+    padding: 10px;
+    background-color: #54C2C3
+  }
+
+  #links a{
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+
+  .btn-primary, .btn-primary:active, .btn-primary:visited {
+    background-color: #6c6c6c !important;
+    border-color:#6c6c6c;
+  }
+
+  .btn-primary:hover{
+    background-color: grey !important;
+    border-color: grey;
   }
 
 </style>
@@ -43,11 +67,12 @@
 			</b-row>
 
 
-
-			<b-nav>
-				<router-link to='/Welcome' class="item"> Entrar </router-link>
-				<router-link to='/Userboard' class="item"> Mis Sitios </router-link>
-			</b-nav>
+      <b-row id="links">
+        <b-nav>
+          <router-link to='/Welcome' class="item"> Entrar </router-link>
+          <router-link to='/Userboard' class="item"> Mis Sitios </router-link>
+        </b-nav>
+			</b-row>
 		</div>
 
 		<router-view></router-view>

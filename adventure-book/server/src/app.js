@@ -175,16 +175,26 @@ app.post('/foto/:image/:name/:place', bodyParse.raw({
     */
 
     var aux_ = __dirname.split('src');
-    console.log(req.params.image);
-    console.log(req.params.name);
-    console.log(req.params.place);
+
+    var array_aux = [aux_[0] + 'uploads/' + req.params.image]
+    UserData.findOne({'name':req.params.name},function(err,doc){
+        var data = new PlaceData({
+            name: req.params.place,
+            author_id: doc.id,
+            author_name: doc.name,
+            photos: array_aux
+        });
+        data.save().then(function(err,doc){
+            console.log("guardado en lugares correctamente");
+        });
+    });
+
+    //Aqui añado el lugar, falta comprobar que no este el lugar creado para no hacer el save pero bueno
+
 
     UserData.findOneAndUpdate({'name':req.params.name},{$push: {visited_places: req.params.place, uploadsphotos: aux_[0] + 'uploads/' + req.params.image} },function(err,doc){
         console.log("Modificando registro ...");
-    }).then(UserData.findOne({'name':req.params.name},function(err,doc){
-        console.log(doc.visited_places)
-        console.log(doc.uploadsphotos)
-    }))
+    });
 
     
     var fd = fs.createWriteStream(path.join(aux_[0],"uploads",req.params.image),{

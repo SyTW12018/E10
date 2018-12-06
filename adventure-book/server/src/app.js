@@ -9,6 +9,11 @@ const config = require('./config');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const multer = require('multer');
+const upload = multer({
+    dest: './uploads/'
+})
+
 var path = require("path");
 var fs = require("fs");
 
@@ -145,6 +150,13 @@ app.post('/dashboard', (req, res) => {
 })
 
 
+app.post('/upload', upload.single('file'), (req,res) => {
+    console.log(req.file)
+
+    res.json({file: req.file});
+})
+
+
 app.get('/comprobar', (req, res) => {    
     var name = req.body.name;
     console.log(name);
@@ -171,6 +183,7 @@ app.post('/foto/:image', bodyParse.raw({
         type : "image/*"
 }),(req,res) =>{
 
+        console.log("fotos " + req.params.image)
        /*
     curl -X GET -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/comprobar
     Desde el directorio de donde está la foto: 
@@ -185,7 +198,7 @@ app.post('/foto/:image', bodyParse.raw({
         flags: "w+",
         encoding: "binary"
     });
-
+    console.log(req.body)
     fd.write(req.body);
     fd.end();
     fd.on("close",() =>{

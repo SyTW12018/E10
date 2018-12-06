@@ -2,29 +2,21 @@
   <div>
     <h1>Bienvenido al dashboard</h1>
     <h2>{{user_data}}</h2>
-    <button @click="!b_creat_alb">Crea tu album</button>
+
+    <form @submit.prevent="sendFiles" enctype="multipart/form-data">
+      <div>
+        <label for="title">Upload Files</label>
+        <input type="file" ref="file" @change="selectFile">
+      </div>
+      <div>
+        <button @onclick="sendFiles">Send</button>
+      </div>
+    </form>
+
     <div>
-      <form enctype="multipart/form-data" novalidate>
-        <h1>Upload images</h1>
-        <div class="dropbox">
-          <input
-            type="file"
-            multiple
-            :name="uploadFieldName"
-            :disabled="isSaving"
-            @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
-            accept="image/*"
-            class="input-file"
-          >
-          <p v-if="isInitial">Drag your file(s) here to begin
-            <br>or click to browse
-          </p>
-          <p v-if="isSaving">Uploading {{ fileCount }} files...</p>
-        </div>
-      </form>
+      <button @click="log_out"> Log Out</button>
     </div>
-    <button @click="log_out">LOG OUT</button>
-  </div>
+  </div>  
 </template>
 
 <script>
@@ -32,7 +24,8 @@ export default {
   data: function() {
     return {
       user_: JSON.parse(localStorage.getItem("user")),
-      b_creat_alb: false
+      b_creat_alb: false,
+      file: ""
     };
   },
   methods: {
@@ -41,7 +34,26 @@ export default {
       this.$router.push("/");
     },
 
-    create_album() {}
+    create_album() {},
+
+    async sendFiles() {
+      /*
+          Initialize the form data
+        */
+      console.log(this.file)
+      const formData = new FormData();
+      formData.append("file", this.file);
+
+      try {
+        await this.$http.post('http://localhost:8081/upload', formData);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    selectFile() {
+      this.file = this.$refs.file.files[0];
+    }
   },
 
   mounted() {
@@ -63,3 +75,4 @@ export default {
   }
 };
 </script>
+

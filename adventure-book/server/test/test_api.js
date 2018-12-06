@@ -24,7 +24,7 @@
      });
  });
 
-
+/*
  describe('Sign UP', function(){
      it('Should return the user and his token', function(done){
          request.post('/signup')
@@ -42,3 +42,4 @@
             
      });
  });
+*/

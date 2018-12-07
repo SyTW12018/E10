@@ -240,7 +240,7 @@ app.get('/comprobar', (req, res) => {
 });
 
 
-app.post('/foto/:image/:name/:place', bodyParse.raw({
+/*app.post('/foto/:image/:name/:place', bodyParse.raw({
         limit : "10mb",
         type : "image/*"
 }),(req,res) =>{
@@ -250,7 +250,7 @@ app.post('/foto/:image/:name/:place', bodyParse.raw({
     curl -X GET -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/comprobar
     Desde el directorio de donde está la foto: 
     curl -X POST -H 'Content-Type: image/png' --data-binary @solare.jpg http://localhost:8081/foto/solare.jpg/sergio/tenerife
-    */
+    
 
     var aux_ = __dirname.split('src');
 
@@ -285,7 +285,7 @@ app.post('/foto/:image/:name/:place', bodyParse.raw({
     fd.on("close",() =>{
         res.send("Subiendo foto");
     });
-});
+});*/
 
 
 

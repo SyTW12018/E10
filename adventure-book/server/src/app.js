@@ -170,8 +170,25 @@ const upload = multer({
     }
 })
 
-app.post('/upload', upload.array('files'), (req,res) => {
-    console.log(req.files)
+app.post('/upload/:user/:place', upload.array('files'), (req,res) => {
+    console.log(req.files);
+    console.log(req.params.user);
+    console.log(req.params.place);
+
+    /*var aux_ = __dirname.split('src');
+
+    
+    UserData.findOne({'name':req.params.name},function(err,doc){
+        var data = new PlaceData({
+            name: req.params.place,
+            author_id: doc.id,
+            author_name: doc.name,
+            photos: array_aux
+        });
+        data.save().then(function(err,doc){
+            console.log("guardado en lugares correctamente");
+        });
+    });*/
 
     res.json({files: req.file});
 })

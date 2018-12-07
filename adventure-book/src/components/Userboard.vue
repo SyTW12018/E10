@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Bienvenido al dashboard</h1>
-    <h2>{{user_data}}</h2>
+    <h2>{{name}}</h2>
 
     <form @submit.prevent="sendFiles" enctype="multipart/form-data">
       <div>
@@ -43,12 +43,14 @@ export default {
   data: function() {
     return {
       user_: JSON.parse(localStorage.getItem("user")),
+      name: JSON.parse(localStorage.getItem("user")).name,
       b_creat_alb: false,
       //file: "",
       files: [],
       uploadFiles: [],
       error: false,
-      err_msg: ""
+      err_msg: "",
+      places:['Tenerife']
     };
   },
   methods: {
@@ -121,12 +123,12 @@ export default {
       const formData = new FormData();
       _.forEach(this.uploadFiles, file => {
         if(this.validate(file) === ""){
-          formData.append('files', file)
+          formData.append('files', file);
         }
       });
 
       try {
-        var url = "http://localhost:8081/upload"
+        var url = "http://localhost:8081/upload/" + this.name + "/" + this.places[0];
         await this.$http.post(url, formData);
         this.files = [];
         this.uploadFiles = [];

@@ -43,7 +43,7 @@ var PlaceDataSchema = new Schema({
     name: String,
     author_id: String,
     author_name: String,
-    photos: String
+    photos: Array
 }, {collection: 'placeData'});
 
 var PlaceData = Mongoose.model('PlaceData',PlaceDataSchema);
@@ -170,28 +170,44 @@ const upload = multer({
     }
 })
 
-app.post('/upload/:user/:place', upload.array('files'), (req,res) => {
-    console.log(req.files);
-    console.log(req.params.user);
-    console.log(req.params.place);
+app.post('/upload/:name/:place', upload.array('files'), (req,res) => {
 
-    /*var aux_ = __dirname.split('src');
+    var aux_ = __dirname.split('src'); 
+    var array_aux = [aux_[0] + 'uploads/' + req.files[0].originalname];
 
-    
-    UserData.findOne({'name':req.params.name},function(err,doc){
-        var data = new PlaceData({
-            name: req.params.place,
-            author_id: doc.id,
-            author_name: doc.name,
-            photos: array_aux
-        });
-        data.save().then(function(err,doc){
-            console.log("guardado en lugares correctamente");
-        });
-    });*/
 
+    PlaceData.findOne({'name':req.params.place},function(err,doc){
+        if(doc == null){ //El lugar no existe y se crea
+            UserData.findOne({'name':req.params.name},function(err,doc){
+                var data = new PlaceData({
+                    name: req.params.place,
+                    author_id: doc.id,
+                    author_name: doc.name,
+                    photos: array_aux
+                });
+                data.save().then(function(){
+                    PlaceData.findOne({'author_name': req.params.name}, function(err,doc){
+                        console.log("Guardado en lugares correctamente");
+                        console.log("Esto es lo que se ha guardado:",doc);
+                    });  
+                });
+            });
+        }
+            UserData.findOneAndUpdate({'name':req.params.name},
+                {$push: {'visited_places': req.params.place, 'uploadsphotos': aux_[0] + 'uploads/' + req.files[0].originalname}},
+                function(err,doc){
+                    console.log("Modificando registro ...");
+                    console.log(doc);//Esto si funciona perfecto
+            });
+        
+    });
     res.json({files: req.file});
-})
+});
+
+
+
+
+
 
 app.use(function(err, req, res, next){
     if(err.code === "LIMIT_FILE_TYPES"){
@@ -205,12 +221,6 @@ app.use(function(err, req, res, next){
     }
     
 })
-
-
-
-
-
-
 
 
 app.get('/comprobar', (req, res) => {    

@@ -8,14 +8,11 @@ var Mongoose = require('mongoose');
 const config = require('./config');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
-const multer = require('multer');
-const upload = multer({
-    dest: './uploads/'
-})
-
 var path = require("path");
 var fs = require("fs");
+//to upload files
+const multer = require('multer');
+
 
 Mongoose.connect('mongodb://localhost:27017/test');
 var app = express()
@@ -151,11 +148,52 @@ app.post('/dashboard', (req, res) => {
 })
 
 
-app.post('/upload', upload.single('file'), (req,res) => {
-    console.log(req.file)
 
-    res.json({file: req.file});
+
+const fileFilter = function(req, file, cb){
+    const allowedType = ["image/jpeg", "image/png", "image/gif"];
+
+    if(!allowedType.includes(file.mimetype)){
+        const error = new Error("Tipo de archivo no permitido");
+        error.code = "LIMIT_FILE_TYPES";
+        return cb(error, false);
+    }
+    cb(null, true);
+}
+
+const MAX_SIZE = 2000000;
+const upload = multer({
+    dest: './uploads/',
+    fileFilter,
+    limits:{
+        fileSize: MAX_SIZE
+    }
 })
+
+app.post('/upload', upload.array('files'), (req,res) => {
+    console.log(req.files)
+
+    res.json({files: req.file});
+})
+
+app.use(function(err, req, res, next){
+    if(err.code === "LIMIT_FILE_TYPES"){
+        res.status(422).json({error: "Solo se permiten imágenes jpeg, png y gif"});
+        return;
+    }
+
+    if(err.code === "LIMIT_FILE_SIZE"){
+        res.status(422).json({error: 'Archivo demasiado pesado. Tamaño máximo: ${MAX_SIZE/1000}kb'});
+        return;
+    }
+    
+})
+
+
+
+
+
+
 
 
 app.get('/comprobar', (req, res) => {    

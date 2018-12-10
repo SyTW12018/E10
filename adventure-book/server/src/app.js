@@ -14,7 +14,8 @@ var fs = require("fs");
 const multer = require('multer');
 
 
-Mongoose.connect('mongodb://localhost:27017/test');
+Mongoose.connect('mongodb://10.6.129.17:27017/test');
+Mongoose.set('useFindAndModify', false);
 var app = express()
 app.use(morgan('combined'))
 
@@ -152,7 +153,16 @@ app.post('/follow/:name/:place', (req, res) => {
     UserData.findOneAndUpdate({'name':req.params.name},
         {$push: {'wished_places': req.params.place}},
         function(err,doc){
-            }); 
+            if(err == null){
+                console.log("Modificando registro de wished_places");
+                res.status(200).send(doc);
+            }
+         
+            else{
+                console.log("Hubo un error");
+                console.log(err);
+            } 
+        });
 });
 
 

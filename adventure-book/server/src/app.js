@@ -56,7 +56,7 @@ app.get('/', (req, res) => {
     var aux = __dirname.split('server');
     console.log(aux[0]);
     res.sendFile(aux[0] + '/client/' + 'index.html');
-})
+});
 
 app.post('/signup', (req, res) => {
     /*curl -X POST -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/registrar*/
@@ -144,9 +144,16 @@ app.post('/dashboard', (req, res) => {
     //Buscamos los datos del usuario a partir de su _id
     PlaceData.find({'author_id': JSON.parse(req.body.user)._id}, function(err, user_data){
         console.log(user_data);
-    })
-})
+    });
+});
 
+app.post('/follow/:name/:place', (req, res) => {
+    
+    UserData.findOneAndUpdate({'name':req.params.name},
+        {$push: {'wished_places': req.params.place}},
+        function(err,doc){
+            }); 
+});
 
 
 

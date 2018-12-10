@@ -14,7 +14,7 @@ var fs = require("fs");
 const multer = require('multer');
 
 
-Mongoose.connect('mongodb://10.6.129.17:27017/test');
+Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
 Mongoose.set('useFindAndModify', false);
 var app = express()
 app.use(morgan('combined'))

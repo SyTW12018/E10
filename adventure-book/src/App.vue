@@ -71,9 +71,10 @@
         <b-nav>
           <router-link to='/Welcome' class="item"> Entrar </router-link>
           <router-link to='/Userboard' class="item"> Mis Sitios </router-link>
+	  <router-link to='/Userdestination' class="item"> Grupos viaje </router-link>
         </b-nav>
-			</b-row>
-		</div>
+       </b-row>
+      </div>
 
 		<router-view></router-view>
 

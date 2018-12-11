@@ -11,6 +11,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import Welcome from './components/welcome.vue';
 import Userboard from './components/Userboard.vue';
 import Waiting from './components/Waiting.vue'
+import Userdestination from './components/Userdestination.vue'
 
 //Vue authentication 
 Vue.prototype.$http = Axios;
@@ -35,7 +36,8 @@ const routes = [
     { path: '/',  component: Welcome},
     { path: '/welcome',  component: Welcome},
     { path: '/userboard', component: Userboard},
-    { path: '/waiting', component: Waiting}
+    { path: '/waiting', component: Waiting},
+    { path: '/userdestination',component:Userdestination}
 ]
 
 const router = new VueRouter({

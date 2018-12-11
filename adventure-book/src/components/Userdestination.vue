@@ -6,9 +6,114 @@
 </style>
 
 <template>
-	<div clas="main">
+	<div class="main">
 		<b-row>
 			<b-col cols="7" id="sitios_deseados">
+				<b-row>
+					<h2> Destinos deseados </h2>
+				</b-row>					
+				<div v-for="sitio in destinos_deseados[0].sitios">
+					<b-row>
+						<b-col>
+							<div class="card" style="width: 10rem;">
+								<img class="card-img-top" src="../C.jpg" alt="Card image">
+							</div>
+						</b-col>
+						<b-col>
+							<b-row>
+								{{sitio.lugar}}
+							</b-row>
+							<b-row>
+								{{sitio.pais}}
+							</b-row>
+						</b-col>
+						<b-col>
+							<b-row>
+								{{sitio.fecha}}
+							</b-row>
+							<b-row>
+								<b-col>
+									{{sitio.personas}}
+								</b-col>
+								<b-col>
+									<div class="card" style="width:2rem;">
+										<img class="card-img-top" src="../person.jpg" alt="Card image">
+									</div>
+								</b-col>
+							</b-row>
+						</b-col>
+					</b-row>
+				</div>
+				<b-row>
+					<h2> Este mes </h2>
+				</b-row>
+				<div v-for="sitio in este_mes[0].sitios">
+                                        <b-row>
+                                                <b-col>
+                                                        <div class="card" style="width: 10rem;">
+                                                                <img class="card-img-top" src="../C.jpg" alt="Card image">
+                                                        </div>
+                                                </b-col>
+                                                <b-col>
+                                                        <b-row>
+                                                                {{sitio.lugar}}
+                                                        </b-row>
+                                                        <b-row>
+                                                                {{sitio.pais}}
+                                                        </b-row>
+                                                </b-col>
+                                                <b-col>
+                                                        <b-row>
+                                                                {{sitio.fecha}}
+                                                        </b-row>
+                                                        <b-row>
+                                                                <b-col>
+                                                                        {{sitio.personas}}
+                                                                </b-col>
+                                                                <b-col>
+                                                                        <div class="card" style="width:2rem;">
+										<img class="card-img-top" src="../person.jpg" alt="Card image">
+									</div>
+								</b-col>
+							</b-row>
+						</b-col>
+					</b-row>
+				</div>	
+				<b-row>
+                                        <h2> Todos los viajes organizados</h2>
+                                </b-row>
+                                <div v-for="sitio in todo_organizado[0].sitios">
+                                        <b-row>
+                                                <b-col>
+                                                        <div class="card" style="width: 10rem;">
+                                                                <img class="card-img-top" src="../C.jpg" alt="Card image">
+                                                        </div>
+                                                </b-col>
+                                                <b-col>
+                                                        <b-row>
+                                                                {{sitio.lugar}}
+                                                        </b-row>
+                                                        <b-row>
+                                                                {{sitio.pais}}
+                                                        </b-row>
+                                                </b-col>
+                                                <b-col>
+                                                        <b-row>
+                                                                {{sitio.fecha}}
+                                                        </b-row>
+                                                        <b-row>
+                                                                <b-col>
+                                                                        {{sitio.personas}}
+                                                                </b-col>
+                                                                <b-col>
+                                                                        <div class="card" style="width:2rem;">
+                                                                                <img class="card-img-top" src="../person.jpg" alt="Card image">
+                                                                        </div>
+                                                                </b-col>
+                                                        </b-row>
+                                                </b-col>
+					</b-row>
+				</div>
 			</b-col>
 			<b-col id="proximos_viajes" class="w-100">
 				<b-row>				
@@ -34,7 +139,14 @@
 								{{sitio.fecha}}
 							</b-row>	
 							<b-row>
-								{{sitio.personas}}
+								<b-col>
+									{{sitio.personas}}
+								</b-col>
+								<b-col>
+									<div class="card" style="width:2rem;">
+										<img class="card-img-top" src="../person.jpg" alt="Card image">
+									</div>
+								</b-col>
 							</b-row>
 						</b-col>
 					</b-row>
@@ -47,9 +159,30 @@
         export default {
                 data(){
                         return{
+				destinos_deseados: [
+							{
+								sitios:[{lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:'3'},
+                                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:'4'},
+									]
+							}
+				],
                                 futuros_viajes: [
                                                         {
                                                                 sitios: [{lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:'3'},
+                                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:'4'},
+                                                                        ]
+                                                        }
+                                ],
+				este_mes: [
+                                                        {
+                                                                sitios: [{lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:'3'},
+                                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:'4'},
+                                                                        ]
+                                                        }
+                                ],
+				todo_organizado: [
+                                                        {
+                                                                sitios: [{lugar: 'Madrid', pais: 'España',fecha:'Marzo 2017', personas:'12'},
                                                                         {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:'4'},
                                                                         ]
                                                         }

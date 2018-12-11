@@ -12,6 +12,8 @@ var path = require("path");
 var fs = require("fs");
 //to upload files
 const multer = require('multer');
+var sys = require('sys')
+var exec = require('child_process').exec;
 
 
 Mongoose.connect('mongodb://localhost:27017/test');
@@ -49,7 +51,16 @@ var PlaceDataSchema = new Schema({
 }, {collection: 'placeData'});
 
 var PlaceData = Mongoose.model('PlaceData',PlaceDataSchema);
- 
+
+var GroupTravelSchema = new Schema({
+    place: String,
+    members: Array,
+    author_name: String,
+    comments: Array,
+    photos: Array
+}, {collection: 'groupTravelData'});
+
+var GroupTravel = Mongoose.model('groupTravelData',GroupTravelSchema);
 /*Aquí empieza la aplicación*/
 
 
@@ -149,7 +160,7 @@ app.post('/dashboard', (req, res) => {
     });
 });
 
-app.post('/follow/:name/:place', (req, res) => {
+app.post('/follow_W/:name/:place', (req, res) => {
     
     UserData.findOneAndUpdate({'name':req.params.name},
         {$push: {'wished_places': req.params.place}},
@@ -190,7 +201,7 @@ const upload = multer({
 
 app.post('/upload/:name/:place', upload.array('files'), (req,res) => {
 
-    var aux_ = __dirname.split('src'); 
+    var aux_ = __dirname.split('server'); 
     var array_aux = [aux_[0] + 'uploads/' + req.files[0].originalname];
 
 
@@ -247,8 +258,25 @@ app.post('/delete_V/:name/:place', (req, res) => {
 
 app.post('/delete_P/:name/:photo', (req, res) => {
 
+     //Este es el código qu ehay que usar para borrar las fotos del directorio uploads
+     //Lo que pasa es que las fotos se guardan con 89078037489738 y no sé como poder conseguir ese nombre
+     
+     /*var command = "rm -rf " + __dirname.split('server')[0] + 'uploads/' + req.params.photo;
+     console.log(command)
+     dir = exec(command, function(err, stdout, stderr) {
+        if (err) {
+          // should have err.code here?  
+        }
+        console.log(stdout);
+      });
+      
+      dir.on('exit', function (code) {
+        // exit code is code
+      });*/
+
+
     UserData.findOneAndUpdate({'name':req.params.name},
-    {$pull: {'uploadsphotos': __dirname.split('src')[0] + 'uploads/' + req.params.photo}},
+    {$pull: {'uploadsphotos': __dirname.split('server')[0] + 'uploads/' + req.params.photo}},
     function(err,doc){
         console.log("Modificando registro ...");
         console.log(doc);//Esto si funciona perfecto
@@ -263,7 +291,6 @@ app.use(function(err, req, res, next){
         res.status(422).json({error: "Solo se permiten imágenes jpeg, png y gif"});
         return;
     }
-
     if(err.code === "LIMIT_FILE_SIZE"){
         res.status(422).json({error: 'Archivo demasiado pesado. Tamaño máximo: ${MAX_SIZE/1000}kb'});
         return;
@@ -274,6 +301,8 @@ app.use(function(err, req, res, next){
 app.get('/comprobar', (req, res) => {    
     var name = req.body.name;
     console.log(name);
+    
+
     UserData.findOne({'name': name},function(err,docs){
         if(docs == null){
             console.log("documento:" + docs);

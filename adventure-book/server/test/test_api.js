@@ -26,10 +26,10 @@ console.log(process.argv);
  });
 
 
-describe('Follow', function() {
+describe('Follow_W', function() {
     describe('POST', function(){
         it('Should return json as default data format', function(done){ 
-           request.post('/follow/sergio/Canarias')
+           request.post('/follow_W/sergio/Canarias')
             .expect('Content-Type', /json/)
             .expect(200);
             done();

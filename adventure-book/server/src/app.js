@@ -14,7 +14,8 @@ var fs = require("fs");
 const multer = require('multer');
 
 
-Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
+Mongoose.connect('mongodb://localhost:27017/test');
+//Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
 Mongoose.set('useFindAndModify', false);
 var app = express()
 app.use(morgan('combined'))
@@ -221,8 +222,39 @@ app.post('/upload/:name/:place', upload.array('files'), (req,res) => {
     res.json({files: req.file});
 });
 
+app.post('/delete_W/:name/:place', (req, res) => {
 
+    UserData.findOneAndUpdate({'name':req.params.name},
+    {$pull: {'wished_places': req.params.place}},
+    function(err,doc){
+        console.log("Modificando registro ...");
+        console.log(doc);//Esto si funciona perfecto
+    });
+    res.send({path:'/login'});
+});
 
+app.post('/delete_V/:name/:place', (req, res) => {
+
+    console.log(req.params.place);
+    UserData.findOneAndUpdate({'name':req.params.name},
+    {$pull: {'visited_places': req.params.place}},
+    function(err,doc){
+        console.log("Modificando registro ...");
+        console.log(doc);//Esto si funciona perfecto
+    });
+    res.send({path:'/login'});
+});
+
+app.post('/delete_P/:name/:photo', (req, res) => {
+
+    UserData.findOneAndUpdate({'name':req.params.name},
+    {$pull: {'uploadsphotos': __dirname.split('src')[0] + 'uploads/' + req.params.photo}},
+    function(err,doc){
+        console.log("Modificando registro ...");
+        console.log(doc);//Esto si funciona perfecto
+    });
+    res.send({path:'/login'});
+});
 
 
 
@@ -239,7 +271,6 @@ app.use(function(err, req, res, next){
     
 })
 
-
 app.get('/comprobar', (req, res) => {    
     var name = req.body.name;
     console.log(name);
@@ -255,56 +286,6 @@ app.get('/comprobar', (req, res) => {
         }
     });
 });
-
-
-/*app.post('/foto/:image/:name/:place', bodyParse.raw({
-        limit : "10mb",
-        type : "image/*"
-}),(req,res) =>{
-
-        console.log("fotos " + req.params.image)
-       /*
-    curl -X GET -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/comprobar
-    Desde el directorio de donde está la foto: 
-    curl -X POST -H 'Content-Type: image/png' --data-binary @solare.jpg http://localhost:8081/foto/solare.jpg/sergio/tenerife
-    
-
-    var aux_ = __dirname.split('src');
-
-    var array_aux = [aux_[0] + 'uploads/' + req.params.image]
-    UserData.findOne({'name':req.params.name},function(err,doc){
-        var data = new PlaceData({
-            name: req.params.place,
-            author_id: doc.id,
-            author_name: doc.name,
-            photos: array_aux
-        });
-        data.save().then(function(err,doc){
-            console.log("guardado en lugares correctamente");
-        });
-    });
-
-    //Aqui añado el lugar, falta comprobar que no este el lugar creado para no hacer el save pero bueno
-
-
-    UserData.findOneAndUpdate({'name':req.params.name},{$push: {visited_places: req.params.place, uploadsphotos: aux_[0] + 'uploads/' + req.params.image} },function(err,doc){
-        console.log("Modificando registro ...");
-    });
-
-    
-    var fd = fs.createWriteStream(path.join(aux_[0],"uploads",req.params.image),{
-        flags: "w+",
-        encoding: "binary"
-    });
-    console.log(req.body)
-    fd.write(req.body);
-    fd.end();
-    fd.on("close",() =>{
-        res.send("Subiendo foto");
-    });
-});*/
-
-
 
 let server = app.listen(process.env.PORT || 8081, function (err) {
     if(err){

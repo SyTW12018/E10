@@ -50,7 +50,7 @@ export default {
       uploadFiles: [],
       error: false,
       err_msg: "",
-      places:['Las palmas']
+      places:['Tenerife']
     };
   },
   methods: {

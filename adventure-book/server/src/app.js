@@ -284,6 +284,38 @@ app.post('/delete_P/:name/:photo', (req, res) => {
     res.send({path:'/login'});
 });
 
+app.post('/group_Add/:author_name/:place/:photo', /*upload.array('files'),*/ (req,res) =>{
+
+    //Probar si sube foto a ver y ya cambiar el rollo para que suba la foto y tal
+
+    console.log("Aqui entra al rollo");
+    var aux_ = __dirname.split('server');
+    var array_user = [req.params.author_name];
+    //var array_aux = [aux_[0] + 'uploads/' + req.files[0].originalname];
+    var array_aux = ["Ejemplo"];
+    console.log("Aqui entra al rollo");
+    var data = new GroupTravel({
+        place: req.params.place,
+        members: array_user,
+        author_name: req.params.author_name,
+        comments: [],
+        photos: array_aux
+    });
+    data.save().then(function(){
+        res.send(200);
+    });
+});
+
+app.post('/group_Dele', (req,res) =>{
+
+});
+
+app.post('/group_F', (req,res) =>{
+
+
+});
+
+
 
 
 app.use(function(err, req, res, next){

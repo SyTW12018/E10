@@ -1,5 +1,24 @@
 <style>
+.main{
+    padding:100px;
+    background-color:white;
+}
 
+.card{
+    margin: 0px 8px 8px 0px; 
+    background-color: #54C2C3;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 0px;
+}
+
+.card:hover{
+    background-color: white;
+    color: #54C2C3;
+}
 </style>
 
 <template>

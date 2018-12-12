@@ -11,6 +11,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import Welcome from './components/welcome.vue';
 import Userboard from './components/Userboard.vue';
 import Waiting from './components/Waiting.vue';
+import Profile from './components/Profile.vue';
 import Sites from './components/Sites.vue'
 
 //Vue authentication 
@@ -37,6 +38,7 @@ const routes = [
     { path: '/welcome',  component: Welcome},
     { path: '/userboard', component: Userboard},
     { path: '/sitios', component: Sites},
+    { path: '/perfil', component: Profile},
     { path: '/waiting', component: Waiting}
 ]
 

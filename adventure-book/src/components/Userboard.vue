@@ -1,7 +1,23 @@
 <style>
 .main{
-    padding:30px;
+    padding:100px;
     background-color:white;
+}
+
+.card{
+    margin: 0px 8px 8px 0px; 
+    background-color: #54C2C3;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 0px;
+}
+
+.card:hover{
+    background-color: white;
+    color: #54C2C3;
 }
 
 </style>
@@ -9,9 +25,6 @@
 <template>
     <div class="main">
         <div class="container">
-            <b-row>
-                <p> Hola de nuevo, {{ nombre_usuario }} </p>
-            </b-row>
             <b-row>
                 <b-col cols="9" id="mis_sitios">
                     <b-row>
@@ -39,9 +52,9 @@
                     </b-row>
                     <b-row class="w-100">
                         <b-list-group class="w-100">
-                        <div v-for="sitio in sitios_deseados[0].sitios">
-                            <b-list-group-item class="w-100"> {{ sitio }} </b-list-group-item>
-                        </div>
+		                    <div v-for="sitio in sitios_deseados[0].sitios">
+		                        <b-list-group-item class="w-100"> {{ sitio }} </b-list-group-item>
+		                    </div>
                         </b-list-group>
                     </b-row>
                 </b-col>

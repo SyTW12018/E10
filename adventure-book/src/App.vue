@@ -2,7 +2,7 @@
 
   #nav{
     background-color: white;
-    margin: 0 0 20px 0px;
+    margin: 0 0 0px 0px;
     padding:15px 15px 0px 15px;
   }
 
@@ -69,8 +69,9 @@
 
       <b-row id="links">
         <b-nav>
-          <router-link to='/Welcome' class="item"> Entrar </router-link>
-          <router-link to='/Userboard' class="item"> Mis Sitios </router-link>
+          <router-link to='/welcome' class="item"> Entrar </router-link>
+          <router-link to='/userboard' class="item"> Mis Sitios </router-link>
+          <router-link to='/sitios' class="item"> Sitios </router-link>
         </b-nav>
 			</b-row>
 		</div>

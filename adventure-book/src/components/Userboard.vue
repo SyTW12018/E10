@@ -84,7 +84,8 @@
           </div>
           <div class="level-right">
             <div class="level-item">
-              <a @click.prevent="files.splice(index,1);uploadFiles.splice(index,1)" class="delete"></a></div>
+              <a @click.prevent="files.splice(index,1);uploadFiles.splice(index,1)" class="delete"></a>
+            </div>
           </div>
         </div>
       </div>
@@ -97,7 +98,7 @@
 
     <div>
       <button @click="log_out"> Log Out</button>
-    <div class="main">
+      <div class="main">
         <div class="container">
             <b-row>
                 <p> Hola de nuevo, {{ nombre_usuario }} </p>
@@ -137,6 +138,7 @@
                 </b-col>
             </b-row>
         </div>
+      </div>
     </div>
   </div>  
 </template>

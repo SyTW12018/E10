@@ -38,7 +38,8 @@ var UserDataSchema = new Schema({
         mail: String,
         visited_places: Array,
         wished_places: Array,
-        uploadsphotos: Array
+        uploadsphotos: Array,
+        groupsTravel: Array
 }, {collection: 'userData'});
 
 var UserData = Mongoose.model('UserData',UserDataSchema);
@@ -100,6 +101,8 @@ app.post('/signup', (req, res) => {
             //create the authentication token for the user with the jwt package
             //the token expires in 24 hours -> 86400seconds
             let token = jwt.sign({id:user._id}, config.secret, {expiresIn: 10});
+
+            
             
             res.status(200).send({auth: true, token: token, user: user});
         })
@@ -155,12 +158,17 @@ app.post('/waiting', (req,res) => {
 app.post('/dashboard', (req, res) => {
 
     //Buscamos los datos del usuario a partir de su _id
+    var response = [];
+
+    UserData.findOne({'name': JSON.parse(req.body.user).name},function(err,doc){
+    });
+
     PlaceData.find({'author_id': JSON.parse(req.body.user)._id}, function(err, user_data){
         console.log(user_data);
     });
 });
 
-app.post('/follow_W/:name/:place', (req, res) => {
+app.post('/follow_Wished/:name/:place', (req, res) => {
     
     UserData.findOneAndUpdate({'name':req.params.name},
         {$push: {'wished_places': req.params.place}},
@@ -233,7 +241,7 @@ app.post('/upload/:name/:place', upload.array('files'), (req,res) => {
     res.json({files: req.file});
 });
 
-app.post('/delete_W/:name/:place', (req, res) => {
+app.post('/delete_Wished/:name/:place', (req, res) => {
 
     UserData.findOneAndUpdate({'name':req.params.name},
     {$pull: {'wished_places': req.params.place}},
@@ -244,7 +252,7 @@ app.post('/delete_W/:name/:place', (req, res) => {
     res.send({path:'/login'});
 });
 
-app.post('/delete_V/:name/:place', (req, res) => {
+app.post('/delete_Visited/:name/:place', (req, res) => {
 
     console.log(req.params.place);
     UserData.findOneAndUpdate({'name':req.params.name},
@@ -256,7 +264,7 @@ app.post('/delete_V/:name/:place', (req, res) => {
     res.send({path:'/login'});
 });
 
-app.post('/delete_P/:name/:photo', (req, res) => {
+app.post('/delete_Photo/:name/:photo', (req, res) => {
 
      //Este es el código qu ehay que usar para borrar las fotos del directorio uploads
      //Lo que pasa es que las fotos se guardan con 89078037489738 y no sé como poder conseguir ese nombre
@@ -284,39 +292,44 @@ app.post('/delete_P/:name/:photo', (req, res) => {
     res.send({path:'/login'});
 });
 
-app.post('/group_Add/:author_name/:place/:photo', /*upload.array('files'),*/ (req,res) =>{
+app.post('/add_group/:author_name/:place/:photo', /*upload.array('files'),*/ (req,res) =>{
 
     //Probar si sube foto a ver y ya cambiar el rollo para que suba la foto y tal
 
-    console.log("Aqui entra al rollo");
     var aux_ = __dirname.split('server');
     var array_user = [req.params.author_name];
     //var array_aux = [aux_[0] + 'uploads/' + req.files[0].originalname];
     var array_aux = ["Ejemplo"];
-    console.log("Aqui entra al rollo");
     var data = new GroupTravel({
         place: req.params.place,
         members: array_user,
         author_name: req.params.author_name,
         comments: [],
-        photos: array_aux
+        photos: [] //array_aux
     });
     data.save().then(function(){
         res.send(200);
     });
 });
 
-app.post('/group_Dele', (req,res) =>{
+app.post('/delete_group/:name/:group', (req,res) =>{
 
+    UserData.findOneAndUpdate({'name': req.params.name},{$pull:{'groupsTravel': req.params.group}}, function(err,doc){
+        console.log("Aqui se elimina un grupo...");
+    });
+    res.send(200);
 });
 
-app.post('/group_F', (req,res) =>{
+app.post('/follow_group/:name/:group', (req,res) =>{
+    
+    UserData.findOneAndUpdate({'name':req.params.name},{$push:{'groupsTravel':req.params.group}},function(err,doc){
+        console.log("Aqui se añade un grupo a los del user...")
+    });
+    res.send(200);
 
+    
 
 });
-
-
-
 
 app.use(function(err, req, res, next){
     if(err.code === "LIMIT_FILE_TYPES"){

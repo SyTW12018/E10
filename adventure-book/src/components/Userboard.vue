@@ -71,7 +71,9 @@ export default {
       uploading: false,
       uploadedFiles: [],
       progress: 0,
-      places:['Tenerife']
+      visited_places:['Tenerife'],
+      wishes_places: [],
+      groups: []
     };
   },
   methods: {
@@ -155,6 +157,7 @@ export default {
           onUploadProgress: e => this.progress = Math.round(e.loaded * 100 / e.total)
         });
         console.log(this.uploadedFiles)
+        
         for(var j=0; j<res.data.files.length; j++){
           this.uploadedFiles.push(res.data.files[j])
         }
@@ -162,8 +165,10 @@ export default {
         console.log(this.uploadedFiles)
         this.uploading = false;
 
-        var url = "http://localhost:8081/upload/" + this.name + "/" + this.places[0];
-        await this.$http.post(url, formData);
+        //var url = "http://localhost:8081/upload/" + this.name + "/" + this.places[0];
+        //await this.$http.post(url, formData);
+
+
         this.files = [];
         this.uploadFiles = [];
       } catch (err) {

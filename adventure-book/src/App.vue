@@ -1,86 +1,105 @@
 <style>
-	body {
-		height:100%;
-		background-image:url('C.jpg');
-		background-repeat: no-repeat;
-		background-position: center center;
-		background-attachment: fixed;
-		background-size: cover;
-	}
 
-	#mainrow{	
-		text-align: center;
-		padding:40px;
-		background-color: white;
-	}
-	#dif{
-		display: flex;
-  		align-items: center;
-		transform: translatey(10%);
-	}
+  #nav{
+    background-color: white;
+    margin: 0 0 0px 0px;
+    padding:15px 15px 0px 15px;
+  }
 
-	@media (min-width: 768px) {
-		#contenedor{
-				transform: translatey(50%);
-		}
+  #header{
+    margin: 5px 0px 10px 10px;
+  }
 
-	}
+  #nav h1{
+    position: relative;
+    top: -5px;
+	margin: 0px 0px 0px 15px;
+	font-size: 40px;
+  }
+
+  h1{
+	color: #54C2C3;
+  }
+
+  h2, h3{
+	color: #6c6c6c;
+  }
+
+  .item {
+    margin: 7px 10px 0px 10px;
+    font-size: 16px;
+  }
+
+  #links{
+    padding: 10px;
+    background-color: #54C2C3
+  }
+
+  #links a{
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+
+  .btn-primary, .btn-primary:active, .btn-primary:visited {
+    background-color: #6c6c6c !important;
+    border-color:#6c6c6c;
+  }
+
+  .btn-primary:hover{
+    background-color: grey !important;
+    border-color: grey;
+  }
 
 </style>
- 
-<template>
-	<div id="contenedor" class="h-100">
-		<b-row id="mainrow">
-			<b-col md="3" offset-md="4">
-				<b-row> 
-					<b-col>
-						<img src="../src/assets/avion.png" height="100px"/>
-					</b-col>
-				</b-row>	
-				<b-row> 
-					<b-col>
-						<h1> Adventure Book </h1>	
-					</b-col>
-				</b-row>	
-				<b-row> 
-					<b-col md="10" offset-md="1">
-						<p> La red social en la que compartir tus experiencias y encontrar nuevas aventuras</p>	
-						<b-row> 
-							<b-col>
-								<router-link to='/Login'> Iniciar Sesión </router-link>
-							</b-col>
-							<b-col>
-								<router-link to='/Signup'> Registrarse </router-link>
-							</b-col>
-						</b-row>
-					</b-col>
-				</b-row>
 
-			</b-col>
-			<b-col md="2" offset-md="1" id="dif">
-				<b-row> 
-					<router-view></router-view>
-				</b-row>
-			</b-col>
-		</b-row>
+<template>
+	<div>
+		<div id="nav">
+			<b-row id="header">
+				<span>
+					<img src="./assets/avion.png" height="40px"/>
+				</span>
+				<span>
+					<h1>AdventureBook</h1>
+				</span>
+			</b-row>
+
+
+      <b-row id="links">
+        <b-nav>
+          <router-link to='/welcome' class="item"> Entrar </router-link>
+	  <router-link to='/perfil' class="item"> Cuenta </router-link>
+          <router-link to='/userboard' class="item"> Mis Sitios </router-link>
+          <router-link to='/sitios' class="item"> Sitios </router-link>
+        </b-nav>
+			</b-row>
+		</div>
+
+		<router-view></router-view>
+
 	</div>
 </template>
 
 
 <script>
-import Login from './components/Login.vue'
-import Signup from './components/Signup.vue'
-import Userboard from './components/Userboard.vue'
+
+import Welcome from './components/welcome.vue'
+
 export default {
-  
-  name: 'App',  
+
+  name: 'App',
   data(){
     return{
-      
+
     }
   },
   mounted(){
-    
+
+  },
+  components: {
+    Welcome
   }
 }
 

@@ -1,7 +1,23 @@
 <style scoped>
 .main{
-    padding:30px;
+    padding:100px;
     background-color:white;
+}
+
+.card{
+    margin: 0px 8px 8px 0px; 
+    background-color: #54C2C3;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 0px;
+}
+
+.card:hover{
+    background-color: white;
+    color: #54C2C3;
 }
 
 .dropzone{
@@ -44,7 +60,6 @@
   }
 
 </style>
-
 
 <template>
   <div>
@@ -98,11 +113,8 @@
 
     <div>
       <button @click="log_out"> Log Out</button>
-      <div class="main">
+    <div class="main">
         <div class="container">
-            <b-row>
-                <p> Hola de nuevo, {{ nombre_usuario }} </p>
-            </b-row>
             <b-row>
                 <b-col cols="9" id="mis_sitios">
                     <b-row>
@@ -130,15 +142,14 @@
                     </b-row>
                     <b-row class="w-100">
                         <b-list-group class="w-100">
-                        <div v-for="sitio in sitios_deseados[0].sitios" :key="sitio">
-                            <b-list-group-item class="w-100"> {{ sitio }} </b-list-group-item>
-                        </div>
+		                    <div v-for="sitio in sitios_deseados[0].sitios" :key="sitio">
+		                        <b-list-group-item class="w-100"> {{ sitio }} </b-list-group-item>
+		                    </div>
                         </b-list-group>
                     </b-row>
                 </b-col>
             </b-row>
         </div>
-      </div>
     </div>
   </div>  
 </template>
@@ -161,35 +172,40 @@ export default {
       uploading: false,
       uploadedFiles: [],
       progress: 0,
-      places:['Tenerife'],
+      visited_places:['Tenerife'],
+      wishes_places: [],
+      groups: [],
 
       sitios_visitados: [
-                            {
-                              nombre: 'Mis Sitios',
-                              descripcion: 'Aquí aparecerán los lugares en los que has etiquetado tus fotos',
-                              sitios: [ 'Islas Canarias',
-                                        'Madrid',
-                                        'Cataluña',
-                                        'Galicia',
-                                        'Castilla y León',
-                                      ]
-                            }
-                          ],
+        {
+          nombre: 'Mis Sitios',
+          descripcion: 'Aquí aparecerán los lugares en los que has etiquetado tus fotos',
+          sitios: [ 'Islas Canarias',
+                    'Madrid',
+                    'Cataluña',
+                    'Galicia',
+                    'Castilla y León',
+          ]
+        }
+      ],
 
-        sitios_deseados: [
-                            {
-                              nombre: 'Mis Sitios',
-                              descripcion: 'Aquí aparecerán los lugares en los que has etiquetado tus fotos',
-                              sitios: [ 'Islas Baleares',
-                                        'La Rioja',
-                                        'Cantabria',
-                                        'Galicia',
-                                        'Andalucía',
-                                      ]
-                            }
-                         ]
+      sitios_deseados: [
+        {
+          nombre: 'Mis Sitios',
+          descripcion: 'Aquí aparecerán los lugares en los que has etiquetado tus fotos',
+          sitios: [ 'Islas Baleares',
+                    'La Rioja',
+                    'Cantabria',
+                    'Galicia',
+                    'Andalucía',
+          ]
+        }
+      ],
+
     };
   },
+
+
   methods: {
     log_out() {
       window.localStorage.clear();
@@ -271,15 +287,17 @@ export default {
           onUploadProgress: e => this.progress = Math.round(e.loaded * 100 / e.total)
         });
         console.log(this.uploadedFiles)
+        
         for(var j=0; j<res.data.files.length; j++){
           this.uploadedFiles.push(res.data.files[j])
         }
-        
-        console.log(this.uploadedFiles)
+
         this.uploading = false;
 
-        var url = "http://localhost:8081/upload/" + this.name + "/" + this.places[0];
-        await this.$http.post(url, formData);
+        //var url = "http://localhost:8081/upload/" + this.name + "/" + this.places[0];
+        //await this.$http.post(url, formData);
+
+
         this.files = [];
         this.uploadFiles = [];
       } catch (err) {
@@ -308,3 +326,25 @@ export default {
 };
 </script>
 
+<<<<<<< HEAD
+=======
+
+
+
+export default {
+  data(){
+    return{
+        
+    }
+  },
+  mounted(){
+
+  },
+  components: {
+
+  }
+}
+
+
+</script>
+>>>>>>> dev-userboard

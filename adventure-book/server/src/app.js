@@ -209,7 +209,7 @@ const upload = multer({
     }
 })
 
-app.post('/upload', upload.array('files'), async (req,res) => {
+/*app.post('/upload', upload.array('files'), async (req,res) => {
     
     try{
         var files_ = []
@@ -228,10 +228,28 @@ app.post('/upload', upload.array('files'), async (req,res) => {
     catch(err){
         res.status(428).json({err});
     }
-})
+})*/
 
 
 app.post('/upload/:name/:place', upload.array('files'), (req,res) => {
+
+    try{
+        var files_ = []
+        for(var i = 0; i<req.files.length; i++){
+            var file = req.files[i];
+            await sharp(file.path)
+                .resize(300,200)
+                .embed()
+                .toFile(`./uploads/${file.originalname}`);
+    
+            fs.unlink(file.path)
+            files_.push(`../../uploads/${file.originalname}`)
+        }
+        res.json({files: files_});
+    }
+    catch(err){
+        res.status(428).json({err});
+    }
 
     var aux_ = __dirname.split('server'); 
     var array_aux = [aux_[0] + 'uploads/' + req.files[0].originalname];

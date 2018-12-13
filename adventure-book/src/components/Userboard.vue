@@ -1,8 +1,7 @@
 <template>
   <div>
     <h1>Bienvenido al dashboard</h1>
-    <h2>{{user_data}}</h2>
-    <img class="imagen" src="../../uploads/luna.jpeg" alt=""/>
+    <h2>{{name}}</h2>
 
     <form @submit.prevent="sendFiles" enctype="multipart/form-data">
       <div class="dropzone">
@@ -62,6 +61,7 @@ export default {
   data: function() {
     return {
       user_: JSON.parse(localStorage.getItem("user")),
+      name: JSON.parse(localStorage.getItem("user")).name,
       b_creat_alb: false,
       //file: "",
       files: [],
@@ -70,7 +70,8 @@ export default {
       err_msg: "",
       uploading: false,
       uploadedFiles: [],
-      progress: 0
+      progress: 0,
+      places:['Tenerife']
     };
   },
   methods: {
@@ -142,7 +143,7 @@ export default {
       const formData = new FormData();
       _.forEach(this.uploadFiles, file => {
         if(this.validate(file) === ""){
-          formData.append('files', file)
+          formData.append('files', file);
         }
       });
 
@@ -161,6 +162,8 @@ export default {
         console.log(this.uploadedFiles)
         this.uploading = false;
 
+        var url = "http://localhost:8081/upload/" + this.name + "/" + this.places[0];
+        await this.$http.post(url, formData);
         this.files = [];
         this.uploadFiles = [];
       } catch (err) {

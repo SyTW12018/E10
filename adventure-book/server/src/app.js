@@ -13,9 +13,13 @@ var fs = require("fs");
 //to upload files
 const multer = require('multer');
 const sharp = require('sharp');
+var sys = require('sys')
+var exec = require('child_process').exec;
 
 
 Mongoose.connect('mongodb://localhost:27017/test');
+//Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
+Mongoose.set('useFindAndModify', false);
 var app = express()
 app.use("/uploads", express.static(path.join("/home/jcpasco/Documentos/E10/adventure-book", "uploads")))
 app.use(morgan('combined'))
@@ -36,7 +40,8 @@ var UserDataSchema = new Schema({
         mail: String,
         visited_places: Array,
         wished_places: Array,
-        uploadsphotos: Array
+        uploadsphotos: Array,
+        groupsTravel: Array
 }, {collection: 'userData'});
 
 var UserData = Mongoose.model('UserData',UserDataSchema);
@@ -45,11 +50,20 @@ var PlaceDataSchema = new Schema({
     name: String,
     author_id: String,
     author_name: String,
-    photos: String
+    photos: Array
 }, {collection: 'placeData'});
 
 var PlaceData = Mongoose.model('PlaceData',PlaceDataSchema);
- 
+
+var GroupTravelSchema = new Schema({
+    place: String,
+    members: Array,
+    author_name: String,
+    comments: Array,
+    photos: Array
+}, {collection: 'groupTravelData'});
+
+var GroupTravel = Mongoose.model('groupTravelData',GroupTravelSchema);
 /*Aquí empieza la aplicación*/
 
 
@@ -58,7 +72,7 @@ app.get('/', (req, res) => {
     var aux = __dirname.split('server');
     console.log(aux[0]);
     res.sendFile(aux[0] + '/client/' + 'index.html');
-})
+});
 
 app.post('/signup', (req, res) => {
     /*curl -X POST -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/registrar*/
@@ -89,6 +103,8 @@ app.post('/signup', (req, res) => {
             //create the authentication token for the user with the jwt package
             //the token expires in 24 hours -> 86400seconds
             let token = jwt.sign({id:user._id}, config.secret, {expiresIn: 10});
+
+            
             
             res.status(200).send({auth: true, token: token, user: user});
         })
@@ -144,11 +160,32 @@ app.post('/waiting', (req,res) => {
 app.post('/dashboard', (req, res) => {
 
     //Buscamos los datos del usuario a partir de su _id
+    var response = [];
+
+    UserData.findOne({'name': JSON.parse(req.body.user).name},function(err,doc){
+    });
+
     PlaceData.find({'author_id': JSON.parse(req.body.user)._id}, function(err, user_data){
         console.log(user_data);
-    })
-})
+    });
+});
 
+app.post('/follow_Wished/:name/:place', (req, res) => {
+    
+    UserData.findOneAndUpdate({'name':req.params.name},
+        {$push: {'wished_places': req.params.place}},
+        function(err,doc){
+            if(err == null){
+                console.log("Modificando registro de wished_places");
+                res.status(200).send(doc);
+            }
+         
+            else{
+                console.log("Hubo un error");
+                console.log(err);
+            } 
+        });
+});
 
 
 
@@ -193,12 +230,136 @@ app.post('/upload', upload.array('files'), async (req,res) => {
     }
 })
 
+
+app.post('/upload/:name/:place', upload.array('files'), (req,res) => {
+
+    var aux_ = __dirname.split('server'); 
+    var array_aux = [aux_[0] + 'uploads/' + req.files[0].originalname];
+
+
+    PlaceData.findOne({'name':req.params.place},function(err,doc){
+        if(doc == null){ //El lugar no existe y se crea
+            UserData.findOne({'name':req.params.name},function(err,doc){
+                var data = new PlaceData({
+                    name: req.params.place,
+                    author_id: doc.id,
+                    author_name: doc.name,
+                    photos: array_aux
+                });
+                data.save().then(function(){
+                    PlaceData.findOne({'author_name': req.params.name}, function(err,doc){
+                        console.log("Guardado en lugares correctamente");
+                        console.log("Esto es lo que se ha guardado:",doc);
+                    });  
+                });
+            });
+        }
+            UserData.findOneAndUpdate({'name':req.params.name},
+                {$push: {'visited_places': req.params.place, 'uploadsphotos': aux_[0] + 'uploads/' + req.files[0].originalname}},
+                function(err,doc){
+                    console.log("Modificando registro ...");
+                    console.log(doc);//Esto si funciona perfecto
+            });
+        
+    });
+    res.json({files: req.file});
+});
+
+app.post('/delete_Wished/:name/:place', (req, res) => {
+
+    UserData.findOneAndUpdate({'name':req.params.name},
+    {$pull: {'wished_places': req.params.place}},
+    function(err,doc){
+        console.log("Modificando registro ...");
+        console.log(doc);//Esto si funciona perfecto
+    });
+    res.send({path:'/login'});
+});
+
+app.post('/delete_Visited/:name/:place', (req, res) => {
+
+    console.log(req.params.place);
+    UserData.findOneAndUpdate({'name':req.params.name},
+    {$pull: {'visited_places': req.params.place}},
+    function(err,doc){
+        console.log("Modificando registro ...");
+        console.log(doc);//Esto si funciona perfecto
+    });
+    res.send({path:'/login'});
+});
+
+app.post('/delete_Photo/:name/:photo', (req, res) => {
+
+     //Este es el código qu ehay que usar para borrar las fotos del directorio uploads
+     //Lo que pasa es que las fotos se guardan con 89078037489738 y no sé como poder conseguir ese nombre
+     
+     /*var command = "rm -rf " + __dirname.split('server')[0] + 'uploads/' + req.params.photo;
+     console.log(command)
+     dir = exec(command, function(err, stdout, stderr) {
+        if (err) {
+          // should have err.code here?  
+        }
+        console.log(stdout);
+      });
+      
+      dir.on('exit', function (code) {
+        // exit code is code
+      });*/
+
+
+    UserData.findOneAndUpdate({'name':req.params.name},
+    {$pull: {'uploadsphotos': __dirname.split('server')[0] + 'uploads/' + req.params.photo}},
+    function(err,doc){
+        console.log("Modificando registro ...");
+        console.log(doc);//Esto si funciona perfecto
+    });
+    res.send({path:'/login'});
+});
+
+app.post('/add_group/:author_name/:place/:photo', /*upload.array('files'),*/ (req,res) =>{
+
+    //Probar si sube foto a ver y ya cambiar el rollo para que suba la foto y tal
+
+    var aux_ = __dirname.split('server');
+    var array_user = [req.params.author_name];
+    //var array_aux = [aux_[0] + 'uploads/' + req.files[0].originalname];
+    var array_aux = ["Ejemplo"];
+    var data = new GroupTravel({
+        place: req.params.place,
+        members: array_user,
+        author_name: req.params.author_name,
+        comments: [],
+        photos: [] //array_aux
+    });
+    data.save().then(function(){
+        res.send(200);
+    });
+});
+
+app.post('/delete_group/:name/:group', (req,res) =>{
+
+    UserData.findOneAndUpdate({'name': req.params.name},{$pull:{'groupsTravel': req.params.group}}, function(err,doc){
+        console.log("Aqui se elimina un grupo...");
+    });
+    res.send(200);
+});
+
+app.post('/follow_group/:name/:group', (req,res) =>{
+    
+    UserData.findOneAndUpdate({'name':req.params.name},{$push:{'groupsTravel':req.params.group}},function(err,doc){
+        console.log("Aqui se añade un grupo a los del user...")
+    });
+    res.send(200);
+
+    
+
+});
+
 app.use(function(err, req, res, next){
     if(err.code === "LIMIT_FILE_TYPES"){
         res.status(422).json({error: "Solo se permiten imágenes jpeg, png y gif"});
         return;
     }
-
     if(err.code === "LIMIT_FILE_SIZE"){
         res.status(422).json({error: `Archivo demasiado pesado. Tamaño máximo: ${MAX_SIZE/1000}kb`});
         return;
@@ -206,16 +367,11 @@ app.use(function(err, req, res, next){
     
 })
 
-
-
-
-
-
-
-
 app.get('/comprobar', (req, res) => {    
     var name = req.body.name;
     console.log(name);
+    
+
     UserData.findOne({'name': name},function(err,docs){
         if(docs == null){
             console.log("documento:" + docs);
@@ -228,56 +384,6 @@ app.get('/comprobar', (req, res) => {
         }
     });
 });
-
-
-app.post('/foto/:image/:name/:place', bodyParse.raw({
-        limit : "10mb",
-        type : "image/*"
-}),(req,res) =>{
-
-        console.log("fotos " + req.params.image)
-       /*
-    curl -X GET -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/comprobar
-    Desde el directorio de donde está la foto: 
-    curl -X POST -H 'Content-Type: image/png' --data-binary @solare.jpg http://localhost:8081/foto/solare.jpg/sergio/tenerife
-    */
-
-    var aux_ = __dirname.split('src');
-
-    var array_aux = [aux_[0] + 'uploads/' + req.params.image]
-    UserData.findOne({'name':req.params.name},function(err,doc){
-        var data = new PlaceData({
-            name: req.params.place,
-            author_id: doc.id,
-            author_name: doc.name,
-            photos: array_aux
-        });
-        data.save().then(function(err,doc){
-            console.log("guardado en lugares correctamente");
-        });
-    });
-
-    //Aqui añado el lugar, falta comprobar que no este el lugar creado para no hacer el save pero bueno
-
-
-    UserData.findOneAndUpdate({'name':req.params.name},{$push: {visited_places: req.params.place, uploadsphotos: aux_[0] + 'uploads/' + req.params.image} },function(err,doc){
-        console.log("Modificando registro ...");
-    });
-
-    
-    var fd = fs.createWriteStream(path.join(aux_[0],"uploads",req.params.image),{
-        flags: "w+",
-        encoding: "binary"
-    });
-    console.log(req.body)
-    fd.write(req.body);
-    fd.end();
-    fd.on("close",() =>{
-        res.send("Subiendo foto");
-    });
-});
-
-
 
 let server = app.listen(process.env.PORT || 8081, function (err) {
     if(err){

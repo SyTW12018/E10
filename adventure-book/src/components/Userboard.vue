@@ -2,11 +2,29 @@
   <div>
     <h1>Bienvenido al dashboard</h1>
     <h2>{{user_data}}</h2>
+    <img class="imagen" src="../../uploads/luna.jpeg" alt=""/>
 
     <form @submit.prevent="sendFiles" enctype="multipart/form-data">
-      <div>
+      <div class="dropzone">
         <label for="title">Upload Files</label>
-        <input multiple type="file" ref="files" @change="selectFile">
+        <input multiple type="file" ref="files" class="input-field" @change="selectFile">
+
+        <p v-if="!uploading" class="call-to-action">Arrasta tus archivos</p>
+        <p v-if="uploading" class="progress-bar">
+          <progress class="progress is-primary" :value="progress" max="100">
+            {{progress}}%
+          </progress>
+        </p>
+      </div>
+
+      <div class="content">
+        <div>  <!--class="columns is-multiline"-->
+          <div v-for="file in uploadedFiles" :key="file" > <!--class="columns is-4"-->
+            <figure class="image">
+              <img class="imagen" :src="file" alt=""/>
+            </figure>
+          </div>
+        </div>
       </div>
 
       <div class="field">
@@ -36,6 +54,7 @@
   </div>  
 </template>
 
+
 <script>
 import _ from 'lodash';
 
@@ -48,7 +67,10 @@ export default {
       files: [],
       uploadFiles: [],
       error: false,
-      err_msg: ""
+      err_msg: "",
+      uploading: false,
+      uploadedFiles: [],
+      progress: 0
     };
   },
   methods: {
@@ -73,9 +95,6 @@ export default {
            invalidMsg: this.validate(file)
 
          }))];
-
-
-
 
       /* Upload only one file
       const file = this.$refs.file.files[0];
@@ -114,6 +133,8 @@ export default {
       return "";
     },
 
+
+
     async sendFiles() {
       /*
           Initialize the form data
@@ -126,12 +147,24 @@ export default {
       });
 
       try {
+        this.uploading = true;
+        console.log("ea")
         var url = "http://localhost:8081/upload"
-        await this.$http.post(url, formData);
+        const res = await this.$http.post(url, formData, {
+          onUploadProgress: e => this.progress = Math.round(e.loaded * 100 / e.total)
+        });
+        console.log(this.uploadedFiles)
+        for(var j=0; j<res.data.files.length; j++){
+          this.uploadedFiles.push(res.data.files[j])
+        }
+        
+        console.log(this.uploadedFiles)
+        this.uploading = false;
+
         this.files = [];
         this.uploadFiles = [];
       } catch (err) {
-        console.log(err.response.data.error);
+        console.log(err);
       }
     }
   },
@@ -155,4 +188,47 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+  .dropzone{
+    min-height: 200px;
+    padding: 10px 10px;
+    position: relative;
+    cursor: pointer;
+    outline: 2px dashed grey;
+    outline-offset: -10px;
+    background: lightcyan;
+    color: dimgray;
+  }
+
+  .dropzone:hover{
+    background: lightskyblue;
+  }
+
+  .dropzone .call-to-action{
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 70px;
+  }
+
+  .dropzone .progress-bar{
+    text-align: center;
+    padding: 60px 10px;
+  }
+
+  .input-field{
+    opacity: 0;
+    width: 100%;
+    height: 200px;
+    position: absolute;
+    cursor: pointer;
+  }
+
+  .imagen{
+    width: 300px;
+    height: 200px;
+  }
+
+
+</style>
 

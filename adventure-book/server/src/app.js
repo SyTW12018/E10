@@ -8,14 +8,16 @@ var Mongoose = require('mongoose');
 const config = require('./config');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-var path = require("path");
+var path = require('path');
 var fs = require("fs");
 //to upload files
 const multer = require('multer');
+const sharp = require('sharp');
 
 
 Mongoose.connect('mongodb://localhost:27017/test');
 var app = express()
+app.use("/uploads", express.static(path.join("/home/jcpasco/Documentos/E10/adventure-book", "uploads")))
 app.use(morgan('combined'))
 
 app.use(bodyParse.urlencoded({
@@ -161,7 +163,7 @@ const fileFilter = function(req, file, cb){
     cb(null, true);
 }
 
-const MAX_SIZE = 2000000;
+const MAX_SIZE = 20000000;
 const upload = multer({
     dest: './uploads/',
     fileFilter,
@@ -170,10 +172,25 @@ const upload = multer({
     }
 })
 
-app.post('/upload', upload.array('files'), (req,res) => {
-    console.log(req.files)
-
-    res.json({files: req.file});
+app.post('/upload', upload.array('files'), async (req,res) => {
+    
+    try{
+        var files_ = []
+        for(var i = 0; i<req.files.length; i++){
+            var file = req.files[i];
+            await sharp(file.path)
+                .resize(300,200)
+                .embed()
+                .toFile(`./uploads/${file.originalname}`);
+    
+            fs.unlink(file.path)
+            files_.push(`../../uploads/${file.originalname}`)
+        }
+        res.json({files: files_});
+    }
+    catch(err){
+        res.status(428).json({err});
+    }
 })
 
 app.use(function(err, req, res, next){
@@ -183,7 +200,7 @@ app.use(function(err, req, res, next){
     }
 
     if(err.code === "LIMIT_FILE_SIZE"){
-        res.status(422).json({error: 'Archivo demasiado pesado. Tamaño máximo: ${MAX_SIZE/1000}kb'});
+        res.status(422).json({error: `Archivo demasiado pesado. Tamaño máximo: ${MAX_SIZE/1000}kb`});
         return;
     }
     

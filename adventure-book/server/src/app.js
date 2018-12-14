@@ -239,6 +239,8 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
         var files_ = []
         var aux_ = __dirname.split('server');
 
+        //UserData.find
+
         UserData.findOneAndUpdate({'name':req.params.name},
             {$push: {'visited_places': req.params.place, }},
             {new:true}, 

@@ -4,3 +4,19 @@ node_js:
 branches:
   only:
   - desarrollo
+
+dist: trusty
+
+addons:
+  sonarcloud:
+    organization: "sytw12018"
+    token:
+      secure: 4814f84edc68d08949731e7d5a0a985136e5850d
+
+script:
+  - sonar-scanner \
+    -Dsonar.projectKey=SyTW12018_E10 \
+    -Dsonar.organization=sytw12018 \
+    -Dsonar.sources=. \
+    -Dsonar.host.url=https://sonarcloud.io \
+    -Dsonar.login=4814f84edc68d08949731e7d5a0a985136e5850d

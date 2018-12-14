@@ -1,0 +1,5 @@
+-Dsonar.projectKey=SyTW12018_E10 \
+  -Dsonar.organization=sytw12018 \
+  -Dsonar.sources=. \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Dsonar.login=4814f84edc68d08949731e7d5a0a985136e5850d

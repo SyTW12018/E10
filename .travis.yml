@@ -19,3 +19,4 @@ dist: trusty
 addons:
   sonarcloud:
     organization: "sytw12018"
+    token: 4814f84edc68d08949731e7d5a0a985136e5850d 

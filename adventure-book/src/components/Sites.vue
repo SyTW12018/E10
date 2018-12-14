@@ -34,7 +34,7 @@
                     </b-row>
 
                     <b-row>
-                        <div v-for="sitio in comunidades_autonomas">
+                        <div v-for="sitio in comunidades_autonomas" :key="sitio">
                             <div class="card" style="width: 16rem;">
                                 <img class="card-img-top" src="../C.jpg" alt="Card image">
                                 <div class="card-body">
@@ -84,6 +84,10 @@ export default {
 
     }
   },
+
+  methods(){
+  },
+
   mounted(){
 
   },

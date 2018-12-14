@@ -69,16 +69,11 @@
 
       <b-row id="links">
         <b-nav>
-<<<<<<< HEAD
           <router-link to='/Welcome' class="item"> Entrar </router-link>
-          <router-link to='/Userboard' class="item"> Mis Sitios </router-link>
-	  <router-link to='/Userdestination' class="item"> Grupos viaje </router-link>
-=======
-          <router-link to='/welcome' class="item"> Entrar </router-link>
-	  <router-link to='/perfil' class="item"> Cuenta </router-link>
-          <router-link to='/userboard' class="item"> Mis Sitios </router-link>
+          <router-link to='/perfil' class="item"> Cuenta </router-link>
+	        <router-link to='/userboard' class="item"> Mis Sitios </router-link>
+          <router-link to='/Userdestination' class="item"> Grupos viaje </router-link>
           <router-link to='/sitios' class="item"> Sitios </router-link>
->>>>>>> dev-userboard
         </b-nav>
        </b-row>
       </div>

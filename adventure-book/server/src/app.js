@@ -231,7 +231,7 @@ const upload = multer({
 })*/
 
 
-app.post('/upload/:name/:place', upload.array('files'), (req,res) => {
+app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
 
     try{
         var files_ = []

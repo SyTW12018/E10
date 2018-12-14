@@ -10,14 +10,10 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import Welcome from './components/welcome.vue';
 import Userboard from './components/Userboard.vue';
-<<<<<<< HEAD
-import Waiting from './components/Waiting.vue'
 import Userdestination from './components/Userdestination.vue'
-=======
 import Waiting from './components/Waiting.vue';
 import Profile from './components/Profile.vue';
 import Sites from './components/Sites.vue'
->>>>>>> dev-userboard
 
 //Vue authentication 
 Vue.prototype.$http = Axios;
@@ -42,14 +38,10 @@ const routes = [
     { path: '/',  component: Welcome},
     { path: '/welcome',  component: Welcome},
     { path: '/userboard', component: Userboard},
-<<<<<<< HEAD
     { path: '/waiting', component: Waiting},
-    { path: '/userdestination',component:Userdestination}
-=======
+    { path: '/userdestination',component:Userdestination},
     { path: '/sitios', component: Sites},
-    { path: '/perfil', component: Profile},
-    { path: '/waiting', component: Waiting}
->>>>>>> dev-userboard
+    { path: '/perfil', component: Profile}
 ]
 
 const router = new VueRouter({

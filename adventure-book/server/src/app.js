@@ -74,6 +74,7 @@ app.get('/', (req, res) => {
     res.sendFile(aux[0] + '/client/' + 'index.html');
 });
 
+
 app.post('/signup', (req, res) => {
     /*curl -X POST -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/registrar*/
     var userr = req.body.name;
@@ -170,6 +171,8 @@ app.post('/dashboard', (req, res) => {
     });
 });
 
+
+
 app.post('/follow_Wished/:name/:place', (req, res) => {
     
     UserData.findOneAndUpdate({'name':req.params.name},
@@ -231,10 +234,20 @@ const upload = multer({
 })*/
 
 
-app.post('/upload/:name/:place', upload.array('files'), (req,res) => {
-
+app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
     try{
         var files_ = []
+        var aux_ = __dirname.split('server');
+
+        UserData.findOneAndUpdate({'name':req.params.name},
+            {$push: {'visited_places': req.params.place, }},
+            {new:true}, 
+            function(err,doc){
+                console.log("Modificando registro ...");
+                console.log(doc);//Esto si funciona perfecto
+            }
+        );
+
         for(var i = 0; i<req.files.length; i++){
             var file = req.files[i];
             await sharp(file.path)
@@ -243,45 +256,54 @@ app.post('/upload/:name/:place', upload.array('files'), (req,res) => {
                 .toFile(`./uploads/${file.originalname}`);
     
             fs.unlink(file.path)
-            files_.push(`../../uploads/${file.originalname}`)
+            files_.push(`${aux_[0]}uploads/${file.originalname}`)
+
+            UserData.findOneAndUpdate({'name':req.params.name},
+                {$push: { 'uploadsphotos': `${aux_[0]}uploads/${file.originalname}`}},
+                {new: true},
+                function(err,doc){
+                   console.log("Modificando registro ...");
+                   console.log(doc);//Esto si funciona perfecto
+                }
+            );
         }
-        res.json({files: files_});
+        //res.json({files: files_});
+
+        PlaceData.findOne({'name':req.params.place},function(err,doc){
+            if(doc == null){ //El lugar no existe y se crea
+                UserData.findOne({'name':req.params.name},function(err,doc){
+                    var data = new PlaceData({
+                        name: req.params.place,
+                        author_id: doc.id,
+                        author_name: doc.name,
+                        photos: files_
+                    });
+                    data.save().then(function(){
+                        PlaceData.findOne({'author_name': req.params.name}, function(err,doc){
+                            console.log("Guardado en lugares correctamente");
+                            console.log("Esto es lo que se ha guardado:",doc);
+                        });  
+                    });
+                });
+            }
+            
+        });
     }
     catch(err){
         res.status(428).json({err});
     }
 
-    var aux_ = __dirname.split('server'); 
-    var array_aux = [aux_[0] + 'uploads/' + req.files[0].originalname];
+    
+
+    console.log(files_)
 
 
-    PlaceData.findOne({'name':req.params.place},function(err,doc){
-        if(doc == null){ //El lugar no existe y se crea
-            UserData.findOne({'name':req.params.name},function(err,doc){
-                var data = new PlaceData({
-                    name: req.params.place,
-                    author_id: doc.id,
-                    author_name: doc.name,
-                    photos: array_aux
-                });
-                data.save().then(function(){
-                    PlaceData.findOne({'author_name': req.params.name}, function(err,doc){
-                        console.log("Guardado en lugares correctamente");
-                        console.log("Esto es lo que se ha guardado:",doc);
-                    });  
-                });
-            });
-        }
-            UserData.findOneAndUpdate({'name':req.params.name},
-                {$push: {'visited_places': req.params.place, 'uploadsphotos': aux_[0] + 'uploads/' + req.files[0].originalname}},
-                function(err,doc){
-                    console.log("Modificando registro ...");
-                    console.log(doc);//Esto si funciona perfecto
-            });
-        
-    });
-    res.json({files: req.file});
+    
+    res.json({files: files_});
 });
+
+
+
 
 app.post('/delete_Wished/:name/:place', (req, res) => {
 

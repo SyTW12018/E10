@@ -8,8 +8,14 @@ script:
 - cd adventure-book
 - npm install
 - npm test
+- sonar-scanner
 notifications:
   slack:
     rooms:
       secure: JUftVecr1tHK+n9zdEKqj9owkADUbp9aEcFtlDlG2nhyyb2NvOpWMc9E4Xb8YD21lKVh/DJz8m5K9O2/ixLa+COLOyeIY9UEzgvOMsiC4F0x3xMxM6Z1TqwMMtkmcVWWatXr2JEzUgCxnhWml3/w6pGCdekuGzv+S/AV7Q/IJlCsNnFwEbzXUnY+pyh7CQA1ahmCVof4GtvzZPp7YwxD8l11vKv6p4MxFs0CjMkSN5bzQ601BIuBCVgaI/awQk3QMXUJKmW/czqfDgJCowDzaxjrKs6c8FAGHebOGO2BcQrgGow1k4PUI2A+QEkxAVGfTcfiDmjQMSlaGKpFvKRkNw6yuIBaRWzROUUGiIRG9TEIUkdasMBVlctLBKTmenSbJpHpt1/aCQU6lk6NQTCEIJShZ2psUhPBNcT2leaVku0XzW9Xdcj1Tdiuv43I5kGvgULZs83Kw1of6iT4OfSkZdPm+1k/uu2feTx5h6bD4TTgPtVoN9Bb7kgf9NX5gyD5KtE7HJG//tbdCKUPj2GgUhQtNS1ZuuCASymSXEss3AXkUjdonJHQFuA6vhYbetHnLFbvu0wyT6HW7QyLHIgpv3n+0LbWpeoFJU0FIgcMwaXw41PQDWgwhwTktRZkTNo73YdcDIqY9e/m4QZM0WqXCxrNRBRwOnBaXlOoav46YWY=
 
+dist: trusty
+
+addons:
+  sonarcloud:
+    organization: "sytw12018"

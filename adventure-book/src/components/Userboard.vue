@@ -150,6 +150,7 @@
                 </b-col>
             </b-row>
         </div>
+      </div>
     </div>
   </div>  
 </template>

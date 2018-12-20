@@ -3,7 +3,7 @@ node_js:
 - node
 branches:
   only:
-  - desarrollo
+  - master
 script:
 - cd adventure-book
 - npm install

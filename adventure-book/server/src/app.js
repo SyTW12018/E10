@@ -239,16 +239,30 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
         var files_ = []
         var aux_ = __dirname.split('server');
 
-        //UserData.find
+        var in_visited_places = false
 
-        UserData.findOneAndUpdate({'name':req.params.name},
-            {$push: {'visited_places': req.params.place, }},
-            {new:true}, 
+        await UserData.find({'name':req.params.name, 'visited_places':req.params.place},
+            'name',
             function(err,doc){
-                console.log("Modificando registro ...");
-                console.log(doc);//Esto si funciona perfecto
+                console.log("doc: " + doc)
+                if(doc != undefined || doc != null){
+                    console.log("entra en el if")
+                    in_visited_places = true
+                }
             }
         );
+
+        if(in_visited_places == false){
+            console.log("visited places: " + in_visited_places)
+            UserData.findOneAndUpdate({'name':req.params.name},
+                {$push: {'visited_places': req.params.place, }},
+                function(err,doc){
+                    console.log("Modificando registro ...");
+                    console.log(doc);//Esto si funciona perfecto
+                }
+            );
+        }
+        
 
         for(var i = 0; i<req.files.length; i++){
             var file = req.files[i];
@@ -260,6 +274,8 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
             fs.unlink(file.path)
             files_.push(`${aux_[0]}uploads/${file.originalname}`)
 
+            UserData
+
             UserData.findOneAndUpdate({'name':req.params.name},
                 {$push: { 'uploadsphotos': `${aux_[0]}uploads/${file.originalname}`}},
                 {new: true},
@@ -269,7 +285,6 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
                 }
             );
         }
-        //res.json({files: files_});
 
         PlaceData.findOne({'name':req.params.place},function(err,doc){
             if(doc == null){ //El lugar no existe y se crea

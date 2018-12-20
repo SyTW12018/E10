@@ -313,9 +313,9 @@ app.post('/delete_Wished/:name/:place', (req, res) => {
     {$pull: {'wished_places': req.params.place}},
     function(err,doc){
         console.log("Modificando registro ...");
-        console.log(doc);//Esto si funciona perfecto
-    });
-    res.send({path:'/login'});
+        console.log(doc);password: bcrypt.hashSync(passw,8)//Esto si funciona perfecto
+    });password: bcrypt.hashSync(passw,8)
+    res.send({path:'/logipassword: bcrypt.hashSync(passw,8)n'});
 });
 
 app.post('/delete_Visited/:name/:place', (req, res) => {
@@ -426,6 +426,45 @@ app.get('/comprobar', (req, res) => {
         }
     });
 });
+
+app.post('/change_Name/:new/:name', (req, res) => {    
+   
+
+    UserData.findOneAndUpdate({'name': req.params.name},{$set: {'name': req.params.new}},function(err,docs){
+        console.log("Aquí se actualiza el nombre de usuario");
+    });
+    res.send(200);
+});
+
+
+app.post('/change_Pass/:new/:name', (req, res) => {    
+   
+    var new_ = bcrypt.hashSync(req.params.new,8);
+
+    UserData.findOneAndUpdate({'name': req.params.name},{$set: {'password': new_}},function(err,docs){
+        console.log(docs);
+        console.log("Aquí se actualiza la pass de usuario");
+    });
+    res.send(200);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 let server = app.listen(process.env.PORT || 8081, function (err) {
     if(err){

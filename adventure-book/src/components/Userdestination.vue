@@ -10,13 +10,20 @@
     font-weight: bold;
     text-transform: uppercase;
     font-size: 14px;
-    text-align: center;
-    border-radius: 0px;
+    border-width: 2px;
+    border: solid white;
+    margin-top: 20px;
 }
 
 .contenido:hover{
-    background-color: #54C2C3;
-    color: white;
+    border-width: 2px;
+    border: solid #54C2C3;
+    border-radius: 5px;
+}
+
+.contenido2{
+	margin:8px;
+	margin-left:0px;
 }
 
 </style>
@@ -25,51 +32,57 @@
 	<div class="main"><div class="container">
 		<b-row>
 			<b-col cols="7" id="sitios_deseados">
-				<b-row class="mb-3">
+				<b-row class="mb-4">
 					<h2> Destinos deseados </h2>
 				</b-row>					
 				<div v-for="sitio in destinos_deseados[0].sitios" class="contenido">
-					<b-row class="mb-4">
+					<b-row class="contenido2">
 						<b-col>
-							<div class="card" style="width: 16rem;">
-								<img class="card-img-top" src="../C.jpg" alt="Card image">
-							</div>
+							<div class="card" style="width: 12rem;">
+                                                                <img class="card-img-top" src="../C.jpg" >
+                                                        </div>
 						</b-col>
 						<b-col>
 							<b-row>
 								<h3>{{sitio.lugar}}</h3>
 							</b-row>
 							<b-row>
-								{{sitio.pais}}
-							</b-row>
-						</b-col>
-						<b-col>
-							<b-row>
-								{{sitio.fecha}}
-							</b-row>
-							<b-row>
-								<b-col md="3" class="ml-auto p-8">
-									{{sitio.personas}}
+								<b-col>
+									<b-row>
+										{{sitio.pais}}
+									</b-row>
 								</b-col>
 								<b-col>
-									<div class="card" style="width:2rem;">
-										<img class="card-img-top" src="../person.jpg" alt="Card image">
-									</div>
+									<b-row>
+										{{sitio.fecha}}
+									</b-row>
+								</b-col>
+								<b-col>
+									<b-row>
+										<b-col md="3" class="ml-auto p-8">
+											{{sitio.personas}}
+										</b-col>
+										<b-col>
+											<div class="card" style="width:2rem;">
+												<img class="card-img-top" src="../person.jpg" alt="Card image">
+											</div>
+										</b-col>
+									</b-row>
 								</b-col>
 							</b-row>
-						</b-col>
+						</b-col>						
 					</b-row>
-				</div>
+</div>
 				<b-row class="mb-3">
 					<h2> Este mes </h2>
 				</b-row>
 				<div v-for="sitio in este_mes[0].sitios" class="contenido">
                                         <b-row class="mb-3">
-                                                <b-col>
-                                                        <div class="card" style="width: 10rem;">
-                                                                <img class="card-img-top" src="../C.jpg" alt="Card image">
-                                                        </div>
-                                                </b-col>
+                                          	<b-col>
+							<div class="card" style="width: 12rem;">
+                                                        	<img class="card-img-top" src="../C.jpg" alt="Card image">
+                                                	</div>
+						</b-col>
                                                 <b-col>
                                                         <b-row>
                                                                 <h3>{{sitio.lugar}}</h3>
@@ -101,7 +114,7 @@
                                 <div v-for="sitio in todo_organizado[0].sitios" class="contenido">
                                         <b-row class="mb-4">
                                                 <b-col>
-                                                        <div class="card" style="width: 10rem;">
+                                                        <div class="card" style="width: 12rem;">
                                                                 <img class="card-img-top" src="../C.jpg" alt="Card image">
                                                         </div>
                                                 </b-col>
@@ -138,7 +151,7 @@
 				<div v-for="sitio in futuros_viajes[0].sitios" class="contenido">
 					<b-row class="mb-4">
 						<b-col >
-							<div class="card" style="width: 10rem;">
+							<div class="card" style="width: 12rem;">
 								<img class="card-img-top" src="../C.jpg" alt="Card image">
 							</div>
 						</b-col>

@@ -1,8 +1,24 @@
-<style>
+<style scope>
 .main{
 	padding:30px;
 	background-color:white;
 }
+
+.contenido{ 
+    background-color: white;
+    color: #54C2C3;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 0px;
+}
+
+.contenido:hover{
+    background-color: #54C2C3;
+    color: white;
+}
+
 </style>
 
 <template>
@@ -12,16 +28,16 @@
 				<b-row class="mb-3">
 					<h2> Destinos deseados </h2>
 				</b-row>					
-				<div v-for="sitio in destinos_deseados[0].sitios">
+				<div v-for="sitio in destinos_deseados[0].sitios" class="contenido">
 					<b-row class="mb-4">
 						<b-col>
-							<div class="card" style="width: 10rem;">
+							<div class="card" style="width: 16rem;">
 								<img class="card-img-top" src="../C.jpg" alt="Card image">
 							</div>
 						</b-col>
 						<b-col>
 							<b-row>
-								{{sitio.lugar}}
+								<h3>{{sitio.lugar}}</h3>
 							</b-row>
 							<b-row>
 								{{sitio.pais}}
@@ -47,7 +63,7 @@
 				<b-row class="mb-3">
 					<h2> Este mes </h2>
 				</b-row>
-				<div v-for="sitio in este_mes[0].sitios">
+				<div v-for="sitio in este_mes[0].sitios" class="contenido">
                                         <b-row class="mb-3">
                                                 <b-col>
                                                         <div class="card" style="width: 10rem;">
@@ -56,7 +72,7 @@
                                                 </b-col>
                                                 <b-col>
                                                         <b-row>
-                                                                {{sitio.lugar}}
+                                                                <h3>{{sitio.lugar}}</h3>
                                                         </b-row>
                                                         <b-row>
                                                                 {{sitio.pais}}
@@ -82,7 +98,7 @@
 				<b-row>
                                         <h2> Todos los viajes organizados</h2>
                                 </b-row>
-                                <div v-for="sitio in todo_organizado[0].sitios">
+                                <div v-for="sitio in todo_organizado[0].sitios" class="contenido">
                                         <b-row class="mb-4">
                                                 <b-col>
                                                         <div class="card" style="width: 10rem;">
@@ -91,7 +107,7 @@
                                                 </b-col>
                                                 <b-col>
                                                         <b-row>
-                                                                {{sitio.lugar}}
+                                                                <h3>{{sitio.lugar}}</h3>
                                                         </b-row>
                                                         <b-row>
                                                                 {{sitio.pais}}
@@ -115,11 +131,11 @@
 					</b-row>
 				</div>
 			</b-col>
-			<b-col id="proximos_viajes" class="w-100">
+			<b-col id="proximos_viajes" class="w-100" >
 				<b-row>				
 					<h2> Tus proximos viajes </h2>
 				</b-row>
-				<div v-for="sitio in futuros_viajes[0].sitios">
+				<div v-for="sitio in futuros_viajes[0].sitios" class="contenido">
 					<b-row class="mb-4">
 						<b-col >
 							<div class="card" style="width: 10rem;">
@@ -128,7 +144,7 @@
 						</b-col>
 						<b-col >
 							<b-row>
-								{{sitio.lugar}}
+								<h3>{{sitio.lugar}}</h3>
 							</b-row>
 							<b-row>
 								{{sitio.pais}}

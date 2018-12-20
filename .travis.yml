@@ -8,6 +8,7 @@ script:
 - cd adventure-book
 - npm install
 - npm test
+- cd ..
 - sonar-scanner
 notifications:
   slack:

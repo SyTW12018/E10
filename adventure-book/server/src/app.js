@@ -357,7 +357,7 @@ app.post('/delete_Photo/:name/:photo', (req, res) => {
 
     //Aqui no usar comandos para borrar la foto dejarla tal y como esta
     //Pero si borramos el registro de base de datos y aparcao
-    fs.unlinkSync('/home/sergio/E10/adventure-book/uploads/Manolo/coche.jpeg');
+    fs.unlinkSync(__dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + req.params.photo);
     UserData.findOneAndUpdate({'name':req.params.name},
     {$pull: {'uploadsphotos': __dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + req.params.photo}},
     function(err,doc){

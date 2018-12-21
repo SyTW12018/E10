@@ -59,6 +59,12 @@
     height: 200px;
   }
 
+  .delete{
+    width: 10px;
+    height: 10px;
+    background-color: blueviolet;
+  }
+
 </style>
 
 <template>
@@ -84,16 +90,6 @@
         </p>
       </div>
 
-      <div class="content">
-        <div>  <!--class="columns is-multiline"-->
-          <div v-for="file in uploadedFiles" :key="file" > <!--class="columns is-4"-->
-            <figure class="image">
-              <img class="imagen" :src="file" alt=""/>
-            </figure>
-          </div>
-        </div>
-      </div>
-
       <div class="field">
         <div v-for="(file, index) in files" :key="index" class="level">
           <div class="level-left">
@@ -104,7 +100,7 @@
           </div>
           <div class="level-right">
             <div class="level-item">
-              <a @click.prevent="files.splice(index,1);uploadFiles.splice(index,1)" class="delete"></a>
+              <a @click.prevent="files.splice(index,1);uploadFiles.splice(index,1)" class="delete">X</a>
             </div>
           </div>
         </div>
@@ -170,8 +166,6 @@ export default {
     return {
       user_: JSON.parse(localStorage.getItem("user")),
       name: JSON.parse(localStorage.getItem("user")).name,
-      b_creat_alb: false,
-      //file: "",
       files: [],
       uploadFiles: [],
       error: false,
@@ -220,8 +214,6 @@ export default {
       this.$router.push("/");
     },
 
-    create_album() {},
-
     selectFile() {
       //Upload multiple files
       const files = this.$refs.files.files;
@@ -237,26 +229,6 @@ export default {
 
          }))];
 
-      /* Upload only one file
-      const file = this.$refs.file.files[0];
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-      const MAX_SIZE = 2000000;
-      const too_heavy = file.size > MAX_SIZE; //true si pesa más que el max_size
-
-      console.log(file.type)
-      if(allowedTypes.includes(file.type) && !too_heavy){
-        console.log("Permitido")
-        this.file = file;
-      }
-      else{
-        this.error = true;        
-        this.err_msg = "Solo se permiten imágenes jpeg, png y gif"
-        if(too_heavy){
-          this.err_msg = 'Archivo muy pesado. Tamaño máximo: ${MAX_SIZE/1000}kb'
-          
-        }
-        console.log(this.err_msg)
-      }*/
     },
 
     validate(file){
@@ -277,6 +249,12 @@ export default {
 
 
     async sendFiles() {
+            
+      if(this.uploadFiles.length == 0){
+        this.err_msg = "No hay ningún archivo que subir"
+        return ""
+      }
+
       /*
           Initialize the form data
         */
@@ -287,9 +265,8 @@ export default {
         }
       });
 
-      console.log(localStorage.getItem("user"))
       var id_user = JSON.parse(localStorage.getItem("user"))._id
-      console.log(id_user)
+      
       formData.append('place', this.place_)
       formData.append('user_id', localStorage.getItem("user"))
 
@@ -299,8 +276,6 @@ export default {
         const res = await this.$http.post(url, formData, {
           onUploadProgress: e => this.progress = Math.round(e.loaded * 100 / e.total)
         });
-        console.log("TEXTO: array")
-        console.log(this.uploadedFiles)
         
         for(var j=0; j<res.data.files.length; j++){
           this.uploadedFiles.push(res.data.files[j])
@@ -308,21 +283,16 @@ export default {
 
         this.uploading = false;
 
-        //var url = "http://localhost:8081/upload/" + this.name + "/" + this.places[0];
-        //await this.$http.post(url, formData);
-
-
         this.files = [];
         this.uploadFiles = [];
-      } catch (err) {
+      } 
+      catch (err) {
         console.log(err);
       }
     }
   },
 
   mounted() {
-    console.log("mounted in dashboard: ");
-    console.log(localStorage.getItem("jwt"));
     if (
       localStorage.getItem("jwt") == null ||
       localStorage.getItem("jwt") == "undefined"
@@ -340,25 +310,3 @@ export default {
 };
 </script>
 
-<<<<<<< HEAD
-=======
-
-
-
-export default {
-  data(){
-    return{
-        
-    }
-  },
-  mounted(){
-
-  },
-  components: {
-
-  }
-}
-
-
-</script>
->>>>>>> dev-userboard

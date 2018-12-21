@@ -9,7 +9,7 @@ const config = require('./config');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 var path = require('path');
-var fs = require("fs");
+var fs = require('fs');
 //to upload files
 const multer = require('multer');
 const sharp = require('sharp');
@@ -240,8 +240,10 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
         var aux_ = __dirname.split('server');
 
         var in_visited_places = false
+        var visited_place = req.params.place.toUpperCase()
+        console.log(visited_place)
 
-        await UserData.find({'name':req.params.name, 'visited_places':req.params.place},
+        await UserData.find({'name':req.params.name, 'visited_places':visited_place},
             'name',
             function(err,doc){
                 console.log("doc: " + doc)
@@ -255,7 +257,7 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
         if(in_visited_places == false){
             console.log("visited places: " + in_visited_places)
             UserData.findOneAndUpdate({'name':req.params.name},
-                {$push: {'visited_places': req.params.place, }},
+                {$push: {'visited_places': visited_place, }},
                 function(err,doc){
                     console.log("Modificando registro ...");
                     console.log(doc);//Esto si funciona perfecto
@@ -263,21 +265,28 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
             );
         }
         
+        var dirPath = `${aux_[0]}uploads/${req.params.name}`
+        console.log("dirpath: " + dirPath)
+        if(fs.existsSync(dirPath) == false){
+            fs.mkdirSync(dirPath)
+        }
+        else{
+            console.log("Carpeta ya existente")
+        }       
+        
 
         for(var i = 0; i<req.files.length; i++){
             var file = req.files[i];
             await sharp(file.path)
                 .resize(300,200)
                 .embed()
-                .toFile(`./uploads/${file.originalname}`);
+                .toFile(`${dirPath}/${file.originalname}`);
     
             fs.unlink(file.path)
-            files_.push(`${aux_[0]}uploads/${file.originalname}`)
-
-            UserData
+            files_.push(`${dirPath}/${file.originalname}`)
 
             UserData.findOneAndUpdate({'name':req.params.name},
-                {$push: { 'uploadsphotos': `${aux_[0]}uploads/${file.originalname}`}},
+                {$push: { 'uploadsphotos': `${dirPath}/${file.originalname}`}},
                 {new: true},
                 function(err,doc){
                    console.log("Modificando registro ...");
@@ -286,11 +295,11 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
             );
         }
 
-        PlaceData.findOne({'name':req.params.place},function(err,doc){
+        PlaceData.findOne({'name':visited_place},function(err,doc){
             if(doc == null){ //El lugar no existe y se crea
                 UserData.findOne({'name':req.params.name},function(err,doc){
                     var data = new PlaceData({
-                        name: req.params.place,
+                        name: visited_place,
                         author_id: doc.id,
                         author_name: doc.name,
                         photos: files_
@@ -309,12 +318,6 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
     catch(err){
         res.status(428).json({err});
     }
-
-    
-
-    console.log(files_)
-
-
     
     res.json({files: files_});
 });
@@ -333,6 +336,8 @@ app.post('/delete_Wished/:name/:place', (req, res) => {
     res.send({path:'/logipassword: bcrypt.hashSync(passw,8)n'});
 });
 
+
+
 app.post('/delete_Visited/:name/:place', (req, res) => {
 
     console.log(req.params.place);
@@ -344,6 +349,8 @@ app.post('/delete_Visited/:name/:place', (req, res) => {
     });
     res.send({path:'/login'});
 });
+
+
 
 app.post('/delete_Photo/:name/:photo', (req, res) => {
 
@@ -373,6 +380,9 @@ app.post('/delete_Photo/:name/:photo', (req, res) => {
     res.send({path:'/login'});
 });
 
+
+
+
 app.post('/add_group/:author_name/:place/:photo', /*upload.array('files'),*/ (req,res) =>{
 
     //Probar si sube foto a ver y ya cambiar el rollo para que suba la foto y tal
@@ -393,6 +403,8 @@ app.post('/add_group/:author_name/:place/:photo', /*upload.array('files'),*/ (re
     });
 });
 
+
+
 app.post('/delete_group/:name/:group', (req,res) =>{
 
     UserData.findOneAndUpdate({'name': req.params.name},{$pull:{'groupsTravel': req.params.group}}, function(err,doc){
@@ -400,6 +412,8 @@ app.post('/delete_group/:name/:group', (req,res) =>{
     });
     res.send(200);
 });
+
+
 
 app.post('/follow_group/:name/:group', (req,res) =>{
     
@@ -411,6 +425,8 @@ app.post('/follow_group/:name/:group', (req,res) =>{
     
 
 });
+
+
 
 app.use(function(err, req, res, next){
     if(err.code === "LIMIT_FILE_TYPES"){

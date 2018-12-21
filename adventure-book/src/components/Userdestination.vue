@@ -66,7 +66,7 @@
 										<b-col cols="1">
 											{{sitio.personas}}	
 										</b-col>
-										<b-col cols="0">
+										<b-col cols="1">
 											<div class="card" style="width:1.5rem;">
 												<img class="card-img-top" src="../person.jpg" alt="Card image">
 											</div>
@@ -109,7 +109,7 @@
 										<b-col cols="1">
 											{{sitio.personas}}	
 										</b-col>
-										<b-col cols="0">
+										<b-col cols="1">
 											<div class="card" style="width:1.5rem;">
 												<img class="card-img-top" src="../person.jpg" alt="Card image">
 											</div>
@@ -152,7 +152,7 @@
 										<b-col cols="1">
 											{{sitio.personas}}	
 										</b-col>
-										<b-col cols="0">
+										<b-col cols="1">
 											<div class="card" style="width:1.5rem;">
 												<img class="card-img-top" src="../person.jpg" alt="Card image">
 											</div>
@@ -197,7 +197,7 @@
 										<b-col cols="1">
 											{{sitio.personas}}	
 										</b-col>
-										<b-col cols="0">
+										<b-col cols="1">
 											<div class="card" style="width:1.5rem;">
 												<img class="card-img-top" src="../person.jpg" alt="Card image">
 											</div>

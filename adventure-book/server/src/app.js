@@ -354,27 +354,13 @@ app.post('/delete_Visited/:name/:place', (req, res) => {
 
 app.post('/delete_Photo/:name/:photo', (req, res) => {
 
-     //Este es el código qu ehay que usar para borrar las fotos del directorio uploads
-     //Lo que pasa es que las fotos se guardan con 89078037489738 y no sé como poder conseguir ese nombre
-     
-     /*var command = "rm -rf " + __dirname.split('server')[0] + 'uploads/' + req.params.photo;
-     console.log(command)
-     dir = exec(command, function(err, stdout, stderr) {
-        if (err) {
-          // should have err.code here?  
-        }
-        console.log(stdout);
-      });
-      
-      dir.on('exit', function (code) {
-        // exit code is code
-      });*/
-
-
+    //Aqui no usar comandos para borrar la foto dejarla tal y como esta
+    //Pero si borramos el registro de base de datos y aparcao
+    
     UserData.findOneAndUpdate({'name':req.params.name},
-    {$pull: {'uploadsphotos': __dirname.split('server')[0] + 'uploads/' + req.params.photo}},
+    {$pull: {'uploadsphotos': __dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + req.params.photo}},
     function(err,doc){
-        console.log("Modificando registro ...");
+        console.log("Borrando foto ...");
         console.log(doc);//Esto si funciona perfecto
     });
     res.send({path:'/login'});

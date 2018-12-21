@@ -15,9 +15,13 @@
     margin-top: 20px;
 }
 
+.Fecha{
+	font-size:12px;
+}
+
 .contenido:hover{
     border-width: 2px;
-    border: solid #54C2C3;
+    border: solid rgb(84,194,195,.7);
     border-radius: 5px;
 }
 
@@ -26,13 +30,18 @@
 	margin-left:0px;
 }
 
+.personas{
+	border-width: 2px;
+	border: solid rgb(84,194,195);
+}
+
 </style>
 
 <template>
 	<div class="main"><div class="container">
 		<b-row>
-			<b-col cols="7" id="sitios_deseados">
-				<b-row class="mb-4">
+			<b-col cols="6" id="sitios_deseados">
+				<b-row>
 					<h2> Destinos deseados </h2>
 				</b-row>					
 				<div v-for="sitio in destinos_deseados[0].sitios" class="contenido">
@@ -52,23 +61,25 @@
 										{{sitio.pais}}
 									</b-row>
 								</b-col>
-								<b-col>
+								<b-col cols="4" class="personas">
 									<b-row>
-										{{sitio.fecha}}
-									</b-row>
-								</b-col>
-								<b-col>
-									<b-row>
-										<b-col md="3" class="ml-auto p-8">
-											{{sitio.personas}}
+										<b-col cols="1">
+											{{sitio.personas}}	
 										</b-col>
-										<b-col>
-											<div class="card" style="width:2rem;">
+										<b-col cols="0">
+											<div class="card" style="width:1.5rem;">
 												<img class="card-img-top" src="../person.jpg" alt="Card image">
 											</div>
 										</b-col>
 									</b-row>
 								</b-col>
+							</b-row>
+							<b-row class="Fecha">	
+								<b-col cols="5">
+                                                                        <b-row>
+                                                                                {{sitio.fecha}}
+                                                                        </b-row>
+                                                                </b-col>
 							</b-row>
 						</b-col>						
 					</b-row>
@@ -77,42 +88,48 @@
 					<h2> Este mes </h2>
 				</b-row>
 				<div v-for="sitio in este_mes[0].sitios" class="contenido">
-                                        <b-row class="mb-3">
+                                        <b-row class="contenido2">
                                           	<b-col>
 							<div class="card" style="width: 12rem;">
                                                         	<img class="card-img-top" src="../C.jpg" alt="Card image">
                                                 	</div>
 						</b-col>
-                                                <b-col>
+						<b-col>
                                                         <b-row>
                                                                 <h3>{{sitio.lugar}}</h3>
                                                         </b-row>
                                                         <b-row>
-                                                                {{sitio.pais}}
-                                                        </b-row>
-                                                </b-col>
-                                                <b-col>
-                                                        <b-row>
-                                                                {{sitio.fecha}}
-                                                        </b-row>
-                                                        <b-row>
-                                                                <b-col md="3" class="ml-auto p-8">
-                                                                        {{sitio.personas}}
+                                                                <b-col>
+                                                                        <b-row>
+                                                                                {{sitio.pais}}
+                                                                        </b-row>
                                                                 </b-col>
                                                                 <b-col>
-                                                                        <div class="card" style="width:2rem;">
-										<img class="card-img-top" src="../person.jpg" alt="Card image">
-									</div>
-								</b-col>
-							</b-row>
-						</b-col>
+                                                                        <b-row>
+                                                                                {{sitio.fecha}}
+                                                                        </b-row>
+                                                                </b-col>
+                                                                <b-col>
+                                                                        <b-row>
+                                                                                <b-col md="3" class="ml-auto p-8">
+                                                                                        {{sitio.personas}}
+                                                                                </b-col>
+                                                                                <b-col>
+                                                                                        <div class="card" style="width:2rem;">
+                                                                                                <img class="card-img-top" src="../person.jpg" alt="Card image">
+                                                                                        </div>
+                                                                                </b-col>
+                                                                        </b-row>
+                                                                </b-col>
+                                                        </b-row>
+                                                </b-col>
 					</b-row>
 				</div>	
 				<b-row>
                                         <h2> Todos los viajes organizados</h2>
                                 </b-row>
                                 <div v-for="sitio in todo_organizado[0].sitios" class="contenido">
-                                        <b-row class="mb-4">
+                                        <b-row class="contenido2">
                                                 <b-col>
                                                         <div class="card" style="width: 12rem;">
                                                                 <img class="card-img-top" src="../C.jpg" alt="Card image">
@@ -123,61 +140,73 @@
                                                                 <h3>{{sitio.lugar}}</h3>
                                                         </b-row>
                                                         <b-row>
-                                                                {{sitio.pais}}
-                                                        </b-row>
-                                                </b-col>
-                                                <b-col>
-                                                        <b-row>
-                                                                {{sitio.fecha}}
-                                                        </b-row>
-                                                        <b-row>
-                                                                <b-col md="3" class="ml-auto p-8">
-                                                                        {{sitio.personas}}
+                                                                <b-col>
+                                                                        <b-row>
+                                                                                {{sitio.pais}}
+                                                                        </b-row>
                                                                 </b-col>
                                                                 <b-col>
-                                                                        <div class="card" style="width:2rem;">
-                                                                                <img class="card-img-top" src="../person.jpg" alt="Card image">
-                                                                        </div>
+                                                                        <b-row>
+                                                                                {{sitio.fecha}}
+                                                                        </b-row>
+                                                                </b-col>
+                                                                <b-col>
+                                                                        <b-row>
+                                                                                <b-col md="3" class="ml-auto p-8">
+                                                                                        {{sitio.personas}}
+                                                                                </b-col>
+                                                                                <b-col>
+                                                                                        <div class="card" style="width:2rem;">
+                                                                                                <img class="card-img-top" src="../person.jpg" alt="Card image">
+                                                                                        </div>
+                                                                                </b-col>
+                                                                        </b-row>
                                                                 </b-col>
                                                         </b-row>
                                                 </b-col>
 					</b-row>
 				</div>
 			</b-col>
-			<b-col id="proximos_viajes" class="w-100" >
+			<b-col cols="6" id="proximos_viajes" class="w-100" >
 				<b-row>				
 					<h2> Tus proximos viajes </h2>
 				</b-row>
 				<div v-for="sitio in futuros_viajes[0].sitios" class="contenido">
-					<b-row class="mb-4">
+					<b-row class="contenido2">
 						<b-col >
 							<div class="card" style="width: 12rem;">
 								<img class="card-img-top" src="../C.jpg" alt="Card image">
 							</div>
 						</b-col>
-						<b-col >
-							<b-row>
-								<h3>{{sitio.lugar}}</h3>
-							</b-row>
-							<b-row>
-								{{sitio.pais}}
-							</b-row>
-						</b-col>
-						<b-col >
-							<b-row>
-								{{sitio.fecha}}
-							</b-row>	
-							<b-row>
-								<b-col md="3" class="ml-auto p-8">
-									{{sitio.personas}}
-								</b-col>
-								<b-col>
-									<div class="card" style="width:2rem;">
-										<img class="card-img-top" src="../person.jpg" alt="Card image">
-									</div>
-								</b-col>
-							</b-row>
-						</b-col>
+						<b-col>
+                                                        <b-row>
+                                                                <h3>{{sitio.lugar}}</h3>
+                                                        </b-row>
+                                                        <b-row>
+                                                                <b-col>
+                                                                        <b-row>
+                                                                                {{sitio.pais}}
+                                                                        </b-row>
+                                                                </b-col>
+                                                                <b-col>
+                                                                        <b-row>
+                                                                                {{sitio.fecha}}
+                                                                        </b-row>
+                                                                </b-col>
+                                                                <b-col>
+                                                                        <b-row>
+                                                                                <b-col md="3" class="ml-auto p-8">
+                                                                                        {{sitio.personas}}
+                                                                                </b-col>
+                                                                                <b-col>
+                                                                                        <div class="card" style="width:2rem;">
+                                                                                                <img class="card-img-top" src="../person.jpg" alt="Card image">
+                                                                                        </div>
+                                                                                </b-col>
+                                                                        </b-row>
+                                                                </b-col>
+                                                        </b-row>
+                                                </b-col>
 					</b-row>
 				</div>
 			</b-col>

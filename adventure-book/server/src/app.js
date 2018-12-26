@@ -205,24 +205,28 @@ app.post('/userboard/:name', async (req, res) => {
     var response = [];
     var aux = []
 
-    //try{
+    try{
 
-    UserData.findOne({ 'name': req.params.name }, function (err, doc) {
-        aux = doc.visited_place
-        response.push(doc.visited_place);
+    await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
+        response.push(doc.visited_places);
     });
 
-    /*for (var i = 0; i < aux.length; i++){
-           await PlaceData.find({'place': aux[i],'author_name':JSON.parse(req.body.user).name}, function(err, doc){
-               console.log(doc);
-           });
-       }*/
-    /*}
+    }
     catch(err){
         console.log(err)
-    }*/
-    res.send(response);
+    }
 
+    try{
+        await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
+            response.push(doc.wished_places);
+        });
+    }
+    catch(err){
+        console.log(err)
+    }
+
+    console.log(response);
+    res.send(response);
 });
 
 

@@ -305,6 +305,7 @@ export default {
       .post("http://localhost:8081/userboard/" + this.name)
       .then(response => {
         this.user_data = response.data;
+        
       });
   }
 };

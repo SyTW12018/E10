@@ -179,29 +179,11 @@ export default {
       place_: "",
 
       sitios_visitados: [
-        {
-          nombre: 'Mis Sitios',
-          descripcion: 'Aquí aparecerán los lugares en los que has etiquetado tus fotos',
-          sitios: [ 'Islas Canarias',
-                    'Madrid',
-                    'Cataluña',
-                    'Galicia',
-                    'Castilla y León',
-          ]
-        }
+        
       ],
 
       sitios_deseados: [
-        {
-          nombre: 'Mis Sitios',
-          descripcion: 'Aquí aparecerán los lugares en los que has etiquetado tus fotos',
-          sitios: [ 'Islas Baleares',
-                    'La Rioja',
-                    'Cantabria',
-                    'Galicia',
-                    'Andalucía',
-          ]
-        }
+      
       ],
 
     };

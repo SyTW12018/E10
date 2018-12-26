@@ -23,6 +23,11 @@
         width:20px;
 }
 
+.Echis{
+	height:17px;
+        width:17px;
+}
+
 .contenido:hover{
     border-width: 2px;
     border: solid rgb(84,194,195,.7);
@@ -39,6 +44,14 @@
 	border: solid rgb(84,194,195);
 }
 
+.card{
+	width:1.5rem;
+}
+
+.img{
+	width: 12rem;
+}
+
 </style>
 
 
@@ -51,14 +64,14 @@
 					<h2> Destinos deseados </h2>
 				</b-row>					
 				<div v-for="sitio in destinos_deseados" class="contenido">
-					<b-row class="contenido2"  @click="cambiarEstado(sitio)">
+					<b-row class="contenido2" v-if="sitio.base">
 						<b-col>
-							<div class="card" style="width: 12rem;">
+							<div class="img">
      						              <img class="card-img-top" src="../C.jpg" >
               						</div>
 					  	</b-col>
 						<b-col>
-							<b-row>
+							<b-row @click="cambiarEstado(sitio)">
 								<h3>{{sitio.lugar}}</h3>
 							</b-row>
 							<b-row>
@@ -73,7 +86,7 @@
 											{{sitio.personas}}	
 										</b-col>
 										<b-col cols="1">
-											<div class="card" style="width:1.5rem;">
+											<div class="card">
 												<img class="card-img-top" src="../person.jpg" alt="Card image">
 											</div>
 										</b-col>
@@ -87,7 +100,7 @@
                     							</b-row>
                 						</b-col>
 								<b-col v-if="sitio.mostrar" cols="1">
-                                                               		<img class="card-img-top Plus" src="../assets/add.png" alt="Card image">
+                                                               		<img @click="personaapuntada(sitio)" class="card-img-top Plus" src="../assets/add.png" alt="Card image">
                                                         	</b-col>
 						 	</b-row>
 						</b-col>						
@@ -97,14 +110,14 @@
 					<h2> Este mes </h2>
 				</b-row>
 				<div v-for="sitio in este_mes" class="contenido">
-					<b-row class="contenido2"  @click="cambiarEstado(sitio)">
+					<b-row class="contenido2" v-if="sitio.base">
 						<b-col>
-							<div class="card" style="width: 12rem;">
+							<div class="img">
                    <img class="card-img-top" src="../C.jpg" >
               </div>
 					  </b-col>
 						<b-col>
-							<b-row>
+							<b-row @click="cambiarEstado(sitio)">
 								<h3>{{sitio.lugar}}</h3>
 							</b-row>
 							<b-row>
@@ -119,7 +132,7 @@
 											{{sitio.personas}}	
 										</b-col>
 										<b-col cols="1">
-											<div class="card" style="width:1.5rem;">
+											<div class="card">
 												<img class="card-img-top" src="../person.jpg" alt="Card image">
 											</div>
 										</b-col>
@@ -133,7 +146,7 @@
                                                                         </b-row>
                                                                 </b-col>
                                                                 <b-col v-if="sitio.mostrar" cols="1">
-                                                                        <img class="card-img-top Plus" src="../assets/add.png" alt="Card image">
+                                                                        <img @click="personaapuntada(sitio)" class="card-img-top Plus" src="../assets/add.png" alt="Card image">
                                                                 </b-col>
 							</b-row>
 						</b-col>						
@@ -143,14 +156,14 @@
                <h2> Todos los viajes organizados</h2>
         </b-row>
         <div v-for="sitio in todo_organizado" class="contenido">
-             <b-row class="contenido2"  @click="cambiarEstado(sitio)">
+             <b-row class="contenido2" v-if="sitio.base">
 						<b-col>
-							<div class="card" style="width: 12rem;">
+							<div class="img" >
                    <img class="card-img-top" src="../C.jpg" >
               </div>
 					  </b-col>
 						<b-col>
-							<b-row>
+							<b-row @click="cambiarEstado(sitio)">
 								<h3>{{sitio.lugar}}</h3>
 							</b-row>
 							<b-row>
@@ -165,7 +178,55 @@
 											{{sitio.personas}}	
 										</b-col>
 										<b-col cols="1">
-											<div class="card" style="width:1.5rem;">
+											<div class="card">
+												<img class="card-img-top" src="../person.jpg" alt="Card image">
+											</div>
+										</b-col>
+									</b-row>
+								</b-col>
+							</b-row>
+							<b-row class="Fecha">
+								<b-col cols="10">
+                                                                        <b-row>
+                                                                                {{sitio.fecha}}
+                                                                        </b-row>
+                                                                </b-col>
+                                                                <b-col v-if="sitio.mostrar" cols="1" >
+                                                                        <img @click="personaapuntada(sitio)" class="card-img-top Plus" src="../assets/add.png" alt="Card image">
+                                                                </b-col>	
+							</b-row>
+						</b-col>						
+					</b-row>
+        </div>
+			</b-col>
+			<b-col cols="6" id="proximos_viajes" class="w-100" >
+				<b-row>				
+					<h2> Tus proximos viajes </h2>
+				</b-row>
+				<div v-for="sitio in futuros_viajes" class="contenido">
+					<b-row v-if="sitio.base" class="contenido2">
+						<b-col>
+							<div class="img">
+                					   <img class="card-img-top" src="../C.jpg" >
+              						</div>
+					  	</b-col>
+						<b-col>
+							<b-row @click="cambiarEstado(sitio)">
+								<h3>{{sitio.lugar}}</h3>
+							</b-row>
+							<b-row>
+								<b-col>
+									<b-row>
+										{{sitio.pais}}
+									</b-row>
+								</b-col>
+								<b-col cols="4" class="personas">
+									<b-row>
+										<b-col cols="1">
+											{{sitio.personas}}	
+										</b-col>
+										<b-col cols="1">
+											<div class="card">
 												<img class="card-img-top" src="../person.jpg" alt="Card image">
 											</div>
 										</b-col>
@@ -179,60 +240,9 @@
                                                                         </b-row>
                                                                 </b-col>
                                                                 <b-col v-if="sitio.mostrar" cols="1">
-                                                                        <img class="card-img-top Plus" src="../assets/add.png" alt="Card image">
+                                                                        <img @click="personadesapuntada(sitio)" class="card-img-top Echis" src="../assets/echis.png" alt="Card image">
                                                                 </b-col>	
 							</b-row>
-						</b-col>						
-					</b-row>
-        </div>
-			</b-col>
-			<b-col cols="6" id="proximos_viajes" class="w-100" >
-				<b-row>				
-					<h2> Tus proximos viajes </h2>
-				</b-row>
-				<div v-for="sitio in futuros_viajes" class="contenido">
-					<b-row class="contenido2" @click="cambiarEstado(sitio)">
-						<b-col>
-							<div class="card" style="width: 12rem;">
-                					   <img class="card-img-top" src="../C.jpg" >
-              						</div>
-					  	</b-col>
-						<b-col>
-							<b-row>
-								<h3>{{sitio.lugar}}</h3>
-							</b-row>
-							<b-row>
-								<b-col>
-									<b-row>
-										{{sitio.pais}}
-									</b-row>
-								</b-col>
-								<b-col cols="4" class="personas">
-									<b-row>
-										<b-col cols="1">
-											{{sitio.personas}}	
-										</b-col>
-										<b-col cols="1">
-											<div class="card" style="width:1.5rem;">
-												<img class="card-img-top" src="../person.jpg" alt="Card image">
-											</div>
-										</b-col>
-									</b-row>
-								</b-col>
-							</b-row>
-							<b-row class="Fecha">	
-								<b-col cols="10">
-                    							<b-row>
-                        							{{sitio.fecha}}
-                    							</b-row>
-									<b-col v-if="sitio.mostrar" cols="1">
-                                                                        	<img class="card-img-top Plus" src="../assets/add.png" alt="Card image">
-                                                                	</b-col>
-                						</b-col>
-							  </b-row>
-							<b-row v-if="sitio.mostrar">
-                               				       <b-button size="sm" disabled variant="success"> Me desapunto </b-button>
-                              	 			</b-row>
 						</b-col>						
 					</b-row>
         			</div>
@@ -251,34 +261,46 @@
                         return{
 		
 				destinos_deseados: [
-							{lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:'3',codigo:'3',mostrar:false},
-                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:'4',codigo:'4',mostrar:false},
+							{lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:3,codigo:'3',mostrar:false,base:true},
+                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'4',mostrar:false,base:true},
 								
 				],
                                 futuros_viajes: [
-                                                        {lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:'3',codigo:'5',mostrar:false},
-                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:'4',codigo:'6',mostrar:false},
-                                                                       
+                                                        {lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:8,codigo:'5',mostrar:false,base:true},
+                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'6',mostrar:false,base:true},
                                 ],
 				este_mes: [
-                                                        {lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:'3',codigo:'7',mostrar:false},
-                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:'4',codigo:'8',mostrar:false},
+                                                        {lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:3,codigo:'7',mostrar:false,base:true},
+                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'8',mostrar:false,base:true},
                                                                       
                                 ],
 				todo_organizado: [
 							
-                                                        {lugar: 'Madrid', pais: 'España',fecha:'Marzo 2017', personas:'12', codigo:'1',mostrar:false},
-                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:'4',codigo:'2',mostrar:false},
-                                ],
+                                                        {lugar: 'Madrid', pais: 'España',fecha:'Marzo 2017', personas:12, codigo:'1',mostrar:false,base:true},
+                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'2',mostrar:false,base:true},
+                                ]
                         }
                 },
                 mounted(){
                 },
 	
 		methods: {
+
+			personaapuntada: function(object){
+				object.personas = object.personas+1;
+				object.base = !object.base;
+				this.futuros_viajes.push({lugar:object.lugar,pais: object.pais,fecha:object.fecha, personas:object.personas,codigo:object.codigo,mostrar:false,base:true}); 
+			},			
+
+			personadesapuntada: function(object){
+				object.personas = object.personas-1;
+				object.base = !object.base;
+				this.todo_organizado.push({lugar:object.lugar,pais: object.pais,fecha:object.fecha, personas:object.personas,codigo:object.codigo,mostrar:false,base:true});
+			},
+
 			cambiarEstado: function(object) {
             			object.mostrar = !object.mostrar;
-        		}
+        		},
 		},
                 components: {
                 }

@@ -165,6 +165,7 @@ app.post('/dashboard', (req, res) => {
     var response = [];
 
     UserData.findOne({'name': JSON.parse(req.body.user).name},function(err,doc){
+        
     });
 
     PlaceData.find({'author_id': JSON.parse(req.body.user)._id}, function(err, user_data){
@@ -355,8 +356,6 @@ app.post('/delete_Visited/:name/:place', (req, res) => {
 
 app.post('/delete_Photo/:name/:photo', (req, res) => {
 
-    //Aqui no usar comandos para borrar la foto dejarla tal y como esta
-    //Pero si borramos el registro de base de datos y aparcao
     fs.unlinkSync(__dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + req.params.photo);
     UserData.findOneAndUpdate({'name':req.params.name},
     {$pull: {'uploadsphotos': __dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + req.params.photo}},

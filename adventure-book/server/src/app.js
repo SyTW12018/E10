@@ -48,10 +48,11 @@ var UserDataSchema = new Schema({
 var UserData = Mongoose.model('UserData',UserDataSchema);
 
 var PlaceDataSchema = new Schema({
-    name: String,
+    place: String,
     author_id: String,
     author_name: String,
-    photos: Array
+    photos: Array,
+    date: String
 }, {collection: 'placeData'});
 
 var PlaceData = Mongoose.model('PlaceData',PlaceDataSchema);
@@ -194,6 +195,27 @@ app.post('/follow_Wished/:name/:place', (req, res) => {
 
 
 
+app.post('/sites/:place', async(req, res) => {
+
+    var visited_place = req.params.place.toUpperCase()
+    var response = []
+    try{
+        await PlaceData.findOne({"place":visited_place},function(err,doc){
+                console.log()
+                response = doc.photos
+            });
+        }
+
+    catch(err){
+        console.log(err)
+    }
+
+    res.send(response);
+
+});
+
+
+
 const fileFilter = function(req, file, cb){
     const allowedType = ["image/jpeg", "image/png", "image/gif"];
 
@@ -214,29 +236,9 @@ const upload = multer({
     }
 })
 
-/*app.post('/upload', upload.array('files'), async (req,res) => {
-    
-    try{
-        var files_ = []
-        for(var i = 0; i<req.files.length; i++){
-            var file = req.files[i];
-            await sharp(file.path)
-                .resize(300,200)
-                .embed()
-                .toFile(`./uploads/${file.originalname}`);
-    
-            fs.unlink(file.path)
-            files_.push(`../../uploads/${file.originalname}`)
-        }
-        res.json({files: files_});
-    }
-    catch(err){
-        res.status(428).json({err});
-    }
-})*/
 
 
-app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
+app.post('/upload/:name/:place/', upload.array('files'), async (req,res) => {
     try{
         var files_ = []
         var aux_ = __dirname.split('server');
@@ -259,7 +261,7 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
         if(in_visited_places == false){
             console.log("visited places: " + in_visited_places)
             UserData.findOneAndUpdate({'name':req.params.name},
-                {$push: {'visited_places': visited_place, }},
+                {$push: {'visited_places': visited_place }},
                 function(err,doc){
                     console.log("Modificando registro ...");
                     console.log(doc);//Esto si funciona perfecto
@@ -297,14 +299,15 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
             );
         }
 
-        PlaceData.findOne({'name':visited_place},function(err,doc){
+        PlaceData.findOne({'place':visited_place},function(err,doc){
             if(doc == null){ //El lugar no existe y se crea
                 UserData.findOne({'name':req.params.name},function(err,doc){
                     var data = new PlaceData({
-                        name: visited_place,
+                        place: visited_place,
                         author_id: doc.id,
                         author_name: doc.name,
-                        photos: files_
+                        photos: files_,
+                        date: "2018-12-01"
                     });
                     data.save().then(function(){
                         PlaceData.findOne({'author_name': req.params.name}, function(err,doc){
@@ -313,6 +316,13 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
                         });  
                     });
                 });
+            }
+            else{
+                PlaceData.findOneAndUpdate({'place': visited_place},{$push: {'photos': `${dirPath}/${file.originalname}`}}, function(err,doc){
+                    console.log("entro al else popis");
+                    console.log(doc)
+                });  
+                
             }
             
         });
@@ -464,21 +474,6 @@ app.post('/change_Pass/:new/:name', (req, res) => {
     });
     res.send(200);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

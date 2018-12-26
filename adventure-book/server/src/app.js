@@ -57,6 +57,14 @@ var PlaceDataSchema = new Schema({
 
 var PlaceData = Mongoose.model('PlaceData',PlaceDataSchema);
 
+
+var SitesDataSchema = new Schema({
+    place: String,
+    id_num: Number
+}, {collection: 'sitesData'});
+
+var SitesData = Mongoose.model('SitesData',SitesDataSchema);
+
 var GroupTravelSchema = new Schema({
     place: String,
     members: Array,
@@ -66,6 +74,27 @@ var GroupTravelSchema = new Schema({
 }, {collection: 'groupTravelData'});
 
 var GroupTravel = Mongoose.model('groupTravelData',GroupTravelSchema);
+
+/*
+var comunidades = ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
+                    'GALICIA','LA RIOJA','CANTABRIA',
+                    'CASTILLA Y LEÓN','CATALUÑA','COMUNIDAD VALENCIANA',
+                    'CASTILLA LA MANCHA','EXTREMADURA','REGIÓN DE MURCIA','COMUNIDAD DE MADRID',
+                    'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'];
+
+comunidades = comunidades.sort();
+
+
+for(var i = 0; i < comunidades.length; i++){   
+
+    var data = SitesData({
+        place: comunidades[i],
+        id_num: i
+    });
+    data.save()
+}  */
+
+
 /*Aquí empieza la aplicación*/
 
 
@@ -160,20 +189,61 @@ app.post('/waiting', (req,res) => {
 
 
 
-app.post('/userboard', async(req, res) => {
+
+
+
+
+
+
+
+
+/*app.post('/userboard/:name', async(req, res) => {
 
     //Buscamos los datos del usuario a partir de su _id
     var response = [];
-    var aux = ""
+    var aux = []
 
-    await UserData.findOne({'name': JSON.parse(req.body.user).name},function(err,doc){
-        response.push(doc.visited_place);
-    });
+    try{
 
-    PlaceData.find({'author_id': JSON.parse(req.body.user)._id}, function(err, user_data){
-        console.log(user_data);
-    });
-});
+        await UserData.findOne({'name': req.params.name},function(err,doc){
+            aux = doc.visited_place
+            response.push(doc.visited_place);
+        });
+
+    /* for (var i = 0; i < aux.length; i++){
+            await PlaceData.find({'place': aux[i],'author_name':JSON.parse(req.body.user).name}, function(err, doc){
+                console.log(doc);
+            });
+        }
+    }
+    catch(err){
+        console.log(err)
+    }
+    res.send(response);
+    
+});*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -239,7 +309,7 @@ const upload = multer({
 
 
 
-app.post('/upload/:name/:place/', upload.array('files'), async (req,res) => {
+app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
     try{
         var files_ = []
         var aux_ = __dirname.split('server');
@@ -248,11 +318,12 @@ app.post('/upload/:name/:place/', upload.array('files'), async (req,res) => {
         var visited_place = req.params.place.toUpperCase()
         console.log(visited_place)
 
-        await UserData.find({'name':req.params.name, 'visited_places':visited_place},
+        await UserData.find({'name':req.params.name, 'visited_places': visited_place},
             'name',
             function(err,doc){
                 console.log("doc: " + doc)
-                if(doc != undefined || doc != null){
+                console.log(typeof(doc))
+                if(doc != undefined || doc != null || doc != ""){
                     console.log("entra en el if")
                     in_visited_places = true
                 }
@@ -271,8 +342,10 @@ app.post('/upload/:name/:place/', upload.array('files'), async (req,res) => {
         }
         
         var dirPath = `${aux_[0]}uploads/${req.params.name}/${visited_place}`
+        var dirPathWithOut = `${aux_[0]}uploads/${req.params.name}`
         console.log("dirpath: " + dirPath)
         if(fs.existsSync(dirPath) == false){
+            fs.mkdirSync(dirPathWithOut)
             fs.mkdirSync(dirPath)
         }
         else{

@@ -302,7 +302,7 @@ export default {
       this.$router.push("/");
     }
     this.$http
-      .post("http://localhost:8081/dashboard", {
+      .post("http://localhost:8081/userboard", {
         user_: JSON.parse(localStorage.getItem("user"))._id
       })
       .then(response => {

@@ -18,6 +18,10 @@
 .Fecha{
 	font-size:12px;
 }
+.Plus{
+	height:20px;
+        width:20px;
+}
 
 .contenido:hover{
     border-width: 2px;
@@ -34,7 +38,6 @@
 	border-width: 2px;
 	border: solid rgb(84,194,195);
 }
-
 
 </style>
 
@@ -78,15 +81,15 @@
 								</b-col>
 							</b-row>
 							<b-row class="Fecha">	
-								<b-col cols="5">
+								<b-col cols="10">
                     							<b-row>
                         							{{sitio.fecha}}
                     							</b-row>
                 						</b-col>
+								<b-col v-if="sitio.mostrar" cols="1">
+                                                               		<img class="card-img-top Plus" src="../assets/add.png" alt="Card image">
+                                                        	</b-col>
 						 	</b-row>
-							<b-row v-if="sitio.mostrar">
-                                                               <b-button size="sm" disabled variant="success"> Me apunto </b-button>
-                                                        </b-row>
 						</b-col>						
 					</b-row>
         </div>
@@ -124,15 +127,15 @@
 								</b-col>
 							</b-row>
 							<b-row class="Fecha">	
-								<b-col cols="5">
-						                        <b-row>
-                       	 							{{sitio.fecha}}
-                    							</b-row>
-                						</b-col>
-						       </b-row>
-							<b-row v-if="sitio.mostrar">
-                                                               <b-button size="sm" disabled variant="success"> Me apunto </b-button>
-                                                        </b-row>
+								<b-col cols="10">
+                                                                        <b-row>
+                                                                                {{sitio.fecha}}
+                                                                        </b-row>
+                                                                </b-col>
+                                                                <b-col v-if="sitio.mostrar" cols="1">
+                                                                        <img class="card-img-top Plus" src="../assets/add.png" alt="Card image">
+                                                                </b-col>
+							</b-row>
 						</b-col>						
 					</b-row>
         </div>
@@ -169,16 +172,16 @@
 									</b-row>
 								</b-col>
 							</b-row>
-							<b-row class="Fecha">	
-								<b-col cols="5">
-                    							<b-row>
-                        							{{sitio.fecha}}
-                    							</b-row>
-                						</b-col>
-							  </b-row>
-							<b-row v-if="sitio.mostrar">
-                                                               <b-button size="sm" disabled variant="success"> Me apunto </b-button>
-                                                        </b-row>
+							<b-row class="Fecha">
+								<b-col cols="10">
+                                                                        <b-row>
+                                                                                {{sitio.fecha}}
+                                                                        </b-row>
+                                                                </b-col>
+                                                                <b-col v-if="sitio.mostrar" cols="1">
+                                                                        <img class="card-img-top Plus" src="../assets/add.png" alt="Card image">
+                                                                </b-col>	
+							</b-row>
 						</b-col>						
 					</b-row>
         </div>
@@ -218,10 +221,13 @@
 								</b-col>
 							</b-row>
 							<b-row class="Fecha">	
-								<b-col cols="5">
+								<b-col cols="10">
                     							<b-row>
                         							{{sitio.fecha}}
                     							</b-row>
+									<b-col v-if="sitio.mostrar" cols="1">
+                                                                        	<img class="card-img-top Plus" src="../assets/add.png" alt="Card image">
+                                                                	</b-col>
                 						</b-col>
 							  </b-row>
 							<b-row v-if="sitio.mostrar">

@@ -26,7 +26,7 @@ app.use("/uploads", express.static(path.join("/home/jcpasco/Documentos/E10/adven
 app.use(morgan('combined'))
 
 app.use(bodyParse.urlencoded({
-    extended:true
+    extended: true
 }));
 app.use(bodyParse.json())
 //control de acceso (CORS)
@@ -36,25 +36,34 @@ app.use(cors())
 /* Creando los esquemas de los datos */
 var Schema = Mongoose.Schema;
 var UserDataSchema = new Schema({
-        name: String,
-        password: String,
-        mail: String,
-        visited_places: Array,
-        wished_places: Array,
-        uploadsphotos: Array,
-        groupsTravel: Array
-}, {collection: 'userData'});
+    name: String,
+    password: String,
+    mail: String,
+    visited_places: Array,
+    wished_places: Array,
+    uploadsphotos: Array,
+    groupsTravel: Array
+}, { collection: 'userData' });
 
-var UserData = Mongoose.model('UserData',UserDataSchema);
+var UserData = Mongoose.model('UserData', UserDataSchema);
 
 var PlaceDataSchema = new Schema({
-    name: String,
+    place: String,
     author_id: String,
     author_name: String,
-    photos: Array
-}, {collection: 'placeData'});
+    photos: Array,
+    date: String
+}, { collection: 'placeData' });
 
-var PlaceData = Mongoose.model('PlaceData',PlaceDataSchema);
+var PlaceData = Mongoose.model('PlaceData', PlaceDataSchema);
+
+
+var SitesDataSchema = new Schema({
+    place: String,
+    id_num: Number
+}, { collection: 'sitesData' });
+
+var SitesData = Mongoose.model('SitesData', SitesDataSchema);
 
 var GroupTravelSchema = new Schema({
     place: String,
@@ -62,9 +71,30 @@ var GroupTravelSchema = new Schema({
     author_name: String,
     comments: Array,
     photos: Array
-}, {collection: 'groupTravelData'});
+}, { collection: 'groupTravelData' });
 
-var GroupTravel = Mongoose.model('groupTravelData',GroupTravelSchema);
+var GroupTravel = Mongoose.model('groupTravelData', GroupTravelSchema);
+
+/*
+var comunidades = ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
+                    'GALICIA','LA RIOJA','CANTABRIA',
+                    'CASTILLA Y LEÓN','CATALUÑA','COMUNIDAD VALENCIANA',
+                    'CASTILLA LA MANCHA','EXTREMADURA','REGIÓN DE MURCIA','COMUNIDAD DE MADRID',
+                    'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'];
+
+comunidades = comunidades.sort();
+
+
+for(var i = 0; i < comunidades.length; i++){   
+
+    var data = SitesData({
+        place: comunidades[i],
+        id_num: i
+    });
+    data.save()
+}  */
+
+
 /*Aquí empieza la aplicación*/
 
 
@@ -84,31 +114,31 @@ app.post('/signup', (req, res) => {
 
     var data = new UserData({
         name: userr,
-        password: bcrypt.hashSync(passw,8),
+        password: bcrypt.hashSync(passw, 8),
         mail: mail
     });
 
     //Introducing the user in our database
-    data.save().then(function(info, err){
-        
-        if(err){
+    data.save().then(function (info, err) {
+
+        if (err) {
             console.log("error 1");
             return res.status(500).send("Hubo un problema en el registro de usuario")
         }
         //If the user is registered successfully we create his token
-        UserData.findOne({'name': data.name}, function (err, user){
-            if (err){
+        UserData.findOne({ 'name': data.name }, function (err, user) {
+            if (err) {
                 console.log("error 2");
                 console.log(err);
                 return res.status(500).send("Problema para encontrar el usuario")
             }
             //create the authentication token for the user with the jwt package
             //the token expires in 24 hours -> 86400seconds
-            let token = jwt.sign({id:user._id}, config.secret, {expiresIn: 10});
+            let token = jwt.sign({ id: user._id }, config.secret, { expiresIn: 10 });
 
-            
-            
-            res.status(200).send({auth: true, token: token, user: user});
+
+
+            res.status(200).send({ auth: true, token: token, user: user });
         })
     });
 });
@@ -116,15 +146,15 @@ app.post('/signup', (req, res) => {
 
 app.post('/login', (req, res) => {
     console.log(req.body.name)
-    UserData.findOne({'name': req.body.name}, function (err, user){
-        
+    UserData.findOne({ 'name': req.body.name }, function (err, user) {
+
         //Server error
-        if (err){
+        if (err) {
             console.log(err);
             return res.status(500).send("Problema para encontrar el usuario");
         }
         //user not found
-        if(!user){
+        if (!user) {
             console.log("usuario no registrado");
             return res.status(404).send("Usuario no registrado");
         }
@@ -132,26 +162,26 @@ app.post('/login', (req, res) => {
         //Useing bcrypt to compare our hashed password with the user supplied password
         let passwordIsValid = bcrypt.compareSync(req.body.pass, user.password);
         console.log(passwordIsValid);
-        if(!passwordIsValid){
-            return res.status(401).send({auth: false, token: null});
+        if (!passwordIsValid) {
+            return res.status(401).send({ auth: false, token: null });
         }
         //create the authentication token for the user with the jwt package
         //the token expires in 24 hours -> 86400seconds
-        let token = jwt.sign({id:user.id}, config.secret, {expiresIn: 10});
+        let token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 10 });
 
-        res.status(200).send({auth: true, token: token, user:user});
+        res.status(200).send({ auth: true, token: token, user: user });
     });
 })
 
 
-app.post('/waiting', (req,res) => {
+app.post('/waiting', (req, res) => {
     var token = req.body.token
-    if((token == null) || (token == 'undefined')){
+    if ((token == null) || (token == 'undefined')) {
         console.log(token)
         console.log("usuario sin token")
-        res.send({path:'/login'})
+        res.send({ path: '/login' })
     }
-    else{
+    else {
         console.log("el token tiene algo" + token);
         res.status(200).send({path:'/userboard'}) //Aqui hay que pasar el user
     }
@@ -159,45 +189,97 @@ app.post('/waiting', (req,res) => {
 
 
 
-app.post('/userboard', (req, res) => {
+
+
+
+
+
+
+
+
+
+
+app.post('/userboard/:name', async (req, res) => {
 
     //Buscamos los datos del usuario a partir de su _id
     var response = [];
+    var aux = []
 
-    UserData.findOne({'name': JSON.parse(req.body.user).name},function(err,doc){
-        
+    try{
+
+    await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
+        response.push(doc.visited_places);
     });
 
-    PlaceData.find({'author_id': JSON.parse(req.body.user)._id}, function(err, user_data){
-        console.log(user_data);
-    });
+    }
+    catch(err){
+        console.log(err)
+    }
+
+    try{
+        await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
+            response.push(doc.wished_places);
+        });
+    }
+    catch(err){
+        console.log(err)
+    }
+
+    console.log(response);
+    res.send(response);
 });
 
 
 
+
+
+
+
+
 app.post('/follow_Wished/:name/:place', (req, res) => {
-    
-    UserData.findOneAndUpdate({'name':req.params.name},
-        {$push: {'wished_places': req.params.place}},
-        function(err,doc){
-            if(err == null){
+
+    UserData.findOneAndUpdate({ 'name': req.params.name },
+        { $push: { 'wished_places': req.params.place } },
+        function (err, doc) {
+            if (err == null) {
                 console.log("Modificando registro de wished_places");
                 res.status(200).send(doc);
             }
-         
-            else{
+
+            else {
                 console.log("Hubo un error");
                 console.log(err);
-            } 
+            }
         });
 });
 
 
 
-const fileFilter = function(req, file, cb){
+app.post('/sites/:place', async (req, res) => {
+
+    var visited_place = req.params.place.toUpperCase()
+    var response = []
+    try {
+        await PlaceData.findOne({ "place": visited_place }, function (err, doc) {
+            console.log()
+            response = doc.photos
+        });
+    }
+
+    catch (err) {
+        console.log(err)
+    }
+
+    res.send(response);
+
+});
+
+
+
+const fileFilter = function (req, file, cb) {
     const allowedType = ["image/jpeg", "image/png", "image/gif"];
 
-    if(!allowedType.includes(file.mimetype)){
+    if (!allowedType.includes(file.mimetype)) {
         const error = new Error("Tipo de archivo no permitido");
         error.code = "LIMIT_FILE_TYPES";
         return cb(error, false);
@@ -209,119 +291,111 @@ const MAX_SIZE = 20000000;
 const upload = multer({
     dest: './uploads/',
     fileFilter,
-    limits:{
+    limits: {
         fileSize: MAX_SIZE
     }
 })
 
-/*app.post('/upload', upload.array('files'), async (req,res) => {
-    
-    try{
-        var files_ = []
-        for(var i = 0; i<req.files.length; i++){
-            var file = req.files[i];
-            await sharp(file.path)
-                .resize(300,200)
-                .embed()
-                .toFile(`./uploads/${file.originalname}`);
-    
-            fs.unlink(file.path)
-            files_.push(`../../uploads/${file.originalname}`)
-        }
-        res.json({files: files_});
-    }
-    catch(err){
-        res.status(428).json({err});
-    }
-})*/
 
 
-app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
-    try{
-        var files_ = []
-        var aux_ = __dirname.split('server');
+app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
+    var files_ = []
+    var aux_ = __dirname.split('server');
+    var in_visited_places = false
+    var visited_place = req.params.place.toUpperCase()
 
-        var in_visited_places = false
-        var visited_place = req.params.place.toUpperCase()
-        console.log(visited_place)
-
-        await UserData.find({'name':req.params.name, 'visited_places':visited_place},
-            'name',
-            function(err,doc){
-                console.log("doc: " + doc)
-                if(doc != undefined || doc != null){
-                    console.log("entra en el if")
-                    in_visited_places = true
+    try {
+        await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
+            for (var i = 0; i < doc.visited_places.length; i++) {
+                var array_ = doc.visited_places
+                if (array_[i] == visited_place) {
+                    in_visited_places = true;
+                    break;
                 }
+
+            }
+        }
+        );
+    }
+    catch (err) {
+        console.log(err);
+    }
+
+    if (in_visited_places == false) {
+        UserData.findOneAndUpdate({ 'name': req.params.name },
+            { $push: { 'visited_places': visited_place } },
+            function (err, doc) {
+                console.log(err);
             }
         );
+    }
 
-        if(in_visited_places == false){
-            console.log("visited places: " + in_visited_places)
-            UserData.findOneAndUpdate({'name':req.params.name},
-                {$push: {'visited_places': visited_place, }},
-                function(err,doc){
-                    console.log("Modificando registro ...");
-                    console.log(doc);//Esto si funciona perfecto
-                }
-            );
-        }
-        
-        var dirPath = `${aux_[0]}uploads/${req.params.name}`
-        console.log("dirpath: " + dirPath)
-        if(fs.existsSync(dirPath) == false){
-            fs.mkdirSync(dirPath)
-        }
-        else{
-            console.log("Carpeta ya existente")
-        }       
-        
+    var dirPath = `${aux_[0]}uploads/${req.params.name}/${visited_place}`
+    var dirPathWithOut = `${aux_[0]}uploads/${req.params.name}`
 
-        for(var i = 0; i<req.files.length; i++){
+    if (fs.existsSync(dirPathWithOut) == false) {
+        fs.mkdirSync(dirPathWithOut)
+        fs.mkdirSync(dirPath)
+    }
+    else if (fs.existsSync(dirPath) == false) {
+        fs.mkdirSync(dirPath)
+    }
+    else {
+        console.log("Carpeta ya existente")
+    }
+
+    try {
+        for (var i = 0; i < req.files.length; i++) {
             var file = req.files[i];
             await sharp(file.path)
-                .resize(300,200)
+                .resize(300, 200)
                 .embed()
                 .toFile(`${dirPath}/${file.originalname}`);
-    
+
             fs.unlink(file.path)
             files_.push(`${dirPath}/${file.originalname}`)
 
-            UserData.findOneAndUpdate({'name':req.params.name},
-                {$push: { 'uploadsphotos': `${dirPath}/${file.originalname}`}},
-                {new: true},
-                function(err,doc){
-                   console.log("Modificando registro ...");
-                   console.log(doc);//Esto si funciona perfecto
+
+            UserData.findOneAndUpdate({ 'name': req.params.name },
+                { $push: { 'uploadsphotos': `${dirPath}/${file.originalname}` } },
+                function (err, doc) {
+                    console.log(err);
                 }
             );
         }
+    }
+    catch (err) {
+        res.status(428).json({ err });
+    }
 
-        PlaceData.findOne({'name':visited_place},function(err,doc){
-            if(doc == null){ //El lugar no existe y se crea
-                UserData.findOne({'name':req.params.name},function(err,doc){
-                    var data = new PlaceData({
-                        name: visited_place,
-                        author_id: doc.id,
-                        author_name: doc.name,
-                        photos: files_
-                    });
-                    data.save().then(function(){
-                        PlaceData.findOne({'author_name': req.params.name}, function(err,doc){
-                            console.log("Guardado en lugares correctamente");
-                            console.log("Esto es lo que se ha guardado:",doc);
-                        });  
+    PlaceData.findOne({ 'place': visited_place }, function (err, doc) {
+        if (doc == null) { //El lugar no existe y se crea
+            UserData.findOne({ 'name': req.params.name }, function (err, doc) {
+                var data = new PlaceData({
+                    place: visited_place,
+                    author_id: doc.id,
+                    author_name: doc.name,
+                    photos: files_,
+                    date: "2018-12-01"
+                });
+                data.save().then(function () {
+                    PlaceData.findOne({ 'author_name': req.params.name }, function (err, doc) {
+                        console.log(err);
                     });
                 });
-            }
-            
-        });
-    }
-    catch(err){
-        res.status(428).json({err});
-    }
-    
-    res.json({files: files_});
+            });
+        }
+        else {
+            PlaceData.findOneAndUpdate({ 'place': visited_place }, { $push: { 'photos': `${dirPath}/${file.originalname}` } }, function (err, doc) {
+                console.log(err)
+            });
+
+        }
+
+    });
+
+
+    res.json({ files: files_ });
 });
 
 
@@ -329,13 +403,13 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
 
 app.post('/delete_Wished/:name/:place', (req, res) => {
 
-    UserData.findOneAndUpdate({'name':req.params.name},
-    {$pull: {'wished_places': req.params.place}},
-    function(err,doc){
-        console.log("Modificando registro ...");
-        console.log(doc);password: bcrypt.hashSync(passw,8)//Esto si funciona perfecto
-    });password: bcrypt.hashSync(passw,8)
-    res.send({path:'/logipassword: bcrypt.hashSync(passw,8)n'});
+    UserData.findOneAndUpdate({ 'name': req.params.name },
+        { $pull: { 'wished_places': req.params.place } },
+        function (err, doc) {
+            console.log("Modificando registro ...");
+            console.log(doc); password: bcrypt.hashSync(passw, 8)//Esto si funciona perfecto
+        }); password: bcrypt.hashSync(passw, 8)
+    res.send({ path: '/logipassword: bcrypt.hashSync(passw,8)n' });
 });
 
 
@@ -343,33 +417,32 @@ app.post('/delete_Wished/:name/:place', (req, res) => {
 app.post('/delete_Visited/:name/:place', (req, res) => {
 
     console.log(req.params.place);
-    UserData.findOneAndUpdate({'name':req.params.name},
-    {$pull: {'visited_places': req.params.place}},
-    function(err,doc){
-        console.log("Modificando registro ...");
-        console.log(doc);//Esto si funciona perfecto
-    });
-    res.send({path:'/login'});
+    UserData.findOneAndUpdate({ 'name': req.params.name },
+        { $pull: { 'visited_places': req.params.place } },
+        function (err, doc) {
+            console.log("Modificando registro ...");
+            console.log(doc);//Esto si funciona perfecto
+        });
+    res.send({ path: '/login' });
 });
 
 
 
-app.post('/delete_Photo/:name/:photo', (req, res) => {
+app.post('/delete_Photo/:name/:place/:photo', (req, res) => {
 
-    fs.unlinkSync(__dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + req.params.photo);
-    UserData.findOneAndUpdate({'name':req.params.name},
-    {$pull: {'uploadsphotos': __dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + req.params.photo}},
-    function(err,doc){
-        console.log("Borrando foto ...");
-        console.log(doc);//Esto si funciona perfecto
-    });
-    res.send({path:'/login'});
+    var place_ = req.params.place.toUpperCase();
+    fs.unlinkSync(__dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + place_ + '/' + req.params.photo);
+    UserData.findOneAndUpdate({ 'name': req.params.name },
+        { $pull: { 'uploadsphotos': __dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + place_ + '/' + req.params.photo } },
+        function (err, doc) {
+            console.log("Borrando foto ...");
+            console.log(doc);//Esto si funciona perfecto
+        });
+    res.send({ path: '/login' });
 });
 
 
-
-
-app.post('/add_group/:author_name/:place/:photo', /*upload.array('files'),*/ (req,res) =>{
+app.post('/add_group/:author_name/:place/:photo', /*upload.array('files'),*/(req, res) => {
 
     //Probar si sube foto a ver y ya cambiar el rollo para que suba la foto y tal
 
@@ -384,16 +457,16 @@ app.post('/add_group/:author_name/:place/:photo', /*upload.array('files'),*/ (re
         comments: [],
         photos: [] //array_aux
     });
-    data.save().then(function(){
+    data.save().then(function () {
         res.send(200);
     });
 });
 
 
 
-app.post('/delete_group/:name/:group', (req,res) =>{
+app.post('/delete_group/:name/:group', (req, res) => {
 
-    UserData.findOneAndUpdate({'name': req.params.name},{$pull:{'groupsTravel': req.params.group}}, function(err,doc){
+    UserData.findOneAndUpdate({ 'name': req.params.name }, { $pull: { 'groupsTravel': req.params.group } }, function (err, doc) {
         console.log("Aqui se elimina un grupo...");
     });
     res.send(200);
@@ -401,64 +474,64 @@ app.post('/delete_group/:name/:group', (req,res) =>{
 
 
 
-app.post('/follow_group/:name/:group', (req,res) =>{
-    
-    UserData.findOneAndUpdate({'name':req.params.name},{$push:{'groupsTravel':req.params.group}},function(err,doc){
+app.post('/follow_group/:name/:group', (req, res) => {
+
+    UserData.findOneAndUpdate({ 'name': req.params.name }, { $push: { 'groupsTravel': req.params.group } }, function (err, doc) {
         console.log("Aqui se añade un grupo a los del user...")
     });
     res.send(200);
 
-    
+
 
 });
 
 
 
-app.use(function(err, req, res, next){
-    if(err.code === "LIMIT_FILE_TYPES"){
-        res.status(422).json({error: "Solo se permiten imágenes jpeg, png y gif"});
+app.use(function (err, req, res, next) {
+    if (err.code === "LIMIT_FILE_TYPES") {
+        res.status(422).json({ error: "Solo se permiten imágenes jpeg, png y gif" });
         return;
     }
-    if(err.code === "LIMIT_FILE_SIZE"){
-        res.status(422).json({error: `Archivo demasiado pesado. Tamaño máximo: ${MAX_SIZE/1000}kb`});
+    if (err.code === "LIMIT_FILE_SIZE") {
+        res.status(422).json({ error: `Archivo demasiado pesado. Tamaño máximo: ${MAX_SIZE / 1000}kb` });
         return;
     }
-    
+
 })
 
-app.get('/comprobar', (req, res) => {    
+app.get('/comprobar', (req, res) => {
     var name = req.body.name;
     console.log(name);
-    
 
-    UserData.findOne({'name': name},function(err,docs){
-        if(docs == null){
+
+    UserData.findOne({ 'name': name }, function (err, docs) {
+        if (docs == null) {
             console.log("documento:" + docs);
             res.send(docs);
         }
-        else{
-            console.log("documento:"+ docs);
+        else {
+            console.log("documento:" + docs);
             res.send(docs);
             //res.send("Usuario está registrado");
         }
     });
 });
 
-app.post('/change_Name/:new/:name', (req, res) => {    
-   
+app.post('/change_Name/:new/:name', (req, res) => {
 
-    UserData.findOneAndUpdate({'name': req.params.name},{$set: {'name': req.params.new}},function(err,docs){
+
+    UserData.findOneAndUpdate({ 'name': req.params.name }, { $set: { 'name': req.params.new } }, function (err, docs) {
         console.log("Aquí se actualiza el nombre de usuario");
     });
     res.send(200);
 });
 
 
-app.post('/change_Pass/:new/:name', (req, res) => {    
-   
-    var new_ = bcrypt.hashSync(req.params.new,8);
+app.post('/change_Pass/:new/:name', (req, res) => {
 
-    UserData.findOneAndUpdate({'name': req.params.name},{$set: {'password': new_}},function(err,docs){
+    var new_ = bcrypt.hashSync(req.params.new, 8);
+
+    UserData.findOneAndUpdate({ 'name': req.params.name }, { $set: { 'password': new_ } }, function (err, docs) {
         console.log(docs);
         console.log("Aquí se actualiza la pass de usuario");
     });
@@ -468,23 +541,8 @@ app.post('/change_Pass/:new/:name', (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 let server = app.listen(process.env.PORT || 8081, function (err) {
-    if(err){
+    if (err) {
         console.log(err);
     }
     console.log("Escuchando en el Puerto 8081");

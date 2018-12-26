@@ -116,7 +116,8 @@
       <button @click="log_out"> Log Out</button>
     </div>
 
-    <div class="main">
+    
+      <div class="main">
         <div class="container">
             <b-row>
                 <b-col cols="9" id="mis_sitios">
@@ -154,7 +155,8 @@
             </b-row>
         </div>
       </div>
-    </div>
+    
+  </div>  
 </template>
 
 
@@ -282,11 +284,10 @@ export default {
       this.$router.push("/");
     }
     this.$http
-      .post("http://localhost:8081/userboard", {
-        user_: JSON.parse(localStorage.getItem("user"))._id
-      })
+      .post("http://localhost:8081/userboard/" + this.name)
       .then(response => {
         this.user_data = response.data;
+        
       });
   }
 };

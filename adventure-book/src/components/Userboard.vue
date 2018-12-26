@@ -116,7 +116,8 @@
       <button @click="log_out"> Log Out</button>
     </div>
 
-    <div class="main">
+    
+      <div class="main">
         <div class="container">
             <b-row>
                 <b-col cols="9" id="mis_sitios">
@@ -153,7 +154,8 @@
                 </b-col>
             </b-row>
         </div>
-    </div>
+      </div>
+    
   </div>  
 </template>
 

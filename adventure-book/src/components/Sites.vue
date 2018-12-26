@@ -84,6 +84,10 @@ export default {
 
     }
   },
+
+  methods(){
+  },
+
   mounted(){
 
   },

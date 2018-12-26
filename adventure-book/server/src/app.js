@@ -245,7 +245,7 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
         var visited_place = req.params.place.toUpperCase()
         console.log(visited_place)
 
-        await UserData.find({'name':req.params.name, 'visited_places':visited_place},
+        await UserData.find({'name':req.params.name, 'visited_places': visited_place},
             'name',
             function(err,doc){
                 console.log("doc: " + doc)
@@ -267,7 +267,7 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
             );
         }
         
-        var dirPath = `${aux_[0]}uploads/${req.params.name}`
+        var dirPath = `${aux_[0]}uploads/${req.params.name}/${visited_place}`
         console.log("dirpath: " + dirPath)
         if(fs.existsSync(dirPath) == false){
             fs.mkdirSync(dirPath)

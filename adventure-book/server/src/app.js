@@ -228,6 +228,10 @@ app.post('/userboard/:name', async (req, res) => {
 
 
 
+
+
+
+
 app.post('/follow_Wished/:name/:place', (req, res) => {
 
     UserData.findOneAndUpdate({ 'name': req.params.name },
@@ -291,24 +295,21 @@ const upload = multer({
 
 
 app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
+    var files_ = []
+    var aux_ = __dirname.split('server');
+    var in_visited_places = false
+    var visited_place = req.params.place.toUpperCase()
+
     try {
-        var files_ = []
-        var aux_ = __dirname.split('server');
-
-        var in_visited_places = false
-        var visited_place = req.params.place.toUpperCase()
-        console.log(visited_place)
-
         await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
+            for (var i = 0; i < doc.visited_places.length; i++) {
+                var array_ = doc.visited_places
+                if (array_[i] == visited_place) {
+                    in_visited_places = true;
+                    break;
+                }
 
-            /*for (var i = 0; i < doc.visited_places.length; i++ ){
-                    var array_ = 
-                    if (doc.visited_places[i] == visited_place){
-                        in_visited_places = true;
-                        console.log("Entra en el if")
-                    }
-                }*/
-            console.log(doc.visited_places)
+            }
         }
         );
     }
@@ -317,24 +318,22 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
     }
 
     if (in_visited_places == false) {
-        console.log("visited places: " + in_visited_places)
         UserData.findOneAndUpdate({ 'name': req.params.name },
             { $push: { 'visited_places': visited_place } },
             function (err, doc) {
-                console.log("Modificando registro ...");
-                console.log(doc);//Esto si funciona perfecto
+                console.log(err);
             }
         );
     }
 
     var dirPath = `${aux_[0]}uploads/${req.params.name}/${visited_place}`
     var dirPathWithOut = `${aux_[0]}uploads/${req.params.name}`
-    console.log("dirpath: " + dirPath)
-    if (fs.existsSync(dirPathWithOut) == false){
+
+    if (fs.existsSync(dirPathWithOut) == false) {
         fs.mkdirSync(dirPathWithOut)
         fs.mkdirSync(dirPath)
     }
-    else if(fs.existsSync(dirPath)==false){
+    else if (fs.existsSync(dirPath) == false) {
         fs.mkdirSync(dirPath)
     }
     else {
@@ -351,14 +350,12 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
 
             fs.unlink(file.path)
             files_.push(`${dirPath}/${file.originalname}`)
-        
+
 
             UserData.findOneAndUpdate({ 'name': req.params.name },
                 { $push: { 'uploadsphotos': `${dirPath}/${file.originalname}` } },
-                { new: true },
                 function (err, doc) {
-                    console.log("Modificando registro ...");
-                    console.log(doc);//Esto si funciona perfecto
+                    console.log(err);
                 }
             );
         }
@@ -367,34 +364,32 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
         res.status(428).json({ err });
     }
 
-        PlaceData.findOne({ 'place': visited_place }, function (err, doc) {
-            if (doc == null) { //El lugar no existe y se crea
-                UserData.findOne({ 'name': req.params.name }, function (err, doc) {
-                    var data = new PlaceData({
-                        place: visited_place,
-                        author_id: doc.id,
-                        author_name: doc.name,
-                        photos: files_,
-                        date: "2018-12-01"
-                    });
-                    data.save().then(function () {
-                        PlaceData.findOne({ 'author_name': req.params.name }, function (err, doc) {
-                            console.log("Guardado en lugares correctamente");
-                            console.log("Esto es lo que se ha guardado:", doc);
-                        });
+    PlaceData.findOne({ 'place': visited_place }, function (err, doc) {
+        if (doc == null) { //El lugar no existe y se crea
+            UserData.findOne({ 'name': req.params.name }, function (err, doc) {
+                var data = new PlaceData({
+                    place: visited_place,
+                    author_id: doc.id,
+                    author_name: doc.name,
+                    photos: files_,
+                    date: "2018-12-01"
+                });
+                data.save().then(function () {
+                    PlaceData.findOne({ 'author_name': req.params.name }, function (err, doc) {
+                        console.log(err);
                     });
                 });
-            }
-            else {
-                PlaceData.findOneAndUpdate({ 'place': visited_place }, { $push: { 'photos': `${dirPath}/${file.originalname}` } }, function (err, doc) {
-                    console.log("entro al else popis");
-                    console.log(doc)
-                });
+            });
+        }
+        else {
+            PlaceData.findOneAndUpdate({ 'place': visited_place }, { $push: { 'photos': `${dirPath}/${file.originalname}` } }, function (err, doc) {
+                console.log(err)
+            });
 
-            }
+        }
 
-        });
-   
+    });
+
 
     res.json({ files: files_ });
 });

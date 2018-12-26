@@ -160,13 +160,14 @@ app.post('/waiting', (req,res) => {
 
 
 
-app.post('/dashboard', (req, res) => {
+app.post('/userboard', async(req, res) => {
 
     //Buscamos los datos del usuario a partir de su _id
     var response = [];
+    var aux = ""
 
-    UserData.findOne({'name': JSON.parse(req.body.user).name},function(err,doc){
-        
+    await UserData.findOne({'name': JSON.parse(req.body.user).name},function(err,doc){
+        response.push(doc.visited_place);
     });
 
     PlaceData.find({'author_id': JSON.parse(req.body.user)._id}, function(err, user_data){
@@ -269,7 +270,7 @@ app.post('/upload/:name/:place/', upload.array('files'), async (req,res) => {
             );
         }
         
-        var dirPath = `${aux_[0]}uploads/${req.params.name}`
+        var dirPath = `${aux_[0]}uploads/${req.params.name}/${visited_place}`
         console.log("dirpath: " + dirPath)
         if(fs.existsSync(dirPath) == false){
             fs.mkdirSync(dirPath)
@@ -364,19 +365,18 @@ app.post('/delete_Visited/:name/:place', (req, res) => {
 
 
 
-app.post('/delete_Photo/:name/:photo', (req, res) => {
+app.post('/delete_Photo/:name/:place/:photo', (req, res) => {
 
-    fs.unlinkSync(__dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + req.params.photo);
+    var place_ = req.params.place.toUpperCase();
+    fs.unlinkSync(__dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + place_  + '/' + req.params.photo);
     UserData.findOneAndUpdate({'name':req.params.name},
-    {$pull: {'uploadsphotos': __dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + req.params.photo}},
+    {$pull: {'uploadsphotos': __dirname.split('server')[0] + 'uploads/' + req.params.name + '/' + place_  + '/' + req.params.photo}},
     function(err,doc){
         console.log("Borrando foto ...");
         console.log(doc);//Esto si funciona perfecto
     });
     res.send({path:'/login'});
 });
-
-
 
 
 app.post('/add_group/:author_name/:place/:photo', /*upload.array('files'),*/ (req,res) =>{

@@ -114,19 +114,9 @@
 
     <div>
       <button @click="log_out"> Log Out</button>
-<<<<<<< HEAD
-<<<<<<< HEAD
-      <div class="main">
-=======
     </div>
 
     <div class="main">
->>>>>>> dev-userdestination
-=======
-    </div>
-
-    <div class="main">
->>>>>>> 89e9d2f6d5b1a16d7e2881513e0759b7ae8424dd
         <div class="container">
             <b-row>
                 <b-col cols="9" id="mis_sitios">

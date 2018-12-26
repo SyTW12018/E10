@@ -237,13 +237,6 @@ const upload = multer({
 
 
 app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> dev-userdestination
-=======
->>>>>>> 89e9d2f6d5b1a16d7e2881513e0759b7ae8424dd
     try{
         var files_ = []
         var aux_ = __dirname.split('server');

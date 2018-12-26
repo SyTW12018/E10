@@ -13,7 +13,7 @@
           <b-row class="mb-3">
             <h2>Destinos deseados</h2>
           </b-row>
-          <div v-for="sitio in destinos_deseados[0].sitios">
+          <div v-for="sitio in destinos_deseados[0].sitios" :key="sitio">
             <b-row class="mb-4">
               <b-col>
                 <div class="card" style="width: 10rem;">
@@ -40,7 +40,7 @@
           <b-row class="mb-3">
             <h2>Este mes</h2>
           </b-row>
-          <div v-for="sitio in este_mes[0].sitios">
+          <div v-for="sitio in este_mes[0].sitios" :key="sitio">
             <b-row class="mb-3">
               <b-col>
                 <div class="card" style="width: 10rem;">
@@ -67,7 +67,7 @@
           <b-row>
             <h2>Todos los viajes organizados</h2>
           </b-row>
-          <div v-for="sitio in todo_organizado[0].sitios">
+          <div v-for="sitio in todo_organizado[0].sitios" :key="sitio">
             <b-row class="mb-4">
               <b-col>
                 <div class="card" style="width: 10rem;">
@@ -96,7 +96,7 @@
           <b-row>
             <h2>Tus proximos viajes</h2>
           </b-row>
-          <div v-for="sitio in futuros_viajes[0].sitios">
+          <div v-for="sitio in futuros_viajes[0].sitios" :key="sitio">
             <b-row class="mb-4">
               <b-col>
                 <div class="card" style="width: 10rem;">

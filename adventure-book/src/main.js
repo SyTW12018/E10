@@ -14,7 +14,8 @@ import Waiting from './components/Waiting.vue'
 import Userdestination from './components/Userdestination.vue';
 import Profile from './components/Profile.vue';
 import Sites from './components/Sites.vue';
-//Vue authentication 
+import Lugar from './components/lugar.vue';
+//Vue authentication
 Vue.prototype.$http = Axios;
 
 
@@ -38,9 +39,17 @@ const routes = [
     { path: '/welcome',  component: Welcome},
     { path: '/userboard', component: Userboard},
     { path: '/userdestination',component:Userdestination},
-    { path: '/sitios', component: Sites},
     { path: '/perfil', component: Profile},
-    { path: '/waiting', component: Waiting}
+    { path: '/waiting', component: Waiting},
+    { path: '/sitios', component: Sites,
+        children: [
+            {
+              path: ':lugar',
+              component: Lugar,
+              props: { default: true, sidebar: false }
+            }
+          ]
+    }
 ]
 
 const router = new VueRouter({

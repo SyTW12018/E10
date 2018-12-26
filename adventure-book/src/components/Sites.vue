@@ -5,7 +5,7 @@
 }
 
 .card{
-    margin: 0px 8px 8px 0px; 
+    margin: 0px 8px 8px 0px;
     background-color: #54C2C3;
     color: white;
     font-weight: bold;
@@ -19,6 +19,8 @@
     background-color: white;
     color: #54C2C3;
 }
+
+
 </style>
 
 <template>
@@ -27,25 +29,26 @@
             <b-row>
                 <b-col cols="12" id="sitios">
                     <b-row>
+                        <router-view></router-view>
+                    </b-row>
+                    <b-row>
                         <h2> {{ nombre }} </h2>
                     </b-row>
-					<b-row>
-						<p> {{ descripcion}} </p>
+					          <b-row>
+						            <p> {{ descripcion}} </p>
                     </b-row>
 
                     <b-row>
                         <div v-for="sitio in comunidades_autonomas" :key="sitio">
-                            <div class="card" style="width: 16rem;">
+                            <div class="card" style="width: 16rem;" @click="route(sitio.cod)">
                                 <img class="card-img-top" src="../C.jpg" alt="Card image">
                                 <div class="card-body">
-                                    <p class="card-text"> {{ sitio }}</p>
+                                    <p class="item">  {{ sitio.nombre }} </p>
                                 </div>
                             </div>
-
                         </div>
                     </b-row>
                 </b-col>
-
             </b-row>
         </div>
     </div>
@@ -58,34 +61,43 @@
 export default {
   data(){
     return{
-	nombre: "Sitios",
+	nombre: "Todos los sitios",
 	descripcion: "Descubre todas las comunidades y ciudades autónomas españolas.",
-	comunidades_autonomas: [	"Andalucía",
-								"Aragón",
-								"Principado de Asturias",
-								"Baleares",
-								"Canarias",
-								"Cantabria",
-								"Castilla-La Mancha",
-								"Castilla y León",
-								"Cataluña",
-								"Extremadura",
-								"Galicia",
-								"La Rioja",
-								"Comunidad de Madrid",
-								"Región de Murcia",
-								"Comunidad Foral de Navarra",
-								"País Vasco",
-								"Comunidad Valenciana",
-								"Ceuta",
-								"Melilla",
-				
+	comunidades_autonomas: [
+                            {
+                              cod: '1',
+                              nombre: 'Andalucía'
+                            },
+                            {
+                              cod: '2',
+                              nombre: 'Aragón'
+                            },
+                            {
+                              cod: '3',
+                              nombre: 'Asturias'
+                            },
+                            {
+                              cod: '4',
+                              nombre: 'Islas Baleares'
+                            },
+                            {
+                              cod: '5',
+                              nombre: 'Islas Canarias'
+                            },
+                            {
+                              cod: '6',
+                              nombre: 'Cantabria'
+                            }
+
 				]
 
     }
   },
 
-  methods(){
+  methods: {
+      route(lugar){
+          this.$router.push('/sitios/' + lugar);
+      }
   },
 
   

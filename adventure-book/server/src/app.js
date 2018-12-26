@@ -153,13 +153,13 @@ app.post('/waiting', (req,res) => {
     }
     else{
         console.log("el token tiene algo" + token);
-        res.status(200).send({path:'/dashboard'}) //Aqui hay que pasar el user
+        res.status(200).send({path:'/userboard'}) //Aqui hay que pasar el user
     }
 })
 
 
 
-app.post('/dashboard', (req, res) => {
+app.post('/userboard', (req, res) => {
 
     //Buscamos los datos del usuario a partir de su _id
     var response = [];

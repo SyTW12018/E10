@@ -74,6 +74,7 @@ app.get('/', (req, res) => {
     res.sendFile(aux[0] + '/client/' + 'index.html');
 });
 
+
 app.post('/signup', (req, res) => {
     /*curl -X POST -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/registrar*/
     var userr = req.body.name;
@@ -170,6 +171,8 @@ app.post('/dashboard', (req, res) => {
     });
 });
 
+
+
 app.post('/follow_Wished/:name/:place', (req, res) => {
     
     UserData.findOneAndUpdate({'name':req.params.name},
@@ -232,9 +235,39 @@ const upload = multer({
 
 
 app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev-userdestination
     try{
         var files_ = []
+        var aux_ = __dirname.split('server');
+
+        var in_visited_places = false
+
+        await UserData.find({'name':req.params.name, 'visited_places':req.params.place},
+            'name',
+            function(err,doc){
+                console.log("doc: " + doc)
+                if(doc != undefined || doc != null){
+                    console.log("entra en el if")
+                    in_visited_places = true
+                }
+            }
+        );
+
+        if(in_visited_places == false){
+            console.log("visited places: " + in_visited_places)
+            UserData.findOneAndUpdate({'name':req.params.name},
+                {$push: {'visited_places': req.params.place, }},
+                function(err,doc){
+                    console.log("Modificando registro ...");
+                    console.log(doc);//Esto si funciona perfecto
+                }
+            );
+        }
+        
+
         for(var i = 0; i<req.files.length; i++){
             var file = req.files[i];
             await sharp(file.path)
@@ -243,45 +276,55 @@ app.post('/upload/:name/:place', upload.array('files'), async (req,res) => {
                 .toFile(`./uploads/${file.originalname}`);
     
             fs.unlink(file.path)
-            files_.push(`../../uploads/${file.originalname}`)
+            files_.push(`${aux_[0]}uploads/${file.originalname}`)
+
+            UserData
+
+            UserData.findOneAndUpdate({'name':req.params.name},
+                {$push: { 'uploadsphotos': `${aux_[0]}uploads/${file.originalname}`}},
+                {new: true},
+                function(err,doc){
+                   console.log("Modificando registro ...");
+                   console.log(doc);//Esto si funciona perfecto
+                }
+            );
         }
-        res.json({files: files_});
+
+        PlaceData.findOne({'name':req.params.place},function(err,doc){
+            if(doc == null){ //El lugar no existe y se crea
+                UserData.findOne({'name':req.params.name},function(err,doc){
+                    var data = new PlaceData({
+                        name: req.params.place,
+                        author_id: doc.id,
+                        author_name: doc.name,
+                        photos: files_
+                    });
+                    data.save().then(function(){
+                        PlaceData.findOne({'author_name': req.params.name}, function(err,doc){
+                            console.log("Guardado en lugares correctamente");
+                            console.log("Esto es lo que se ha guardado:",doc);
+                        });  
+                    });
+                });
+            }
+            
+        });
     }
     catch(err){
         res.status(428).json({err});
     }
 
-    var aux_ = __dirname.split('server'); 
-    var array_aux = [aux_[0] + 'uploads/' + req.files[0].originalname];
+    
+
+    console.log(files_)
 
 
-    PlaceData.findOne({'name':req.params.place},function(err,doc){
-        if(doc == null){ //El lugar no existe y se crea
-            UserData.findOne({'name':req.params.name},function(err,doc){
-                var data = new PlaceData({
-                    name: req.params.place,
-                    author_id: doc.id,
-                    author_name: doc.name,
-                    photos: array_aux
-                });
-                data.save().then(function(){
-                    PlaceData.findOne({'author_name': req.params.name}, function(err,doc){
-                        console.log("Guardado en lugares correctamente");
-                        console.log("Esto es lo que se ha guardado:",doc);
-                    });  
-                });
-            });
-        }
-            UserData.findOneAndUpdate({'name':req.params.name},
-                {$push: {'visited_places': req.params.place, 'uploadsphotos': aux_[0] + 'uploads/' + req.files[0].originalname}},
-                function(err,doc){
-                    console.log("Modificando registro ...");
-                    console.log(doc);//Esto si funciona perfecto
-            });
-        
-    });
-    res.json({files: req.file});
+    
+    res.json({files: files_});
 });
+
+
+
 
 app.post('/delete_Wished/:name/:place', (req, res) => {
 
@@ -289,9 +332,9 @@ app.post('/delete_Wished/:name/:place', (req, res) => {
     {$pull: {'wished_places': req.params.place}},
     function(err,doc){
         console.log("Modificando registro ...");
-        console.log(doc);//Esto si funciona perfecto
-    });
-    res.send({path:'/login'});
+        console.log(doc);password: bcrypt.hashSync(passw,8)//Esto si funciona perfecto
+    });password: bcrypt.hashSync(passw,8)
+    res.send({path:'/logipassword: bcrypt.hashSync(passw,8)n'});
 });
 
 app.post('/delete_Visited/:name/:place', (req, res) => {
@@ -402,6 +445,45 @@ app.get('/comprobar', (req, res) => {
         }
     });
 });
+
+app.post('/change_Name/:new/:name', (req, res) => {    
+   
+
+    UserData.findOneAndUpdate({'name': req.params.name},{$set: {'name': req.params.new}},function(err,docs){
+        console.log("Aquí se actualiza el nombre de usuario");
+    });
+    res.send(200);
+});
+
+
+app.post('/change_Pass/:new/:name', (req, res) => {    
+   
+    var new_ = bcrypt.hashSync(req.params.new,8);
+
+    UserData.findOneAndUpdate({'name': req.params.name},{$set: {'password': new_}},function(err,docs){
+        console.log(docs);
+        console.log("Aquí se actualiza la pass de usuario");
+    });
+    res.send(200);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 let server = app.listen(process.env.PORT || 8081, function (err) {
     if(err){

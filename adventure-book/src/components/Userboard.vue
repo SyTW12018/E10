@@ -66,6 +66,11 @@
     <h1>Bienvenido al dashboard</h1>
     <h2>{{name}}</h2>
 
+    <label for="lugar">
+      Lugar:
+      <input type="text" v-model="place_"/>
+    </label>
+
     <form @submit.prevent="sendFiles" enctype="multipart/form-data">
       <div class="dropzone">
         <label for="title">Upload Files</label>
@@ -113,7 +118,13 @@
 
     <div>
       <button @click="log_out"> Log Out</button>
+<<<<<<< HEAD
       <div class="main">
+=======
+    </div>
+
+    <div class="main">
+>>>>>>> dev-userdestination
         <div class="container">
             <b-row>
                 <b-col cols="9" id="mis_sitios">
@@ -176,6 +187,7 @@ export default {
       visited_places:['Tenerife'],
       wishes_places: [],
       groups: [],
+      place_: "",
 
       sitios_visitados: [
         {
@@ -280,13 +292,19 @@ export default {
         }
       });
 
+      console.log(localStorage.getItem("user"))
+      var id_user = JSON.parse(localStorage.getItem("user"))._id
+      console.log(id_user)
+      formData.append('place', this.place_)
+      formData.append('user_id', localStorage.getItem("user"))
+
       try {
         this.uploading = true;
-        console.log("ea")
-        var url = "http://localhost:8081/upload"
+        var url = "http://localhost:8081/upload/" + this.name + "/" + this.place_
         const res = await this.$http.post(url, formData, {
           onUploadProgress: e => this.progress = Math.round(e.loaded * 100 / e.total)
         });
+        console.log("TEXTO: array")
         console.log(this.uploadedFiles)
         
         for(var j=0; j<res.data.files.length; j++){

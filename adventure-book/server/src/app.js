@@ -70,7 +70,7 @@ var GroupTravelSchema = new Schema({
     members: Array,
     author_name: String,
     comments: Array,
-    photos: Array
+    photos: String
 }, { collection: 'groupTravelData' });
 
 var GroupTravel = Mongoose.model('groupTravelData', GroupTravelSchema);
@@ -92,7 +92,7 @@ for(var i = 0; i < comunidades.length; i++){
         id_num: i
     });
     data.save()
-}  */
+} */
 
 
 /*Aquí empieza la aplicación*/
@@ -183,27 +183,14 @@ app.post('/waiting', (req, res) => {
     }
     else {
         console.log("el token tiene algo" + token);
-        res.status(200).send({ path: '/dashboard' }) //Aqui hay que pasar el user
+        res.status(200).send({ path: '/userboard' }) //Aqui hay que pasar el user
     }
 })
-
-
-
-
-
-
-
-
-
-
-
-
 
 app.post('/userboard/:name', async (req, res) => {
 
     //Buscamos los datos del usuario a partir de su _id
     var response = [];
-    var aux = []
 
     try{
 
@@ -224,16 +211,9 @@ app.post('/userboard/:name', async (req, res) => {
     catch(err){
         console.log(err)
     }
-
     console.log(response);
     res.send(response);
 });
-
-
-
-
-
-
 
 
 app.post('/follow_Wished/:name/:place', (req, res) => {
@@ -400,7 +380,7 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
 
 
 
-
+//ARREGLAR
 app.post('/delete_Wished/:name/:place', (req, res) => {
 
     UserData.findOneAndUpdate({ 'name': req.params.name },
@@ -423,7 +403,7 @@ app.post('/delete_Visited/:name/:place', (req, res) => {
             console.log("Modificando registro ...");
             console.log(doc);//Esto si funciona perfecto
         });
-    res.send({ path: '/login' });
+    res.status(200);
 });
 
 
@@ -438,24 +418,42 @@ app.post('/delete_Photo/:name/:place/:photo', (req, res) => {
             console.log("Borrando foto ...");
             console.log(doc);//Esto si funciona perfecto
         });
-    res.send({ path: '/login' });
+    res.status(200);
 });
 
 
-app.post('/add_group/:author_name/:place/:photo', /*upload.array('files'),*/(req, res) => {
+app.post('/add_group/:author_name/:place', async (req, res) => {
 
     //Probar si sube foto a ver y ya cambiar el rollo para que suba la foto y tal
 
     var aux_ = __dirname.split('server');
     var array_user = [req.params.author_name];
-    //var array_aux = [aux_[0] + 'uploads/' + req.files[0].originalname];
-    var array_aux = ["Ejemplo"];
+    var photo_group = ""
+    try{
+        await UserData.findOneAndUpdate({ 'name': req.params.name }, { $push: { 'groupsTravel': req.params.group } }, 
+        function (err, doc) {
+            console.log("Aqui se añade un grupo a los del user...")
+        });
+    }catch(err){
+        console.log(err);
+    } 
+
+    try{
+        await PlaceData.findOne({ 'name': req.params.place }, 
+        function (err, doc) {
+            photo_group = doc.photos[0]
+            console.log("Aqui se añade un grupo a los del user...");
+        });
+    }catch(err){
+        console.log(err);
+    } 
+
     var data = new GroupTravel({
         place: req.params.place,
         members: array_user,
         author_name: req.params.author_name,
         comments: [],
-        photos: [] //array_aux
+        photos: photo_group
     });
     data.save().then(function () {
         res.send(200);
@@ -476,7 +474,8 @@ app.post('/delete_group/:name/:group', (req, res) => {
 
 app.post('/follow_group/:name/:group', (req, res) => {
 
-    UserData.findOneAndUpdate({ 'name': req.params.name }, { $push: { 'groupsTravel': req.params.group } }, function (err, doc) {
+    UserData.findOneAndUpdate({ 'name': req.params.name }, { $push: { 'groupsTravel': req.params.group } }, 
+    function (err, doc) {
         console.log("Aqui se añade un grupo a los del user...")
     });
     res.send(200);

@@ -17,7 +17,6 @@ var sys = require('sys')
 var exec = require('child_process').exec;
 var fs = require('fs');
 
-
 Mongoose.connect('mongodb://localhost:27017/test');
 //Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
 Mongoose.set('useFindAndModify', false);
@@ -165,8 +164,8 @@ app.post('/login', (req, res) => {
         if (!passwordIsValid) {
             return res.status(401).send({ auth: false, token: null });
         }
-        //create the authentication token for the user with the jwt package
-        //the token expires in 24 hours -> 86400seconds
+        //create the authentication token for the user with the jwt package
+        //the token expires in 24 hours -> 86400seconds
         let token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 10 });
 
         res.status(200).send({ auth: true, token: token, user: user });
@@ -187,32 +186,50 @@ app.post('/waiting', (req, res) => {
     }
 })
 
-app.post('/userboard/:name', async (req, res) => {
 
-    //Buscamos los datos del usuario a partir de su _id
-    var response = [];
+/*await fs.readdirSync(dir + "/" + doc.visited_places[i]).forEach(function(file){
+                                response.push(dir + "/" + doc.visited_places[i] + "/" + file) //Esto es lo que necesito para 
+                                //devolver todas las fotos de un sitio
+                                });*/
 
+app.get('/userboard/:name', async(req, res) => {
+    
     try{
+    var aux = [];
+    var wi;
+    var response=[];
 
-    await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
-        response.push(doc.visited_places);
-    });
-
-    }
-    catch(err){
-        console.log(err)
-    }
-
+    var dir = __dirname.split('server')[0] + 'uploads/' + req.params.name;
+    console.log(dir);
+  
     try{
-        await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
-            response.push(doc.wished_places);
-        });
-    }
-    catch(err){
-        console.log(err)
-    }
-    console.log(response);
-    res.send(response);
+         UserData.findOne({ 'name': req.params.name }, async function (err, doc) {
+                for (var i = 0; i < doc.visited_places.length; i++){
+                    console.log(doc.visited_places[i])
+                        await PlaceData.findOne({ "place": doc.visited_places[i]}, 
+                        function (err, docs) {
+                            if(docs == null)
+                                res.send("No hay lugares visitados");
+                            else{
+                                console.log("entro en el else");
+                                var url = dir + "/" + doc.visited_places[i] + "/" + (fs.readdirSync(dir + "/" + doc.visited_places[i])[0])
+                                aux.push("../../" +  url.split("adventure-book/")[1]);
+                            }
+                        })                    
+                }
+                console.log(response);
+                res.send(response);
+
+        }).then(result => {
+                response.push(result.visited_places);
+                response.push(aux)
+                response.push(result.wished_places);
+            });
+    }catch(err){console.log(err)};
+
+    }catch(err){};
+    
+    
 });
 
 
@@ -351,6 +368,7 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
     PlaceData.findOne({ 'place': visited_place }, function (err, doc) {
         if (doc == null) { //El lugar no existe y se crea
             UserData.findOne({ 'name': req.params.name }, function (err, doc) {
+
                 var data = new PlaceData({
                     place: visited_place,
                     author_id: doc.id,
@@ -366,7 +384,7 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
             });
         }
         else {
-            PlaceData.findOneAndUpdate({ 'place': visited_place }, { $push: { 'photos': `${dirPath}/${file.originalname}` } }, function (err, doc) {
+            PlaceData.findOneAndUpdate({ 'place': visited_place }, { $push: { 'photos': `${dirPath}/${file.originalname}`} }, function (err, doc) {
                 console.log(err)
             });
 
@@ -377,6 +395,12 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
 
     res.json({ files: files_ });
 });
+
+
+
+
+
+
 
 
 
@@ -391,6 +415,12 @@ app.post('/delete_Wished/:name/:place', (req, res) => {
         }); password: bcrypt.hashSync(passw, 8)
     res.send({ path: '/logipassword: bcrypt.hashSync(passw,8)n' });
 });
+//ARREGLAR
+
+
+
+
+
 
 
 
@@ -424,7 +454,6 @@ app.post('/delete_Photo/:name/:place/:photo', (req, res) => {
 
 app.post('/add_group/:author_name/:place', async (req, res) => {
 
-    //Probar si sube foto a ver y ya cambiar el rollo para que suba la foto y tal
 
     var aux_ = __dirname.split('server');
     var array_user = [req.params.author_name];

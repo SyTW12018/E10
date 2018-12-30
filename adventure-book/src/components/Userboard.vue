@@ -130,7 +130,7 @@
                     <b-row>
                         <div v-for="(sitio,index) in sitios_visitados[0].sitios" :key="index">
                             <div class="card" style="width: 16rem;">
-                                <img class="card-img-top" :src="sitios_visitados_fotos[index]" alt="Card image">
+                                <img class="card-img-top" :src="aux_sitio"  alt="Card image">
                                 <div class="card-body">
                                     <p class="card-text"> {{ sitio }}</p>
                                 </div>
@@ -178,6 +178,7 @@ export default {
       groups: [],
       place_: "",
       sitios_visitados_fotos:[],
+      aux_sitio,
 
       sitios_visitados: [
         {
@@ -213,6 +214,15 @@ export default {
     log_out() {
       window.localStorage.clear();
       this.$router.push("/");
+    },
+
+    get_photo(sitio){
+      //console.log(sitio)
+      var aux = '../../uploads/Sergio/BARCELONA/coche2.jpeg'
+      if(sitio != undefined)
+        //return require(aux)
+      return require('../../uploads/Sergio/BARCELONA/coche2.jpeg')
+        //return require(sitio)
     },
 
     selectFile() {
@@ -305,9 +315,11 @@ export default {
     await this.$http
       .get("http://localhost:8081/userboard/" + this.name)
       .then(response => {
-        console.log(response.data);
         this.sitios_visitados[0].sitios = response.data[0];
-        this.sitios_visitados_fotos= response.data[1];
+        
+        this.aux_sitio = "[{path:require('"+ this.sitios_visitados_fotos[0] +"')}]"
+
+        this.sitios_visitados_fotos = response.data[1];
         this.sitios_deseados[0].sitios = response.data[2];
         
       });

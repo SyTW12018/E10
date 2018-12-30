@@ -38,33 +38,6 @@
             </b-row>
           </div>
           <b-row class="mb-3">
-            <h2>Este mes</h2>
-          </b-row>
-          <div v-for="sitio in este_mes[0].sitios" :key="sitio">
-            <b-row class="mb-3">
-              <b-col>
-                <div class="card" style="width: 10rem;">
-                  <img class="card-img-top" src="../C.jpg" alt="Card image">
-                </div>
-              </b-col>
-              <b-col>
-                <b-row>{{sitio.lugar}}</b-row>
-                <b-row>{{sitio.pais}}</b-row>
-              </b-col>
-              <b-col>
-                <b-row>{{sitio.fecha}}</b-row>
-                <b-row>
-                  <b-col md="3" class="ml-auto p-8">{{sitio.personas}}</b-col>
-                  <b-col>
-                    <div class="card" style="width:2rem;">
-                      <img class="card-img-top" src="../person.jpg" alt="Card image">
-                    </div>
-                  </b-col>
-                </b-row>
-              </b-col>
-            </b-row>
-          </div>
-          <b-row>
             <h2>Todos los viajes organizados</h2>
           </b-row>
           <div v-for="sitio in todo_organizado[0].sitios" :key="sitio">
@@ -165,24 +138,6 @@ export default {
           ]
         }
       ],
-      este_mes: [
-        {
-          sitios: [
-            {
-              lugar: "Venecia",
-              pais: "Italia",
-              fecha: "Marzo 2016",
-              personas: "3"
-            },
-            {
-              lugar: "Oporto",
-              pais: "Portugal",
-              fecha: "Mayo 2016",
-              personas: "4"
-            }
-          ]
-        }
-      ],
       todo_organizado: [
         {
           sitios: [
@@ -203,7 +158,22 @@ export default {
       ]
     };
   },
-  mounted() {},
+  async mounted() {
+    try{
+    await this.$http
+      .get("http://localhost:8081/groups/" + this.name)
+      .then(response => {
+        this.destinos_deseados[0].sitios = response.data[0];
+        console.log(response.data[0])
+        this.futuros_viajes[0].sitios = response.data[1];
+        this.todo_organizado = response.data[2];
+      });
+    }catch(err){};
+
+
+
+
+  },
   components: {}
 };
 </script>

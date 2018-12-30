@@ -51,7 +51,7 @@ var PlaceDataSchema = new Schema({
     author_id: String,
     author_name: String,
     photos: Array,
-    date: String
+    date: Date
 }, { collection: 'placeData' });
 
 var PlaceData = Mongoose.model('PlaceData', PlaceDataSchema);
@@ -69,7 +69,8 @@ var GroupTravelSchema = new Schema({
     members: Array,
     author_name: String,
     comments: Array,
-    photos: String
+    photos: String,
+    date: Date
 }, { collection: 'groupTravelData' });
 
 var GroupTravel = Mongoose.model('groupTravelData', GroupTravelSchema);
@@ -192,20 +193,20 @@ app.post('/waiting', (req, res) => {
                                 //devolver todas las fotos de un sitio
                                 });*/
 
-app.get('/userboard/:name', async(req, res) => {
+app.get('/userboard/:name', (req, res) => {
     
-    try{
     var aux = [];
     var wi;
     var response=[];
-
+/*
     var dir = __dirname.split('server')[0] + 'uploads/' + req.params.name;
     console.log(dir);
   
-    try{
+    
          UserData.findOne({ 'name': req.params.name }, async function (err, doc) {
                 for (var i = 0; i < doc.visited_places.length; i++){
                     console.log(doc.visited_places[i])
+                    try{
                         await PlaceData.findOne({ "place": doc.visited_places[i]}, 
                         function (err, docs) {
                             if(docs == null)
@@ -215,7 +216,8 @@ app.get('/userboard/:name', async(req, res) => {
                                 var url = dir + "/" + doc.visited_places[i] + "/" + (fs.readdirSync(dir + "/" + doc.visited_places[i])[0])
                                 aux.push("../../" +  url.split("adventure-book/")[1]);
                             }
-                        })                    
+                        });
+                    }catch(err){console.log(err)};                    
                 }
                 console.log(response);
                 res.send(response);
@@ -225,10 +227,41 @@ app.get('/userboard/:name', async(req, res) => {
                 response.push(aux)
                 response.push(result.wished_places);
             });
-    }catch(err){console.log(err)};
+   */ 
 
-    }catch(err){};
-    
+
+
+
+
+
+
+  var dir = __dirname.split('server')[0] + 'uploads/' + req.params.name;
+  console.log(dir);
+
+  
+       UserData.findOne({ 'name': req.params.name }, async function (err, doc) {
+              for (var i = 0; i < doc.visited_places.length; i++){
+                  console.log(doc.visited_places[i])
+                  try{
+                      await PlaceData.findOne({ "place": doc.visited_places[i]}, 
+                      function (err, docs) {
+                          if(docs == null)
+                              res.send("No hay lugares visitados");
+                          else{
+                              console.log("entro en el else");
+                              var url = dir + "/" + doc.visited_places[i] + "/" + (fs.readdirSync(dir + "/" + doc.visited_places[i])[0])
+                              aux.push("../../" +  url.split("adventure-book/")[1]);
+                          }
+                      });
+                  }catch(err){console.log(err)};                    
+              }
+              console.log(response);
+              response.push(doc.visited_places);
+              response.push(aux)
+              response.push(doc.wished_places);
+              res.send(response);
+
+      });
     
 });
 
@@ -240,7 +273,7 @@ app.post('/follow_Wished/:name/:place', (req, res) => {
         function (err, doc) {
             if (err == null) {
                 console.log("Modificando registro de wished_places");
-                res.status(200).send(doc);
+                res.status(200);
             }
 
             else {
@@ -374,7 +407,7 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
                     author_id: doc.id,
                     author_name: doc.name,
                     photos: files_,
-                    date: "2018-12-01"
+                    date: new Date()
                 });
                 data.save().then(function () {
                     PlaceData.findOne({ 'author_name': req.params.name }, function (err, doc) {
@@ -468,10 +501,11 @@ app.post('/add_group/:author_name/:place', async (req, res) => {
     } 
 
     try{
-        await PlaceData.findOne({ 'name': req.params.place }, 
+        await PlaceData.findOne({ 'place': req.params.place }, 
         function (err, doc) {
+
             photo_group = doc.photos[0]
-            console.log("Aqui se añade un grupo a los del user...");
+            console.log("Aqui se añade una foto al grupo...");
         });
     }catch(err){
         console.log(err);
@@ -482,7 +516,8 @@ app.post('/add_group/:author_name/:place', async (req, res) => {
         members: array_user,
         author_name: req.params.author_name,
         comments: [],
-        photos: photo_group
+        photos: photo_group,
+        date : new Date()
     });
     data.save().then(function () {
         res.send(200);
@@ -508,9 +543,47 @@ app.post('/follow_group/:name/:group', (req, res) => {
         console.log("Aqui se añade un grupo a los del user...")
     });
     res.send(200);
+});
+
+
+app.get('/groups/', async (req, res) => {
+
+    try{
+        var response = [];
+        await GroupTravel.find({},function(err,doc){
+            response.push(doc);
+    });
+
+    res.send(response);
+
+    }catch(err){};
+
+});
 
 
 
+app.get('/groups/:name/', (req, res) => {
+    
+        var response = [];
+        var aux = []
+        UserData.findOne({ 'name': req.params.name }, 
+        async function (err, doc) {
+
+         for (var i = 0; i < doc.wished_places.length; i++){
+            try{
+                await GroupTravel.find({'place': doc.wished_places[i]},
+                function(err,docs){
+                    if(docs.length > 0){
+                        aux.push(docs); //Aqui devulevo los grupos que existen que sean al lugar que el user tenga como deseados
+                    }
+                });
+            }catch(err){console.log(err)};
+        }
+         //ESTO A VECES FUNCIONA, ES MAGIA
+         response.push(doc.groupsTravel);
+         response.push(aux); 
+         res.send(response);
+        });
 });
 
 
@@ -565,7 +638,6 @@ app.post('/change_Pass/:new/:name', (req, res) => {
     });
     res.send(200);
 });
-
 
 
 

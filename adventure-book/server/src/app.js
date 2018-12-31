@@ -21,7 +21,7 @@ Mongoose.connect('mongodb://localhost:27017/test');
 //Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
 Mongoose.set('useFindAndModify', false);
 var app = express()
-app.use("/uploads", express.static(path.join("/home/jcpasco/Documentos/E10/adventure-book", "uploads")))
+app.use("/uploads", express.static(path.join("/home/sergio/E10/adventure-book", "uploads")))
 app.use(morgan('combined'))
 
 app.use(bodyParse.urlencoded({
@@ -198,12 +198,10 @@ app.get('/userboard/:name', (req, res) => {
     var aux = [];
     var wi;
     var response=[];
-/*
+
     var dir = __dirname.split('server')[0] + 'uploads/' + req.params.name;
-    console.log(dir);
-  
-    
-         UserData.findOne({ 'name': req.params.name }, async function (err, doc) {
+    console.log(dir);    
+        UserData.findOne({ 'name': req.params.name }, async function (err, doc) {
                 for (var i = 0; i < doc.visited_places.length; i++){
                     console.log(doc.visited_places[i])
                     try{
@@ -214,54 +212,19 @@ app.get('/userboard/:name', (req, res) => {
                             else{
                                 console.log("entro en el else");
                                 var url = dir + "/" + doc.visited_places[i] + "/" + (fs.readdirSync(dir + "/" + doc.visited_places[i])[0])
-                                aux.push("../../" +  url.split("adventure-book/")[1]);
+                                aux.push(url.split("adventure-book")[1]);
                             }
                         });
                     }catch(err){console.log(err)};                    
                 }
                 console.log(response);
-                res.send(response);
-
-        }).then(result => {
-                response.push(result.visited_places);
+                response.push(doc.visited_places);
                 response.push(aux)
-                response.push(result.wished_places);
-            });
-   */ 
+                response.push(doc.wished_places);
+                const enviar = response;
+                res.send(enviar);
 
-
-
-
-
-
-
-  var dir = __dirname.split('server')[0] + 'uploads/' + req.params.name;
-  console.log(dir);
-
-  
-       UserData.findOne({ 'name': req.params.name }, async function (err, doc) {
-              for (var i = 0; i < doc.visited_places.length; i++){
-                  console.log(doc.visited_places[i])
-                  try{
-                      await PlaceData.findOne({ "place": doc.visited_places[i]}, 
-                      function (err, docs) {
-                          if(docs == null)
-                              res.send("No hay lugares visitados");
-                          else{
-                              console.log("entro en el else");
-                              var url = dir + "/" + doc.visited_places[i] + "/" + (fs.readdirSync(dir + "/" + doc.visited_places[i])[0])
-                              aux.push("../../" +  url.split("adventure-book/")[1]);
-                          }
-                      });
-                  }catch(err){console.log(err)};                    
-              }
-              console.log(response);
-              response.push(doc.visited_places);
-              response.push(aux)
-              response.push(doc.wished_places);
-              res.send(response);
-
-      });
+        });
     
 });
 
@@ -437,23 +400,16 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
 
 
 
-//ARREGLAR
 app.post('/delete_Wished/:name/:place', (req, res) => {
 
     UserData.findOneAndUpdate({ 'name': req.params.name },
         { $pull: { 'wished_places': req.params.place } },
         function (err, doc) {
             console.log("Modificando registro ...");
-            console.log(doc); password: bcrypt.hashSync(passw, 8)//Esto si funciona perfecto
-        }); password: bcrypt.hashSync(passw, 8)
-    res.send({ path: '/logipassword: bcrypt.hashSync(passw,8)n' });
+            console.log(doc);//Esto si funciona perfecto
+        }); 
+    res.send(200);
 });
-//ARREGLAR
-
-
-
-
-
 
 
 
@@ -568,12 +524,11 @@ app.get('/groups/:name/', (req, res) => {
         var aux = []
         UserData.findOne({ 'name': req.params.name }, 
         async function (err, doc) {
-
          for (var i = 0; i < doc.wished_places.length; i++){
             try{
-                await GroupTravel.find({'place': doc.wished_places[i]},
+                await GroupTravel.findOne({'place': doc.wished_places[i]},
                 function(err,docs){
-                    if(docs.length > 0){
+                    if(docs != null){
                         aux.push(docs); //Aqui devulevo los grupos que existen que sean al lugar que el user tenga como deseados
                     }
                 });

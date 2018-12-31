@@ -130,7 +130,7 @@
                     <b-row>
                         <div v-for="(sitio,index) in sitios_visitados[0].sitios" :key="index">
                             <div class="card" style="width: 16rem;">
-                                <img class="card-img-top" :src="get_photo()"  alt="Card image">
+                                <img class="card-img-top" :src="sitios_visitados_fotos[0]"  alt="Card image">
                                 <div class="card-body">
                                     <p class="card-text"> {{ sitio }}</p>
                                 </div>
@@ -162,6 +162,7 @@
 
 <script>
 import _ from 'lodash';
+import Foto from './Require_photo.vue'
 
 export default {
   data: function() {
@@ -173,13 +174,11 @@ export default {
       error: false,
       err_msg: "",
       uploading: false,
-        //return require(aux)
       uploadedFiles: [],
       progress: 0,
       groups: [],
       place_: "",
       sitios_visitados_fotos:[],
-      aux_sitio:[{path:"../../uploads/Sergio/BARCELONA/coche2.jpeg"}],
 
       sitios_visitados: [
         {
@@ -218,12 +217,9 @@ export default {
     },
 
     get_photo(/*sitio*/){
-      console.log("este es el valor de path" + this.aux_sitio[0].path)
-        //return require(aux)
-        const obj = this.aux_sitio[0].path
-        //return require(this.aux.sitio[0].path)
+      console.log(this.sitios_visitados_fotos[0]);
       return require('../../uploads/Sergio/BARCELONA/coche2.jpeg')
-        //return require(sitio)
+
     },
 
     selectFile() {
@@ -317,16 +313,21 @@ export default {
       .get("http://localhost:8081/userboard/" + this.name)
       .then(response => {
         this.sitios_visitados[0].sitios = response.data[0];
-        
-        //this.aux_sitio.push(JSON.parse("{path:require('"+ response.data[1][0] +"')}"));
 
-        //this.aux_sitio[0].path = (" require('"+ response.data[1][0] +"')")
 
-        //this.sitios_visitados_fotos = response.data[1];
+        this.sitios_visitados_fotos.push(response.data[1]);
+        /*this.sitios_visitados_fotos = [
+          "http://localhost:3000/static/uploads/Sergio/BARCELONA/coche2.jpeg"
+        ];*/
+        console.log(response.data[1]);
         this.sitios_deseados[0].sitios = response.data[2];
         
       });
     }catch(err){};
+  },
+
+  components: {
+    Foto
   }
 };
 </script>

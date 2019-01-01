@@ -130,7 +130,7 @@
                     <b-row>
                         <div v-for="(sitio,index) in sitios_visitados[0].sitios" :key="index">
                             <div class="card" style="width: 16rem;">
-                                <img class="card-img-top" :src="sitios_visitados_fotos[0]"  alt="Card image">
+                                <img class="card-img-top" :src="sitios_visitados_fotos[index]"  alt="Card image">
                                 <div class="card-body">
                                     <p class="card-text"> {{ sitio }}</p>
                                 </div>
@@ -216,10 +216,10 @@ export default {
       this.$router.push("/");
     },
 
-    get_photo(/*sitio*/){
-      console.log(this.sitios_visitados_fotos[0]);
-      return require('../../uploads/Sergio/BARCELONA/coche2.jpeg')
-
+    get_photo(index){
+      console.log(this.sitios_visitados_fotos[index]);
+      return "http//:localhost:3000/static/prueba/CANTABRIA/coche3.jpg";
+      //return this.sitios_visitados_fotos[index];
     },
 
     selectFile() {
@@ -313,13 +313,7 @@ export default {
       .get("http://localhost:8081/userboard/" + this.name)
       .then(response => {
         this.sitios_visitados[0].sitios = response.data[0];
-
-
-        this.sitios_visitados_fotos.push(response.data[1]);
-        /*this.sitios_visitados_fotos = [
-          "http://localhost:3000/static/uploads/Sergio/BARCELONA/coche2.jpeg"
-        ];*/
-        console.log(response.data[1]);
+        this.sitios_visitados_fotos = response.data[1];
         this.sitios_deseados[0].sitios = response.data[2];
         
       });

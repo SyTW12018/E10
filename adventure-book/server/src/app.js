@@ -199,7 +199,7 @@ app.get('/userboard/:name', (req, res) => {
     var wi;
     var response=[];
 
-    var dir = __dirname.split('server')[0] + 'uploads/' + req.params.name;
+    var dir = __dirname.split('server')[0] + 'static/uploads/' + req.params.name;
     console.log(dir);    
         UserData.findOne({ 'name': req.params.name }, async function (err, doc) {
                 for (var i = 0; i < doc.visited_places.length; i++){
@@ -323,8 +323,8 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
         );
     }
 
-    var dirPath = `${aux_[0]}uploads/${req.params.name}/${visited_place}`
-    var dirPathWithOut = `${aux_[0]}uploads/${req.params.name}`
+    var dirPath = `${aux_[0]}static/uploads/${req.params.name}/${visited_place}`;
+    var dirPathWithOut = `${aux_[0]}static/uploads/${req.params.name}`;
 
     if (fs.existsSync(dirPathWithOut) == false) {
         fs.mkdirSync(dirPathWithOut)

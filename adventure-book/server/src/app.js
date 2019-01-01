@@ -183,11 +183,7 @@ app.post('/waiting', (req, res) => {
     }
     else {
         console.log("el token tiene algo" + token);
-<<<<<<< HEAD
-        res.status(200).send({path:'/userboard'}) //Aqui hay que pasar el user
-=======
         res.status(200).send({ path: '/userboard' }) //Aqui hay que pasar el user
->>>>>>> desarrollo
     }
 })
 
@@ -395,12 +391,6 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
 
     res.json({ files: files_ });
 });
-
-
-
-
-
-
 
 
 

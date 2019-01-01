@@ -248,6 +248,7 @@
   </div>
 </template>
 <script>
+<<<<<<< HEAD
 
 	
 
@@ -306,6 +307,85 @@
     }
 
   }
+=======
+export default {
+  data() {
+    return {
+      destinos_deseados: [
+        {
+          sitios: [
+            {
+              lugar: "Venecia",
+              pais: "Italia",
+              fecha: "Marzo 2016",
+              personas: "3"
+            },
+            {
+              lugar: "Oporto",
+              pais: "Portugal",
+              fecha: "Mayo 2016",
+              personas: "4"
+            }
+          ]
+        }
+      ],
+      futuros_viajes: [
+        {
+          sitios: [
+            {
+              lugar: "Venecia",
+              pais: "Italia",
+              fecha: "Marzo 2016",
+              personas: "3"
+            },
+            {
+              lugar: "Oporto",
+              pais: "Portugal",
+              fecha: "Mayo 2016",
+              personas: "4"
+            }
+          ]
+        }
+      ],
+      todo_organizado: [
+        {
+          sitios: [
+            {
+              lugar: "Madrid",
+              pais: "España",
+              fecha: "Marzo 2017",
+              personas: "12"
+            },
+            {
+              lugar: "Oporto",
+              pais: "Portugal",
+              fecha: "Mayo 2016",
+              personas: "4"
+            }
+          ]
+        }
+      ]
+    };
+  },
+  async mounted() {
+    try{
+    await this.$http
+      .get("http://localhost:8081/groups/" + this.name)
+      .then(response => {
+        this.destinos_deseados[0].sitios = response.data[0];
+        console.log(response.data[0])
+        this.futuros_viajes[0].sitios = response.data[1];
+        this.todo_organizado = response.data[2];
+      });
+    }catch(err){};
+
+
+
+
+  },
+  components: {}
+};
+>>>>>>> desarrollo
 </script>
 							
                         

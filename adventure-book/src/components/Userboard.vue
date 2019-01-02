@@ -123,9 +123,9 @@
               <p>{{ sitios_visitados[0].descripcion }}</p>
             </b-row>
             <b-row>
-              <div v-for="sitio in sitios_visitados[0].sitios" :key="sitio">
+              <div v-for="(sitio,index) in sitios_visitados[0].sitios" :key="index">
                 <div class="card" style="width: 16rem;">
-                  <img class="card-img-top" src="../C.jpg" alt="Card image">
+                  <img class="card-img-top" :src="sitios_visitados_fotos[index]" alt="Card image">
                   <div class="card-body">
                     <p class="card-text">{{ sitio }}</p>
                   </div>

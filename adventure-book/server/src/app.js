@@ -227,32 +227,6 @@ app.get('/userboard/:name', (req, res) => {
 });
 
 
-app.post('/userboard/:name', async (req, res) => {
-
-    //Buscamos los datos del usuario a partir de su _id
-    var response = [];
-    var aux = []
-
-    try {
-        await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
-            response.push(doc.visited_places);
-        });
-    }
-    catch (err) {
-        console.log(err)
-    }
-
-    try {
-        await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
-            response.push(doc.wished_places);
-        });
-    }
-    catch(err){
-        console.log(err)
-    }    
-})
-
-
 app.post('/follow_Wished/:name/:place', (req, res) => {
 
     UserData.findOneAndUpdate({ 'name': req.params.name },

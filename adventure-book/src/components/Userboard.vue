@@ -162,7 +162,6 @@
 
 <script>
 import _ from 'lodash';
-import Foto from './Require_photo.vue'
 
 export default {
   data: function() {
@@ -289,7 +288,6 @@ export default {
     ) {
       this.$router.push("/");
     }
-    this.sitios_visitados[0].sitios = ["Tamo activo"];
     try{
     await this.$http
       .get("http://localhost:8081/userboard/" + this.name)

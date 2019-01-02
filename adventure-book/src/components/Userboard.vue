@@ -154,7 +154,8 @@
 
 
 <script>
-import _ from "lodash";
+import _ from 'lodash';
+import Foto from './Require_photo.vue'
 
 export default {
   data: function() {
@@ -168,10 +169,9 @@ export default {
       uploading: false,
       uploadedFiles: [],
       progress: 0,
-      visited_places: ["Tenerife"],
-      wishes_places: [],
       groups: [],
       place_: "",
+      sitios_visitados_fotos:[],
 
        sitios_visitados: [
                             {
@@ -196,6 +196,12 @@ export default {
     log_out() {
       window.localStorage.clear();
       this.$router.push("/");
+    },
+
+    get_photo(index){
+      console.log(this.sitios_visitados_fotos[index]);
+      return "http//:localhost:3000/static/prueba/CANTABRIA/coche3.jpg";
+      //return this.sitios_visitados_fotos[index];
     },
 
     selectFile() {
@@ -273,18 +279,29 @@ export default {
     }
   },
 
-  mounted() {
+  async mounted() {
     if (
       localStorage.getItem("jwt") == null ||
       localStorage.getItem("jwt") == "undefined"
     ) {
       this.$router.push("/");
     }
-    this.$http
-      .post("http://localhost:8081/userboard/" + this.name)
+    this.sitios_visitados[0].sitios = ["Tamo activo"];
+    try{
+    await this.$http
+      .get("http://localhost:8081/userboard/" + this.name)
       .then(response => {
         this.user_data = response.data;
+        this.sitios_visitados[0].sitios = response.data[0];
+        this.sitios_visitados_fotos = response.data[1];
+        this.sitios_deseados[0].sitios = response.data[2];
+        
       });
+    }catch(err){};
+  },
+
+  components: {
+    Foto
   }
 };
 </script>

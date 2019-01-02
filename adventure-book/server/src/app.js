@@ -17,12 +17,11 @@ var sys = require('sys')
 var exec = require('child_process').exec;
 var fs = require('fs');
 
-
 Mongoose.connect('mongodb://localhost:27017/test');
 //Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
 Mongoose.set('useFindAndModify', false);
 var app = express()
-app.use("/uploads", express.static(path.join("/home/jcpasco/Documentos/E10/adventure-book", "uploads")))
+app.use("/uploads", express.static(path.join("/home/sergio/E10/adventure-book", "uploads")))
 app.use(morgan('combined'))
 
 app.use(bodyParse.urlencoded({
@@ -52,7 +51,7 @@ var PlaceDataSchema = new Schema({
     author_id: String,
     author_name: String,
     photos: Array,
-    date: String
+    date: Date
 }, { collection: 'placeData' });
 
 var PlaceData = Mongoose.model('PlaceData', PlaceDataSchema);
@@ -70,7 +69,8 @@ var GroupTravelSchema = new Schema({
     members: Array,
     author_name: String,
     comments: Array,
-    photos: Array
+    photos: String,
+    date: Date
 }, { collection: 'groupTravelData' });
 
 var GroupTravel = Mongoose.model('groupTravelData', GroupTravelSchema);
@@ -92,7 +92,7 @@ for(var i = 0; i < comunidades.length; i++){
         id_num: i
     });
     data.save()
-}  */
+} */
 
 
 /*Aquí empieza la aplicación*/
@@ -165,8 +165,8 @@ app.post('/login', (req, res) => {
         if (!passwordIsValid) {
             return res.status(401).send({ auth: false, token: null });
         }
-        //create the authentication token for the user with the jwt package
-        //the token expires in 24 hours -> 86400seconds
+        //create the authentication token for the user with the jwt package
+        //the token expires in 24 hours -> 86400seconds
         let token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 10 });
 
         res.status(200).send({ auth: true, token: token, user: user });
@@ -183,11 +183,48 @@ app.post('/waiting', (req, res) => {
     }
     else {
         console.log("el token tiene algo" + token);
-        res.status(200).send({path:'/userboard'}) //Aqui hay que pasar el user
+        res.status(200).send({ path: '/userboard' }) //Aqui hay que pasar el user
     }
 })
 
 
+/*await fs.readdirSync(dir + "/" + doc.visited_places[i]).forEach(function(file){
+                                response.push(dir + "/" + doc.visited_places[i] + "/" + file) //Esto es lo que necesito para 
+                                //devolver todas las fotos de un sitio
+                                });*/
+
+app.get('/userboard/:name', (req, res) => {
+
+    var aux = [];
+    var wi;
+    var response = [];
+
+    var dir = __dirname.split('server')[0] + 'static/uploads/' + req.params.name;
+    console.log(dir);
+    UserData.findOne({ 'name': req.params.name }, async function (err, doc) {
+        for (var i = 0; i < doc.visited_places.length; i++) {
+            console.log(doc.visited_places[i])
+            try {
+                await PlaceData.findOne({ "place": doc.visited_places[i] },
+                    function (err, docs) {
+                        if (docs == null)
+                            res.send("No hay lugares visitados");
+                        else {
+                            console.log("entro en el else");
+                            var url = dir + "/" + doc.visited_places[i] + "/" + (fs.readdirSync(dir + "/" + doc.visited_places[i])[0])
+                            aux.push(url.split("adventure-book")[1]);
+                        }
+                    });
+            } catch (err) { console.log(err) };
+        }
+        console.log(response);
+        response.push(doc.visited_places);
+        response.push(aux)
+        response.push(doc.wished_places);
+        const enviar = response;
+        res.send(enviar);
+    });
+});
 
 
 app.post('/userboard/:name', async (req, res) => {
@@ -196,35 +233,24 @@ app.post('/userboard/:name', async (req, res) => {
     var response = [];
     var aux = []
 
-    try{
-
-    await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
-        response.push(doc.visited_places);
-    });
-
+    try {
+        await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
+            response.push(doc.visited_places);
+        });
     }
-    catch(err){
+    catch (err) {
         console.log(err)
     }
 
-    try{
+    try {
         await UserData.findOne({ 'name': req.params.name }, function (err, doc) {
             response.push(doc.wished_places);
         });
     }
     catch(err){
         console.log(err)
-    }
-
-    console.log(response);
-    res.send(response);
-});
-
-
-
-
-
-
+    }    
+})
 
 
 app.post('/follow_Wished/:name/:place', (req, res) => {
@@ -234,7 +260,7 @@ app.post('/follow_Wished/:name/:place', (req, res) => {
         function (err, doc) {
             if (err == null) {
                 console.log("Modificando registro de wished_places");
-                res.status(200).send(doc);
+                res.status(200);
             }
 
             else {
@@ -321,8 +347,8 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
         );
     }
 
-    var dirPath = `${aux_[0]}uploads/${req.params.name}/${visited_place}`
-    var dirPathWithOut = `${aux_[0]}uploads/${req.params.name}`
+    var dirPath = `${aux_[0]}static/uploads/${req.params.name}/${visited_place}`;
+    var dirPathWithOut = `${aux_[0]}static/uploads/${req.params.name}`;
 
     if (fs.existsSync(dirPathWithOut) == false) {
         fs.mkdirSync(dirPathWithOut)
@@ -362,12 +388,13 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
     PlaceData.findOne({ 'place': visited_place }, function (err, doc) {
         if (doc == null) { //El lugar no existe y se crea
             UserData.findOne({ 'name': req.params.name }, function (err, doc) {
+
                 var data = new PlaceData({
                     place: visited_place,
                     author_id: doc.id,
                     author_name: doc.name,
                     photos: files_,
-                    date: "2018-12-01"
+                    date: new Date()
                 });
                 data.save().then(function () {
                     PlaceData.findOne({ 'author_name': req.params.name }, function (err, doc) {
@@ -377,7 +404,7 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
             });
         }
         else {
-            PlaceData.findOneAndUpdate({ 'place': visited_place }, { $push: { 'photos': `${dirPath}/${file.originalname}` } }, function (err, doc) {
+            PlaceData.findOneAndUpdate({ 'place': visited_place }, { $push: { 'photos': `${dirPath}/${file.originalname}`} }, function (err, doc) {
                 console.log(err)
             });
 
@@ -391,16 +418,15 @@ app.post('/upload/:name/:place', upload.array('files'), async (req, res) => {
 
 
 
-
 app.post('/delete_Wished/:name/:place', (req, res) => {
 
     UserData.findOneAndUpdate({ 'name': req.params.name },
         { $pull: { 'wished_places': req.params.place } },
         function (err, doc) {
             console.log("Modificando registro ...");
-            console.log(doc); password: bcrypt.hashSync(passw, 8)//Esto si funciona perfecto
-        }); password: bcrypt.hashSync(passw, 8)
-    res.send({ path: '/logipassword: bcrypt.hashSync(passw,8)n' });
+            console.log(doc);//Esto si funciona perfecto
+        }); 
+    res.send(200);
 });
 
 
@@ -414,7 +440,7 @@ app.post('/delete_Visited/:name/:place', (req, res) => {
             console.log("Modificando registro ...");
             console.log(doc);//Esto si funciona perfecto
         });
-    res.send({ path: '/login' });
+    res.status(200);
 });
 
 
@@ -429,24 +455,43 @@ app.post('/delete_Photo/:name/:place/:photo', (req, res) => {
             console.log("Borrando foto ...");
             console.log(doc);//Esto si funciona perfecto
         });
-    res.send({ path: '/login' });
+    res.status(200);
 });
 
 
-app.post('/add_group/:author_name/:place/:photo', /*upload.array('files'),*/(req, res) => {
+app.post('/add_group/:author_name/:place', async (req, res) => {
 
-    //Probar si sube foto a ver y ya cambiar el rollo para que suba la foto y tal
 
     var aux_ = __dirname.split('server');
     var array_user = [req.params.author_name];
-    //var array_aux = [aux_[0] + 'uploads/' + req.files[0].originalname];
-    var array_aux = ["Ejemplo"];
+    var photo_group = ""
+    try{
+        await UserData.findOneAndUpdate({ 'name': req.params.name }, { $push: { 'groupsTravel': req.params.group } }, 
+        function (err, doc) {
+            console.log("Aqui se añade un grupo a los del user...")
+        });
+    }catch(err){
+        console.log(err);
+    } 
+
+    try{
+        await PlaceData.findOne({ 'place': req.params.place }, 
+        function (err, doc) {
+
+            photo_group = doc.photos[0]
+            console.log("Aqui se añade una foto al grupo...");
+        });
+    }catch(err){
+        console.log(err);
+    } 
+
     var data = new GroupTravel({
         place: req.params.place,
         members: array_user,
         author_name: req.params.author_name,
         comments: [],
-        photos: [] //array_aux
+        photos: photo_group,
+        date : new Date()
     });
     data.save().then(function () {
         res.send(200);
@@ -467,13 +512,51 @@ app.post('/delete_group/:name/:group', (req, res) => {
 
 app.post('/follow_group/:name/:group', (req, res) => {
 
-    UserData.findOneAndUpdate({ 'name': req.params.name }, { $push: { 'groupsTravel': req.params.group } }, function (err, doc) {
+    UserData.findOneAndUpdate({ 'name': req.params.name }, { $push: { 'groupsTravel': req.params.group } }, 
+    function (err, doc) {
         console.log("Aqui se añade un grupo a los del user...")
     });
     res.send(200);
+});
+
+
+app.get('/groups/', async (req, res) => {
+
+    try{
+        var response = [];
+        await GroupTravel.find({},function(err,doc){
+            response.push(doc);
+    });
+
+    res.send(response);
+
+    }catch(err){};
+
+});
 
 
 
+app.get('/groups/:name/', (req, res) => {
+    
+        var response = [];
+        var aux = []
+        UserData.findOne({ 'name': req.params.name }, 
+        async function (err, doc) {
+         for (var i = 0; i < doc.wished_places.length; i++){
+            try{
+                await GroupTravel.findOne({'place': doc.wished_places[i]},
+                function(err,docs){
+                    if(docs != null){
+                        aux.push(docs); //Aqui devulevo los grupos que existen que sean al lugar que el user tenga como deseados
+                    }
+                });
+            }catch(err){console.log(err)};
+        }
+         //ESTO A VECES FUNCIONA, ES MAGIA
+         response.push(doc.groupsTravel);
+         response.push(aux); 
+         res.send(response);
+        });
 });
 
 
@@ -528,7 +611,6 @@ app.post('/change_Pass/:new/:name', (req, res) => {
     });
     res.send(200);
 });
-
 
 
 

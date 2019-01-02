@@ -190,15 +190,6 @@ app.post('/waiting', (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
 app.post('/userboard/:name', async (req, res) => {
 
     //Buscamos los datos del usuario a partir de su _id

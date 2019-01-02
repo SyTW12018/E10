@@ -51,12 +51,85 @@
 .img {
   width: 12rem;
 }
+
+.boton {
+  color:white ;
+  background-color:#54C2C3;
+  border-radius: 6px;
+  border: 2px solid rgb(84, 194, 195,.3);
+  margin-top:10px;
+}
+
+.boton:hover {
+  background-color: rgb(84, 194, 195,.7);
+  border: 2px solid rgb(84, 194, 195,.3);
+}
+
+.contenido3{
+  text-align:center;
+  background-color: white;
+  color: #54c2c3;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+  border-width: 2px;
+  border: solid white;
+  margin-top: 20px;
+}
+
+.fondo {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0, 0, 0,.7);
+  display: table;
+}
+
+.cuadrado {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.contenedor {
+  width: 300px;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+}
+
+.form{
+  margin:12px;
+  border: 2px solid rgb(84, 194, 195);
+}
+
 </style>
 
 
 
 <template>
   <div class="main">
+    <transition v-if="cuestionario">
+      <div class="fondo">
+        <div class="cuadrado">
+          <div class="contenedor">
+            <div class="contenido3">
+              <h4> Añadir lugar </h4>
+              <b-form-input class= "form" type="text" placeholder="Nombre lugar" v-model="lugar_"></b-form-input>
+              <b-form-input class= "form" type="text" placeholder="Fecha viaje" v-model="fecha_"></b-form-input>
+              <b-button type="submit" class="boton" v-on:click= "nuevoviaje">
+                Añadir
+              </b-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+
     <div class="container">
       <b-row>
         <b-col cols="6" id="sitio_deseados">
@@ -200,11 +273,17 @@
           <b-row>
             <h2>Tus proximos viajes</h2>
           </b-row>
+          <b-row>
+            <div class="contenido" @click="cuestionario=true">
+              <img  class="card-img-top Plus" src="../assets/add.png">
+              Añade un viaje
+            </div>
+          </b-row>
           <div v-for="sitio in futuros_viajes" :key="sitio" class="contenido">
             <b-row v-if="sitio.base" class="contenido2">
               <b-col>
                 <div class="img">
-                  <img class="card-img-top" src="../C.jpg">
+                  <img  class="card-img-top" src="../C.jpg">
                 </div>
               </b-col>
               <b-col>
@@ -220,7 +299,11 @@
                       <b-col cols="1">{{sitio.personas}}</b-col>
                       <b-col cols="1">
                         <div class="card">
-                          <img class="card-img-top" src="../person.jpg" alt="Card image">
+                          <img
+                            class="card-img-top"
+                            src="../person.jpg"
+                            alt="Card image"
+                          >
                         </div>
                       </b-col>
                     </b-row>
@@ -249,18 +332,20 @@
 </template>
 <script>
 
-	
+
 
 	export default {
 
 	  data(){
-      return{		
+
+      return{
+        cuestionario:false,
 				destinos_deseados: [
 							{lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:3,codigo:'3',mostrar:false,base:true},
-                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'4',mostrar:false,base:true},
-								
+              {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'4',mostrar:false,base:true},
+
         ],
-        
+
         futuros_viajes: [
                                                         {lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:8,codigo:'5',mostrar:false,base:true},
                                                         {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'6',mostrar:false,base:true},
@@ -269,11 +354,11 @@
 				este_mes: [
                                                         {lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:3,codigo:'7',mostrar:false,base:true},
                                                         {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'8',mostrar:false,base:true},
-                                                                      
+
         ],
 
 				todo_organizado: [
-							
+
                                                         {lugar: 'Madrid', pais: 'España',fecha:'Marzo 2017', personas:12, codigo:'1',mostrar:false,base:true},
                                                         {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'2',mostrar:false,base:true},
         ]
@@ -282,14 +367,14 @@
 
     mounted(){
     },
-	
+
 		methods: {
 
 			personaapuntada: function(object){
 				object.personas = object.personas+1;
 				object.base = !object.base;
-				this.futuros_viajes.push({lugar:object.lugar,pais: object.pais,fecha:object.fecha, personas:object.personas,codigo:object.codigo,mostrar:false,base:true}); 
-			},			
+				this.futuros_viajes.push({lugar:object.lugar,pais: object.pais,fecha:object.fecha, personas:object.personas,codigo:object.codigo,mostrar:false,base:true});
+      },
 
 			personadesapuntada: function(object){
 				object.personas = object.personas-1;
@@ -300,14 +385,20 @@
 			cambiarEstado: function(object) {
             			object.mostrar = !object.mostrar;
       },
+
+      nuevoviaje: function(){
+        if ((this.lugar_!= undefined) && (this.fecha_!= undefined)){
+          this.cuestionario=!this.cuestionario;
+          this.futuros_viajes.push({lugar:this.lugar_,pais: 'España',fecha:this.fecha_, personas:1,codigo:'9',mostrar:false,base:true});
+          this.todo_organizado.push({lugar:this.lugar_,pais: 'España',fecha:this.fecha_, personas:1,codigo:'9',mostrar:false,base:true});
+        }else{
+          alert("Existe un campo vacío");
+        }
+      },
 		},
-    
+
     components: {
     }
 
   }
 </script>
-							
-                        
-                                
-

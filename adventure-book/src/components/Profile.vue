@@ -65,10 +65,13 @@ h3{
           				      <h3> Cambiar la contraseña </h3>
           					</b-row>
           	        <b-row>
-          				      <b-form-input type="text" placeholder="Contraseña actual"></b-form-input>
+          				      <b-form-input type="password" placeholder="Contraseña actual"></b-form-input>
           					</b-row>
           	        <b-row>
-          				      <b-form-input type="text" placeholder="Nueva contraseña"></b-form-input>
+          				      <b-form-input type="password" placeholder="Nueva contraseña"></b-form-input>
+          					</b-row>
+                    <b-row>
+          				      <b-form-input type="password" placeholder="Repite la nueva contraseña"></b-form-input>
           					</b-row>
                     <b-row>
           						  <b-button id="update_pass">Guardar contraseña</b-button>

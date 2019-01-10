@@ -1,10 +1,10 @@
 <template>
 	<b-row align-h="center"> 
 		    <h2> Crear una cuenta </h2>
-		    <b-form-input type="text" placeholder="Nombre" v-model="name_"></b-form-input>
-		    <b-form-input type="text" placeholder="E-mail" v-model="mail_"></b-form-input>
-		    <b-form-input type="text" placeholder="Contraseña" v-model="pass_"></b-form-input>
-            <b-form-input type="text" placeholder="Repita contraseña" v-model="pass_rep"></b-form-input>
+		    <b-form-input type="text" placeholder="nombre y apellidos" v-model="name_"></b-form-input>
+		    <b-form-input type="text" placeholder="e-mail" v-model="mail_"></b-form-input>
+		    <b-form-input type="password" placeholder="contraseña" v-model="pass_"></b-form-input>
+            	    <b-form-input type="password" placeholder="repite la contraseña" v-model="pass_rep"></b-form-input>
 		    <button type="submit" value="Crear" @click="handleSubmit" class="btn btn-primary btn-block" style="margin-bottom:10px;"> Crear </button>
 
 	</b-row>

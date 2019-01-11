@@ -21,8 +21,9 @@ export default {
     handleSubmit(e){
       e.preventDefault()
       if(this.pass_.length > 0){
+        console.log(this.mail_);
         this.$http.post('http://localhost:8081/login', {
-          name: this.name_,
+          mail: this.mail_,
           pass: this.pass_
         })
         .then(response => {

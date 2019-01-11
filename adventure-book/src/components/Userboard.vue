@@ -162,6 +162,7 @@ export default {
     return {
       user_: JSON.parse(localStorage.getItem("user")),
       name: JSON.parse(localStorage.getItem("user")).name,
+      mail: JSON.parse(localStorage.getItem("user")).mail,
       files: [],
       uploadFiles: [],
       error: false,
@@ -259,7 +260,7 @@ export default {
       try {
         this.uploading = true;
         var url =
-          "http://localhost:8081/upload/" + this.name + "/" + this.place_;
+          "http://localhost:8081/upload/" + this.mail + "/" + this.place_;
         const res = await this.$http.post(url, formData, {
           onUploadProgress: e =>
             (this.progress = Math.round((e.loaded * 100) / e.total))
@@ -289,7 +290,7 @@ export default {
     this.sitios_visitados[0].sitios = ["Tamo activo"];
     try{
     await this.$http
-      .get("http://localhost:8081/userboard/" + this.name)
+      .get("http://localhost:8081/userboard/" + this.mail)
       .then(response => {
         this.user_data = response.data;
         this.sitios_visitados[0].sitios = response.data[0];

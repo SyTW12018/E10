@@ -1,7 +1,7 @@
 <template>
 	<b-row align-h="center"> 
         <h2> Iniciar Sesión </h2>
-        <b-form-input type="text" placeholder="e-mail" v-model="mail_"></b-form-input>
+        <b-form-input type="text" placeholder="Username" v-model="name_"></b-form-input>
         <b-form-input type="password" placeholder="contraseña" v-model="pass_"></b-form-input>
 	<button type="submit" value="Entrar" @click="handleSubmit" class="btn btn-primary btn-block" style="margin-bottom:10px;"> Entrar </button>
 	</b-row>
@@ -12,7 +12,7 @@
 export default {
   data: function() {
     return {
-      mail_: "",
+      name_: "",
       pass_: ""
     };
   },

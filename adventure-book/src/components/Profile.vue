@@ -46,7 +46,7 @@ h3{
 							                <b-form-input type="text" placeholder="Nombre completo" v-model="name_"></b-form-input>
 						             </b-col>
             						 <b-col cols="2">
-            						    <b-button>Guardar</b-button>
+            						    <b-button  v-on:click="update_name" >Guardar</b-button>
             						</b-col>
 					          </b-row>
 	            	    <b-row class="datos_personales">
@@ -90,11 +90,33 @@ export default {
   data(){
     return{
 		nombre: 'Tu cuenta en AdventureBook',
-    name_: 'Mireia Scholz Díaz',
-		mail_: 'mireia@gmail.com'
-	}
-  },
-  mounted(){
+    name_: '',
+		mail_: '',
+		pass_: ''
+		}
+	},
+
+	methods: {
+		update_name(){
+			console.log("Ejecuto popi");
+			this.$http.post("http://localhost:8081/change_Name/"+ this.name_ 
+			+ "/" + JSON.parse(localStorage.getItem("user")).name).
+			then(response => {
+					console.log("cambie el nombre");
+					window.localStorage.clear();
+					this.$router.push("/");
+			});
+		}
+},
+
+  async mounted(){
+		await this.$http.get("http://localhost:8081/data_user/"+ JSON.parse(localStorage.getItem("user")).name).
+		then(response => {
+			console.log(response.data)
+				this.pass_ = response.data[0];
+				this.mail_ = response.data[1];
+				this.name_ = response.data[2];
+		});
 
   },
   components: {

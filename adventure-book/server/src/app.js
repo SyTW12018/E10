@@ -567,11 +567,31 @@ app.get('/comprobar', (req, res) => {
 
 
 
+app.get('/data_user/:name', async (req,res) => {
 
-app.post('/change_Name/:new/:name', (req, res) => {
-    UserData.findOneAndUpdate({ 'name': req.params.name }, { $set: { 'name': req.params.new } }, function (err, docs) {
-        console.log("Aquí se actualiza el nombre de usuario");
-    });
+    try{
+        var response = [];
+        await UserData.findOne({'name': req.params.name},function(err,doc){
+                response.push(doc.password);
+                response.push(doc.mail);
+                response.push(doc.name);
+        });
+
+        res.send(response);
+    }catch(err){console.log(err)};
+
+});
+
+
+
+app.post('/change_Name/:new/:name', async (req, res) => {
+   
+    try{
+        UserData.findOneAndUpdate({ 'name': req.params.name }, { $set: { 'name': req.params.new } }, function (err, docs) {
+            console.log("Aquí se actualiza el nombre de usuario");
+        });
+    }catch(err){console.log(err)}
+    
     res.send(200);
 });
 

@@ -31,7 +31,7 @@ h3{
 			           <b-col md="8" offset-md="2">
 		    		         <b-row class="justify-content-md-center">
                          <b-col cols="12" md="auto">
-                             <h2> {{ nombre }} </h2>
+                             <h2> Tu cuenta en AdventureBook </h2>
                        </b-col>
 		    		         </b-row>
                      <br>
@@ -40,24 +40,21 @@ h3{
            					</b-row>
 	            	     <b-row class="datos_personales">
 						             <b-col cols="3">
-							               <p> Nombre completo</p>
+							               <p> Apodo </p>
 						             </b-col>
 						             <b-col cols="7">
-							                <b-form-input type="text" placeholder="Nombre completo" v-model="name_"></b-form-input>
+							                <b-form-input type="text" placeholder="Nombre con el que los demás usuarios te identificarán" v-model="nick_"></b-form-input>
 						             </b-col>
             						 <b-col cols="2">
-            						    <b-button  v-on:click="update_name" >Guardar</b-button>
+            						    <b-button  v-on:click="update_nickname" >Guardar</b-button>
             						</b-col>
 					          </b-row>
 	            	    <b-row class="datos_personales">
 						            <b-col cols="3">
 							              <p> Correo electrónico</p>
 						            </b-col>
-            						<b-col cols="7">
-            							  <b-form-input type="text" placeholder="Dirección de correo electrónico" v-model="mail_"></b-form-input>
-            						</b-col>
-            						<b-col cols="2">
-            							  <b-button>Guardar</b-button>
+            						<b-col cols="9">
+            							  <b-form-input type="text" placeholder="Dirección de correo electrónico" v-model="mail_" disabled>></b-form-input>
             						</b-col>
 					          </b-row>
                     <br>
@@ -89,17 +86,19 @@ h3{
 export default {
   data(){
     return{
-		nombre: 'Tu cuenta en AdventureBook',
-    name_: '',
+    nickname_: '',
 		mail_: '',
 		pass_: ''
 		}
 	},
 
 	methods: {
-		update_name(){
+		update_nickname(){
+
+      // Popi, fíjate que aquí que ya no será name, sino this.nickname_ (no lo toqué, que lo rompo)
+
 			console.log("Ejecuto popi");
-			this.$http.post("http://localhost:8081/change_Name/"+ this.name_ 
+			this.$http.post("http://localhost:8081/change_Name/"+ this.name_
 			+ "/" + JSON.parse(localStorage.getItem("user")).name).
 			then(response => {
 					console.log("cambie el nombre");
@@ -110,6 +109,9 @@ export default {
 },
 
   async mounted(){
+
+    // Popi, aquí sería recuperar el e-mail, que es con lo que el usuario inicia sesión (creo) (no lo toqué, que lo rompo)
+
 		await this.$http.get("http://localhost:8081/data_user/"+ JSON.parse(localStorage.getItem("user")).name).
 		then(response => {
 			console.log(response.data)

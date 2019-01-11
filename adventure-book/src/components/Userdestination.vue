@@ -34,14 +34,9 @@
   border-radius: 5px;
 }
 
-.contenido2 {
+/*.contenido2 {
   margin: 8px;
   margin-left: 0px;
-}
-
-/*.personas {
-  border-width: 2px;
-  border: solid rgb(84, 194, 195);
 }*/
 
 .card {
@@ -113,6 +108,13 @@
 .camuflado{
   margin-left: 15px;
   margin-top: 10px;
+  border-radius: 0px;
+}
+
+.camuflado:hover {
+  border-width: 2px;
+  border: solid rgb(84, 194, 195, 0.7);
+  border-radius: 5px;
 }
 
 </style>
@@ -146,8 +148,8 @@
           <b-row>
             <h2>Destinos deseados</h2>
           </b-row>
-          <div v-for="sitio in destinos_deseados" :key="sitio" class="contenido">
-              <b-row class="contenido2" v-if="sitio.base">
+          <div v-for="sitio in destinos_deseados" :key="sitio" >
+              <b-row class="contenido" v-if="sitio.base">
                 <div class="principal" @click="mostrarfechas(sitio)">
                   <b-col>
                     <div class="img">
@@ -168,29 +170,31 @@
                   </div>
                 </b-col>
               </b-row>
-              <b-row class="camuflado" v-if="sitio.camuflado">
-                <b-col cols="4" class="Fecha"> {{sitio.fecha}} </b-col>
-                <b-col cols="1"> - </b-col>
-                <b-col cols="4" class="Fecha"> {{sitio.fecha_f}} </b-col>
-                <b-col cols="3">
-                  <b-row>
-                    <b-col cols="1" class="margin"> {{sitio.personas}} </b-col>
-                    <b-col cols="1">
-                      <div class="card">
-                        <img class="card-img-top" src="../assets/person.png" alt="Card image">
-                      </div>
-                    </b-col>
-                    <b-col v-if="sitio.mostrar">
-                      <img
-                        @click="personaapuntada(sitio)"
-                        class="card-img-top Plus"
-                        src="../assets/add.png"
-                        alt="Card image"
-                      >
-                    </b-col>
-                  </b-row>
-                </b-col>
-              </b-row>
+              <div v-for="fech in sitio.date" :key="date" class="camuflado">
+                <b-row v-if="sitio.camuflado">
+                  <b-col cols="4" class="Fecha"> {{fech.fecha}} </b-col>
+                  <b-col cols="1"> - </b-col>
+                  <b-col cols="4" class="Fecha"> {{fech.fecha_f}} </b-col>
+                  <b-col cols="3">
+                    <b-row>
+                      <b-col cols="1" class="margin"> {{fech.personas}} </b-col>
+                      <b-col cols="1">
+                        <div class="card">
+                          <img class="card-img-top" src="../assets/person.png" alt="Card image">
+                        </div>
+                      </b-col>
+                      <b-col>
+                        <img
+                          @click="personaapuntada(sitio)"
+                          class="card-img-top Plus"
+                          src="../assets/add.png"
+                          alt="Card image"
+                        >
+                      </b-col>
+                    </b-row>
+                  </b-col>
+                </b-row>
+              </div>
           </div>
           <b-row class="mb-3">
             <h2>Este mes</h2>
@@ -355,8 +359,8 @@
       return{
         cuestionario:false,
 				destinos_deseados: [
-					{lugar: 'Andalucia', pais: 'España',mostrar:false,base:true,codigo:'3',fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3,camuflado:false},
-          {lugar: 'Cantabria' ,pais: 'España',fecha:'13 Mayo de 2019',fecha_f: '20 de Mayo de 2019', personas:4,codigo:'4',mostrar:false,base:true,camuflado:false},
+					{lugar: 'Andalucia', pais: 'España',mostrar:false,base:true,codigo:'3',camuflado:false,date:[{fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+          {lugar: 'Cantabria', pais: 'España',mostrar:false,base:true,codigo:'3',camuflado:false,date:[{fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
         ],
 
         futuros_viajes: [
@@ -384,20 +388,20 @@
 		methods: {
 
 			personaapuntada: function(object){
-				object.personas = object.personas+1;
+				object.date.personas = object.date.personas+1;
 				object.base = !object.base;
-				this.futuros_viajes.push({lugar:object.lugar,pais: object.pais,fecha:object.fecha, personas:object.personas,codigo:object.codigo,mostrar:false,base:true});
+				this.futuros_viajes.push({lugar:object.lugar,pais: object.pais,mostrar:false,base:true,camuflado:false,codigo:object.codigo,fecha:object.fecha, personas:object.personas,});
       },
 
 			personadesapuntada: function(object){
-				object.personas = object.personas-1;
+				object.date.personas = object.date.personas-1;
 				object.base = !object.base;
 				this.todo_organizado.push({lugar:object.lugar,pais: object.pais,fecha:object.fecha, personas:object.personas,codigo:object.codigo,mostrar:false,base:true});
 			},
 
-			cambiarEstado: function(object) {
+			/*cambiarEstado: function(object) {
             			object.mostrar = !object.mostrar;
-      },
+      },*/
 
       nuevoviaje: function(){
         if ((this.lugar_!= undefined) && (this.fecha_!= undefined) && (this.fechaf_!= undefined)){

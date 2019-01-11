@@ -276,6 +276,21 @@ export default {
       } catch (err) {
         console.log(err);
       }
+
+      try {
+        await this.$http.get("http://localhost:8081/userboard/" + this.name).
+        then(response => {
+        this.user_data = response.data;
+        this.sitios_visitados[0].sitios = response.data[0];
+        this.sitios_visitados_fotos = response.data[1];
+        this.sitios_deseados[0].sitios = response.data[2];
+        
+      });
+
+      }catch(err){console.log(err)}
+
+
+
     }
   },
 

@@ -497,9 +497,9 @@ app.post('/follow_group/:name/:group', (req, res) => {
 app.get('/groups/', async (req, res) => {
 
     try{
-        var response = [];
+        var response;
         await GroupTravel.find({},function(err,doc){
-            response.push(doc);
+            response = doc;
     });
 
     res.send(response);
@@ -565,9 +565,10 @@ app.get('/comprobar', (req, res) => {
     });
 });
 
+
+
+
 app.post('/change_Name/:new/:name', (req, res) => {
-
-
     UserData.findOneAndUpdate({ 'name': req.params.name }, { $set: { 'name': req.params.new } }, function (err, docs) {
         console.log("Aquí se actualiza el nombre de usuario");
     });

@@ -265,13 +265,6 @@
                                                         {lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:8,codigo:'5',mostrar:false,base:true},
                                                         {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'6',mostrar:false,base:true},
         ],
-
-				este_mes: [
-                                                        {lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:3,codigo:'7',mostrar:false,base:true},
-                                                        {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'8',mostrar:false,base:true},
-                                                                      
-        ],
-
 				todo_organizado: [
 							
                                                         {lugar: 'Madrid', pais: 'España',fecha:'Marzo 2017', personas:12, codigo:'1',mostrar:false,base:true},
@@ -280,7 +273,16 @@
       }
     },
 
-    mounted(){
+    async mounted(){
+
+      try{
+        await this.$http.get("http://localhost:8081/groups").
+        then(response => {
+          console.log(response.data[0].place);
+            this.todo_organizado.lugar = response[0].data.place;
+      });
+
+      }catch(err){console.log(err)}
     },
 	
 		methods: {
@@ -288,7 +290,8 @@
 			personaapuntada: function(object){
 				object.personas = object.personas+1;
 				object.base = !object.base;
-				this.futuros_viajes.push({lugar:object.lugar,pais: object.pais,fecha:object.fecha, personas:object.personas,codigo:object.codigo,mostrar:false,base:true}); 
+        this.futuros_viajes.push({lugar:object.lugar,pais: object.pais,fecha:object.fecha, personas:object.personas,codigo:object.codigo,mostrar:false,base:true}); 
+        
 			},			
 
 			personadesapuntada: function(object){

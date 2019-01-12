@@ -1,26 +1,30 @@
 <style>
-.main{
-    padding:100px;
-    background-color:white;
-}
+  body {
+    background-color: white !important;
+  }
 
-h3{
-	font-size: 24px;
-}
+  .main{
+      padding:100px;
+      background-color:white;
+  }
 
-.datos_personales{
-  position: relative;
-  left: -15px;
-}
+  h3{
+  	font-size: 24px;
+  }
 
-.datos_personales p{
-  position: relative;
-  top: 4px;
-}
+  .datos_personales{
+    position: relative;
+    left: -15px;
+  }
 
- #update_pass{
-   margin-top: 4px;
- }
+  .datos_personales p{
+    position: relative;
+    top: 4px;
+  }
+
+   #update_pass{
+     margin-top: 4px;
+   }
 
 </style>
 

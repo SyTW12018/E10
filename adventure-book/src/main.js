@@ -15,6 +15,7 @@ import Userdestination from './components/Userdestination.vue';
 import Profile from './components/Profile.vue';
 import Sites from './components/Sites.vue';
 import Lugar from './components/lugar.vue';
+import Subir_foto from './components/subir_foto.vue';
 //Vue authentication
 Vue.prototype.$http = Axios;
 
@@ -26,10 +27,8 @@ if(token){
   Vue.prototype.$http.defaults.headers.common['Authorization'] = token
 }
 
-
 //Vue default
 Vue.config.productionTip = false
-
 
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
@@ -37,7 +36,15 @@ Vue.use(VueRouter);
 const routes = [
     { path: '/',  component: Welcome},
     { path: '/welcome',  component: Welcome},
-    { path: '/userboard', component: Userboard},
+    { path: '/userboard', component: Userboard,
+        children: [
+            {
+              path: 'upload',
+              component: Subir_foto,
+              props: { default: true, sidebar: false }
+            }
+          ]
+    },
     { path: '/userdestination',component:Userdestination},
     { path: '/perfil', component: Profile},
     { path: '/waiting', component: Waiting},

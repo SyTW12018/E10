@@ -1,4 +1,7 @@
 <style>
+body {
+  background-color: white !important;
+}
 .main{
     padding:100px;
     background-color:white;
@@ -100,7 +103,7 @@ export default {
       }
   },
 
-  
+
   mounted() {
     if (
       localStorage.getItem("jwt") == null ||

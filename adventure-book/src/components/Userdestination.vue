@@ -1,4 +1,7 @@
 <style scope>
+body {
+  background-color: white !important;
+}
 .main {
   padding: 30px;
   background-color: white;
@@ -249,18 +252,18 @@
 </template>
 <script>
 
-	
+
 
 	export default {
 
 	  data(){
-      return{		
+      return{
 				destinos_deseados: [
 							{lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:3,codigo:'3',mostrar:false,base:true},
                                                         {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'4',mostrar:false,base:true},
-								
+
         ],
-        
+
         futuros_viajes: [
                                                         {lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:8,codigo:'5',mostrar:false,base:true},
                                                         {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'6',mostrar:false,base:true},
@@ -269,11 +272,11 @@
 				este_mes: [
                                                         {lugar: 'Venecia', pais: 'Italia',fecha:'Marzo 2016', personas:3,codigo:'7',mostrar:false,base:true},
                                                         {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'8',mostrar:false,base:true},
-                                                                      
+
         ],
 
 				todo_organizado: [
-							
+
                                                         {lugar: 'Madrid', pais: 'España',fecha:'Marzo 2017', personas:12, codigo:'1',mostrar:false,base:true},
                                                         {lugar: 'Oporto' ,pais: 'Portugal',fecha:'Mayo 2016', personas:4,codigo:'2',mostrar:false,base:true},
         ]
@@ -282,14 +285,14 @@
 
     mounted(){
     },
-	
+
 		methods: {
 
 			personaapuntada: function(object){
 				object.personas = object.personas+1;
 				object.base = !object.base;
-				this.futuros_viajes.push({lugar:object.lugar,pais: object.pais,fecha:object.fecha, personas:object.personas,codigo:object.codigo,mostrar:false,base:true}); 
-			},			
+				this.futuros_viajes.push({lugar:object.lugar,pais: object.pais,fecha:object.fecha, personas:object.personas,codigo:object.codigo,mostrar:false,base:true});
+			},
 
 			personadesapuntada: function(object){
 				object.personas = object.personas-1;
@@ -301,13 +304,9 @@
             			object.mostrar = !object.mostrar;
       },
 		},
-    
+
     components: {
     }
 
   }
 </script>
-							
-                        
-                                
-

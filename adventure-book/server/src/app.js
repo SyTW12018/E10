@@ -502,7 +502,7 @@ app.post("/delete_Visited/:mail/:place", (req, res) => {
 app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
   fs.unlinkSync(
     __dirname.split("server")[0] +
-      "uploads/" +
+      "static//uploads/" +
       req.params.mail +
       "/" +
       req.params.place.toUpperCase() +
@@ -514,7 +514,7 @@ app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
     { $pull: {
         uploadsphotos:
           __dirname.split("server")[0] +
-          "uploads/" +
+          "static/uploads/" +
           req.params.mail +
           "/" +
           place_ +

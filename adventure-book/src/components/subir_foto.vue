@@ -117,7 +117,7 @@
             </b-col>
             <b-col cols="3">
               <div>
-                <b-button @onclick="sendFiles">Subir fotos</b-button>
+                <button @onclick="sendFiles">Subir fotos</button>
               </div>
             </b-col>
           </b-row>
@@ -192,6 +192,7 @@ export default {
       return "";
     },
     async sendFiles() {
+      console.log("Ento en la funcion");
       if (this.uploadFiles.length == 0) {
         this.err_msg = "No hay ningún archivo que subir";
         return "";
@@ -207,6 +208,7 @@ export default {
       });
       var id_user = JSON.parse(localStorage.getItem("user"))._id;
       formData.append("place", this.place_);
+      console.log(this.place_);
       formData.append("user_id", localStorage.getItem("user"));
       try {
         this.uploading = true;

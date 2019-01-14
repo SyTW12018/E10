@@ -135,7 +135,18 @@
 export default {
   data: function() {
     return {
-       sitios_visitados_fotos:[],
+      user_: JSON.parse(localStorage.getItem("user")),
+      name: JSON.parse(localStorage.getItem("user")).name,
+      mail: JSON.parse(localStorage.getItem("user")).mail,
+      files: [],
+      uploadFiles: [],
+      error: false,
+      err_msg: "",
+      uploading: false,
+      uploadedFiles: [],
+      progress: 0,
+      groups: [],
+      sitios_visitados_fotos:[],
 
        sitios_visitados: [
                             {
@@ -169,7 +180,7 @@ export default {
     await this.$http
       .get("http://localhost:8081/userboard/" + this.mail)
       .then(response => {
-        this.user_data = response.data;
+        console.log(response.data);
         this.sitios_visitados[0].sitios = response.data[0];
         this.sitios_visitados_fotos = response.data[1];
         this.sitios_deseados[0].sitios = response.data[2];

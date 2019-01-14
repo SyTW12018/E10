@@ -83,8 +83,6 @@
       <div class="container">
 
           <router-view></router-view>
-
-
         <b-row>
           <b-col cols="9" id="mis_sitios">
             <b-row>

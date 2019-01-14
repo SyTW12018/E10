@@ -175,7 +175,21 @@ export default {
 	}
 	},
 
-
+  mounted() {
+    if (
+      localStorage.getItem("jwt") == null ||
+      localStorage.getItem("jwt") == "undefined"
+    ) {
+      this.$router.push("/");
+    }
+    this.$http
+      .post("http://localhost:8081/perfil", {
+        user_: JSON.parse(localStorage.getItem("user"))._id
+      })
+      .then(response => {
+        this.user_data = response.data;
+      });
+  },
 
   components: {
 

@@ -213,11 +213,11 @@ app.post("/waiting", (req, res) => {
                                 //devolver todas las fotos de un sitio
                                 });*/
 
-app.get("/userboard/:mail", (req, res) => {
+app.get("/userboard/:mail", async (req, res) => {
   var aux = [];
   var response = [];
 
-  UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
+  await UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
     //Server error
     if (err) {
       console.log(err);
@@ -230,6 +230,7 @@ app.get("/userboard/:mail", (req, res) => {
 
     if(doc.visited_places.length != 0){
       while (exit == 0 && i < doc.visited_places.length) {
+        console.log("i = " + i + "  visit: " + doc.visited_places[i])
         try {
           await PlaceData.find({place: doc.visited_places[i].toUpperCase(),"content.user_id": doc._id}, function(err, docs){
               if (err) {

@@ -1,4 +1,4 @@
-<style scope>
+<style>
 body {
   background-color: white !important;
 }

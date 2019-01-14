@@ -67,18 +67,35 @@
     height: 10px;
     background-color: blueviolet;
   }
+
+
+
+
+.imagen {
+  width: 300px;
+  height: 200px;
+}
 </style>
 
 <template>
   <div>
     <div class="main">
       <div class="container">
+
+          <router-view></router-view>
+
+
         <b-row>
           <b-col cols="9" id="mis_sitios">
-            <router-view></router-view>
             <b-row>
-              <h2>{{ sitios_visitados[0].nombre }}</h2>
+              <b-col>
+                <h2>{{ sitios_visitados[0].nombre }}</h2>
+              </b-col>
+              <b-col cols="1">
+                <img @click="upload()" width="20px" src="../upload.png" alt="cerrar">
+              </b-col>
             </b-row>
+
             <b-row>
               <p>{{ sitios_visitados[0].descripcion }}</p>
             </b-row>
@@ -139,6 +156,8 @@ export default {
     };
   },
   async mounted() {
+    this.subir_foto = 0;
+
     if (
       localStorage.getItem("jwt") == null ||
       localStorage.getItem("jwt") == "undefined"
@@ -157,6 +176,12 @@ export default {
 
       });
     }catch(err){};
+  },
+  methods: {
+    upload(){
+        this.$router.push('/userboard/upload');
+        this.subir_foto = 1;
+    },
   },
   components: {
 

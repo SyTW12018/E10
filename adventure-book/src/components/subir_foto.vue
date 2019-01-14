@@ -1,22 +1,5 @@
 <style scoped>
-.main {
-  padding: 100px;
-  background-color: white;
-}
-.card {
-  margin: 0px 8px 8px 0px;
-  background-color: #54c2c3;
-  color: white;
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 14px;
-  text-align: center;
-  border-radius: 0px;
-}
-.card:hover {
-  background-color: white;
-  color: #54c2c3;
-}
+
 .dropzone {
   min-height: 200px;
   padding: 10px 10px;
@@ -46,63 +29,103 @@
   position: absolute;
   cursor: pointer;
 }
-.imagen {
-  width: 300px;
-  height: 200px;
-}
 .delete {
   width: 10px;
   height: 10px;
   background-color: blueviolet;
 }
+
+
+.contenido3{
+
+}
+.fondo {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0, 0, 0,.7);
+  display: table;
+}
+.cuadrado {
+  display: table-cell;
+  vertical-align: middle;
+}
+.contenedor {
+
+  width: 50%;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  text-align:center;
+  background-color: white;
+  color: #54c2c3;
+  font-weight: bold;
+  font-size: 14px;
+  border-width: 2px;
+  border: solid white;
+  margin-top: 20px;
+}
+
 </style>
 
 <template>
-  <div>
-    <h1>Subir una foto</h1>
+  <div class="fondo">
+    <div class="cuadrado">
+      <div class="contenedor">
+        <b-row>
+          <b-col>
+            <h3> Subir una foto </h3>
+          </b-col>
+          <b-col cols="1">
+            <img @click="close()" src="../close.png" alt="cerrar">
+          </b-col>
+        </b-row>
+        <form @submit.prevent="sendFiles" enctype="multipart/form-data">
+          <div class="dropzone">
+            <input multiple type="file" ref="files" class="input-field" @change="selectFile">
 
-    <label for="lugar">
-      Lugar:
-      <input type="text" v-model="place_">
-    </label>
+            <p v-if="!uploading" class="call-to-action">Arrasta tus archivos</p>
+            <p v-if="uploading" class="progress-bar">
+              <progress class="progress is-primary" :value="progress" max="100">{{progress}}%</progress>
+            </p>
+          </div>
 
-    <form @submit.prevent="sendFiles" enctype="multipart/form-data">
-      <div class="dropzone">
-        <label for="title">Upload Files</label>
-        <input multiple type="file" ref="files" class="input-field" @change="selectFile">
-
-        <p v-if="!uploading" class="call-to-action">Arrasta tus archivos</p>
-        <p v-if="uploading" class="progress-bar">
-          <progress class="progress is-primary" :value="progress" max="100">{{progress}}%</progress>
-        </p>
-      </div>
-
-      <div class="field">
-        <div v-for="(file, index) in files" :key="index" class="level">
-          <div class="level-left">
-            <div class="level-item">
-              {{file.name}}
-              <span v-if="file.invalidMsg">&nbsp;- {{file.invalidMsg}}</span>
+          <div class="field">
+            <div v-for="(file, index) in files" :key="index" class="level">
+              <div class="level-left">
+                <div class="level-item">
+                  {{file.name}}
+                  <span v-if="file.invalidMsg">&nbsp;- {{file.invalidMsg}}</span>
+                </div>
+              </div>
+              <div class="level-right">
+                <div class="level-item">
+                  <a @click.prevent="files.splice(index,1);uploadFiles.splice(index,1)" class="delete">X</a>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="level-right">
-            <div class="level-item">
-              <a @click.prevent="files.splice(index,1);uploadFiles.splice(index,1)" class="delete">X</a>
-            </div>
-          </div>
-        </div>
+          <br>
+          <b-row align-h="between">
+            <b-col cols="4">
+              <b-form-select v-model="place_" :options="options" class="mb-3">
+              </b-form-select>
+            </b-col>
+            <b-col cols="3">
+              <div>
+                <b-button @onclick="sendFiles">Subir fotos</b-button>
+              </div>
+            </b-col>
+          </b-row>
+        </form>
       </div>
-
-      <div>
-        <button @onclick="sendFiles">Send</button>
-      </div>
-    </form>
-
-    <div>
-      <button @click="log_out">Log Out</button>
     </div>
+</div>
 
-  </div>
 </template>
 
 
@@ -112,6 +135,17 @@ import Foto from './Require_photo.vue'
 export default {
   data: function() {
     return {
+      place_: null,
+      options: [
+        { value: null, text: 'Lugar' },
+        { value: '1', text: 'Andalucía' },
+        { value: '2', text: 'Aragón' },
+        { value: '3', text: 'Asturias' },
+        { value: '4', text: 'Baleares'},
+        { value: '5', text: 'Canarias'},
+        { value: '6', text: 'Cantabria'},
+      ],
+
       user_: JSON.parse(localStorage.getItem("user")),
       name: JSON.parse(localStorage.getItem("user")).name,
       mail: JSON.parse(localStorage.getItem("user")).mail,
@@ -123,15 +157,13 @@ export default {
       uploadedFiles: [],
       progress: 0,
       groups: [],
-      place_: "",
       sitios_visitados_fotos:[],
 
     };
   },
   methods: {
-    log_out() {
-      window.localStorage.clear();
-      this.$router.push("/");
+    close(){
+        this.$router.push('/userboard/');
     },
 
     selectFile() {

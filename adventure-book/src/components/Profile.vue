@@ -129,23 +129,17 @@ export default {
   },
   mounted(){
 
-		this.name_= JSON.parse(localStorage.getItem("user")).name;
-		this.pass_= JSON.parse(localStorage.getItem("user")).pass;
-    this.mail_= JSON.parse(localStorage.getItem("user")).mail;
-    
     if (
       localStorage.getItem("jwt") == null ||
       localStorage.getItem("jwt") == "undefined"
     ) {
       this.$router.push("/");
     }
-    this.$http
-      .post("http://localhost:8081/perfil", {
-        user_: JSON.parse(localStorage.getItem("user"))._id
-      })
-      .then(response => {
-        this.user_data = response.data;
-      });
+
+    this.name_= JSON.parse(localStorage.getItem("user")).name;
+		this.pass_= JSON.parse(localStorage.getItem("user")).pass;
+    this.mail_= JSON.parse(localStorage.getItem("user")).mail;
+
 
 	},
 	
@@ -162,7 +156,10 @@ export default {
 					localStorage.setItem('user', JSON.stringify(user));
 
 					// mostrar el tick verde
-					document.getElementById("update_name").style.visibility = "visible";
+          document.getElementById("update_name").style.visibility = "visible";
+          wait(100000);
+          document.getElementById("update_name").style.visibility = "hidden";
+
 				});
 			}catch(err){}
 		
@@ -183,7 +180,7 @@ export default {
 					this.new_pass_= "";
 					this.new_pass_repeat_= "";
 					// mostrar el tick verde
-					document.getElementById("update_name").style.visibility = "visible";
+          document.getElementById("update_name").style.visibility = "visible";
 				});
 			}catch(err){}
 	}

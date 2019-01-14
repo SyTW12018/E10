@@ -656,9 +656,18 @@ app.get("/comprobar", (req, res) => {
 });
 
 
-app.post("/change_Name/:new/:name", (req, res) => {
+
+
+
+
+
+
+
+
+
+app.post("/change_name/:new/:mail", async(req, res) => {
   UserData.findOneAndUpdate(
-    { name: req.params.name },
+    { mail: req.params.mail },
     { $set: { name: req.params.new } },
     function(err, docs) {
       console.log("Aquí se actualiza el nombre de usuario");
@@ -668,18 +677,38 @@ app.post("/change_Name/:new/:name", (req, res) => {
 });
 
 
-app.post("/change_Pass/:new/:mail", (req, res) => {
+app.post("/change_pass/:new/:mail", async(req, res) => {
 
-  UserData.findOneAndUpdate(
+  var pass = "";
+  try{
+    await UserData.findOneAndUpdate(
     { mail: req.params.mail },
     { $set: { password: bcrypt.hashSync(req.params.new, 8) } },
     function(err, docs) {
-      console.log(docs);
+      pass = docs.password;
       console.log("Aquí se actualiza la pass de usuario");
     }
   );
-  res.send(200);
+  res.send(pass);
+  }catch(err){};
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 let server = app.listen(process.env.PORT || 8081, function(err) {
   if (err) {

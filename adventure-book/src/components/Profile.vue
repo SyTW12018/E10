@@ -131,7 +131,21 @@ export default {
 
 		this.name_= JSON.parse(localStorage.getItem("user")).name;
 		this.pass_= JSON.parse(localStorage.getItem("user")).pass;
-		this.mail_= JSON.parse(localStorage.getItem("user")).mail;
+    this.mail_= JSON.parse(localStorage.getItem("user")).mail;
+    
+    if (
+      localStorage.getItem("jwt") == null ||
+      localStorage.getItem("jwt") == "undefined"
+    ) {
+      this.$router.push("/");
+    }
+    this.$http
+      .post("http://localhost:8081/perfil", {
+        user_: JSON.parse(localStorage.getItem("user"))._id
+      })
+      .then(response => {
+        this.user_data = response.data;
+      });
 
 	},
 	
@@ -174,22 +188,6 @@ export default {
 			}catch(err){}
 	}
 	},
-
-  mounted() {
-    if (
-      localStorage.getItem("jwt") == null ||
-      localStorage.getItem("jwt") == "undefined"
-    ) {
-      this.$router.push("/");
-    }
-    this.$http
-      .post("http://localhost:8081/perfil", {
-        user_: JSON.parse(localStorage.getItem("user"))._id
-      })
-      .then(response => {
-        this.user_data = response.data;
-      });
-  },
 
   components: {
 

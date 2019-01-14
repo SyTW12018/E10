@@ -31,7 +31,6 @@ export default {
           localStorage.setItem('jwt', response.data.token)
           if(localStorage.getItem('jwt') != null){
             this.$emit('loggenIn')
-
             this.$router.push('/waiting');           
           }
         })

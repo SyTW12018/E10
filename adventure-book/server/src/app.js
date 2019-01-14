@@ -204,7 +204,6 @@ app.post("/waiting", (req, res) => {
     console.log("usuario sin token");
     res.send({ path: "/login" });
   } else {
-    console.log("el token tiene algo" + token);
     res.status(200).send({ path: "/userboard" }); //Aqui hay que pasar el user
   }
 });
@@ -217,9 +216,6 @@ app.post("/waiting", (req, res) => {
 app.get("/userboard/:mail", (req, res) => {
   var aux = [];
   var response = [];
-
-  
-  console.log(dir);
 
   UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
     //Server error

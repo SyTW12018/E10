@@ -228,7 +228,7 @@ app.get("/userboard/:mail", (req, res) => {
     var exit = 0;
     var i = 0;
 
-    if(doc.visited_place.length != 0){
+    if(doc.visited_places.length != 0){
       while (exit == 0 && i < doc.visited_places.length) {
         try {
           await PlaceData.find({place: doc.visited_places[i].toUpperCase(),"content.user_id": doc._id}, function(err, docs){
@@ -287,7 +287,6 @@ app.get("/userboard/:mail", (req, res) => {
       if (exit == 1) {
         return res.status(500).send("Error de inconsistencia");
       } else {
-        console.log(response);
         response.push(doc.visited_places);
         response.push(aux);
         response.push(doc.wished_places);

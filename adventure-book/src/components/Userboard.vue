@@ -154,8 +154,8 @@
 
 
 <script>
-import _ from 'lodash';
-import Foto from './Require_photo.vue'
+import _ from "lodash";
+import Foto from "./Require_photo.vue";
 
 export default {
   data: function() {
@@ -172,24 +172,24 @@ export default {
       progress: 0,
       groups: [],
       place_: "",
-      sitios_visitados_fotos:[],
+      sitios_visitados_fotos: [],
 
-       sitios_visitados: [
-                            {
-                              nombre: 'Mis Sitios',
-                              descripcion: 'Aquí aparecerán los lugares en los que has etiquetado tus fotos',
-                              sitios: [ 
-                                      ]
-                            }
-                          ],
-        sitios_deseados: [
-                            {
-                              nombre: 'Mis Sitios',
-                              descripcion: 'Aquí aparecerán los lugares en los que has etiquetado tus fotos',
-                              sitios: [ 
-                                      ]
-                            }
-                         ],
+      sitios_visitados: [
+        {
+          nombre: "Mis Sitios",
+          descripcion:
+            "Aquí aparecerán los lugares en los que has etiquetado tus fotos",
+          sitios: []
+        }
+      ],
+      sitios_deseados: [
+        {
+          nombre: "Mis Sitios",
+          descripcion:
+            "Aquí aparecerán los lugares en los que has etiquetado tus fotos",
+          sitios: []
+        }
+      ]
     };
   },
 
@@ -199,7 +199,7 @@ export default {
       this.$router.push("/");
     },
 
-    get_photo(index){
+    get_photo(index) {
       console.log(this.sitios_visitados_fotos[index]);
       return "http//:localhost:3000/static/prueba/CANTABRIA/coche3.jpg";
       //return this.sitios_visitados_fotos[index];
@@ -288,17 +288,16 @@ export default {
       this.$router.push("/");
     }
     this.sitios_visitados[0].sitios = ["Tamo activo"];
-    try{
-    await this.$http
-      .get("http://localhost:8081/userboard/" + this.mail)
-      .then(response => {
-        this.user_data = response.data;
-        this.sitios_visitados[0].sitios = response.data[0];
-        this.sitios_visitados_fotos = response.data[1];
-        this.sitios_deseados[0].sitios = response.data[2];
-        
-      });
-    }catch(err){};
+    try {
+      await this.$http
+        .get("http://localhost:8081/userboard/" + this.mail)
+        .then(response => {
+          this.user_data = response.data;
+          this.sitios_visitados[0].sitios = response.data[0];
+          this.sitios_visitados_fotos = response.data[1];
+          this.sitios_deseados[0].sitios = response.data[2];
+        });
+    } catch (err) {}
   },
 
   components: {

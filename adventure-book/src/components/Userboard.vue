@@ -1,124 +1,99 @@
 <style scoped>
-.main {
-  padding: 100px;
-  background-color: white;
-}
+  body {
+    background-color: white !important;
+  }
+  .main {
+    padding: 100px;
+    background-color: white;
+  }
 
-.card {
-  margin: 0px 8px 8px 0px;
-  background-color: #54c2c3;
-  color: white;
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 14px;
-  text-align: center;
-  border-radius: 0px;
-}
+  .card {
+    margin: 0px 8px 8px 0px;
+    background-color: #54c2c3;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 0px;
+  }
 
-.card:hover {
-  background-color: white;
-  color: #54c2c3;
-}
+  .card:hover {
+    background-color: white;
+    color: #54c2c3;
+  }
 
-.dropzone {
-  min-height: 200px;
-  padding: 10px 10px;
-  position: relative;
-  cursor: pointer;
-  outline: 2px dashed grey;
-  outline-offset: -10px;
-  background: lightcyan;
-  color: dimgray;
-}
+  .dropzone {
+    min-height: 200px;
+    padding: 10px 10px;
+    position: relative;
+    cursor: pointer;
+    outline: 2px dashed grey;
+    outline-offset: -10px;
+    background: lightcyan;
+    color: dimgray;
+  }
 
-.dropzone:hover {
-  background: lightskyblue;
-}
+  .dropzone:hover {
+    background: lightskyblue;
+  }
 
-.dropzone .call-to-action {
-  font-size: 1.2rem;
-  text-align: center;
-  padding: 70px;
-}
+  .dropzone .call-to-action {
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 70px;
+  }
 
-.dropzone .progress-bar {
-  text-align: center;
-  padding: 60px 10px;
-}
+  .dropzone .progress-bar {
+    text-align: center;
+    padding: 60px 10px;
+  }
 
-.input-field {
-  opacity: 0;
-  width: 100%;
-  height: 200px;
-  position: absolute;
-  cursor: pointer;
-}
+  .input-field {
+    opacity: 0;
+    width: 100%;
+    height: 200px;
+    position: absolute;
+    cursor: pointer;
+  }
+
+  .imagen {
+    width: 300px;
+    height: 200px;
+  }
+
+  .delete {
+    width: 10px;
+    height: 10px;
+    background-color: blueviolet;
+  }
+
+
+
 
 .imagen {
   width: 300px;
   height: 200px;
 }
-
-.delete {
-  width: 10px;
-  height: 10px;
-  background-color: blueviolet;
-}
 </style>
 
 <template>
   <div>
-    <h1>Bienvenido al dashboard</h1>
-    <h2>{{name}}</h2>
-
-    <label for="lugar">
-      Lugar:
-      <input type="text" v-model="place_">
-    </label>
-
-    <form @submit.prevent="sendFiles" enctype="multipart/form-data">
-      <div class="dropzone">
-        <label for="title">Upload Files</label>
-        <input multiple type="file" ref="files" class="input-field" @change="selectFile">
-
-        <p v-if="!uploading" class="call-to-action">Arrasta tus archivos</p>
-        <p v-if="uploading" class="progress-bar">
-          <progress class="progress is-primary" :value="progress" max="100">{{progress}}%</progress>
-        </p>
-      </div>
-
-      <div class="field">
-        <div v-for="(file, index) in files" :key="index" class="level">
-          <div class="level-left">
-            <div class="level-item">
-              {{file.name}}
-              <span v-if="file.invalidMsg">&nbsp;- {{file.invalidMsg}}</span>
-            </div>
-          </div>
-          <div class="level-right">
-            <div class="level-item">
-              <a @click.prevent="files.splice(index,1);uploadFiles.splice(index,1)" class="delete">X</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <button @onclick="sendFiles">Send</button>
-      </div>
-    </form>
-
-    <div>
-      <button @click="log_out">Log Out</button>
-    </div>
-
     <div class="main">
       <div class="container">
+
+          <router-view></router-view>
         <b-row>
           <b-col cols="9" id="mis_sitios">
             <b-row>
-              <h2>{{ sitios_visitados[0].nombre }}</h2>
+              <b-col>
+                <h2>{{ sitios_visitados[0].nombre }}</h2>
+              </b-col>
+              <b-col cols="1">
+                <img @click="upload()" width="20px" src="../upload.png" alt="cerrar">
+              </b-col>
             </b-row>
+
             <b-row>
               <p>{{ sitios_visitados[0].descripcion }}</p>
             </b-row>
@@ -281,6 +256,8 @@ export default {
   },
 
   async mounted() {
+    this.subir_foto = 0;
+
     if (
       localStorage.getItem("jwt") == null ||
       localStorage.getItem("jwt") == "undefined"
@@ -299,10 +276,14 @@ export default {
         });
     } catch (err) {}
   },
-
+  methods: {
+    upload(){
+        this.$router.push('/userboard/upload');
+        this.subir_foto = 1;
+    },
+  },
   components: {
-    Foto
+
   }
 };
 </script>
-

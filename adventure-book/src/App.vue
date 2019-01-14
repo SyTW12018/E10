@@ -66,17 +66,17 @@
 				</span>
 			</b-row>
 
-
       <b-row id="links">
         <b-nav>
-          <router-link to='/Welcome' class="item"> Entrar </router-link>
           <router-link to='/perfil' class="item"> Cuenta </router-link>
-	        <router-link to='/userboard' class="item"> Mis Sitios </router-link>
+          <router-link to='/userboard' class="item"> Mis Sitios </router-link>
           <router-link to='/Userdestination' class="item"> Grupos viaje </router-link>
           <router-link to='/sitios' class="item"> Sitios </router-link>
+          <b-button @click="log_out"> Salir </b-button>
         </b-nav>
-       </b-row>
+      </b-row>
       </div>
+
 
 		<router-view></router-view>
 
@@ -93,10 +93,19 @@ export default {
   name: 'App',
   data(){
     return{
-
     }
   },
-  mounted(){
+  watch:{
+    
+  },
+
+  methods:{
+
+    log_out(){
+      console.log("voy a salir, ma");
+      window.localStorage.clear();
+      this.$router.push("/");  
+    }
 
   },
   components: {

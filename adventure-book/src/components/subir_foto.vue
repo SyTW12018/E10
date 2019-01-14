@@ -35,10 +35,6 @@
   background-color: blueviolet;
 }
 
-
-.contenido3{
-
-}
 .fondo {
   position: fixed;
   z-index: 9998;

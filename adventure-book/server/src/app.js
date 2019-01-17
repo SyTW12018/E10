@@ -56,7 +56,7 @@ var UserData = Mongoose.model("UserData", UserDataSchema);
 var PlaceDataSchema = new Schema(
   {
     place: String,
-    content: [{ user_id: String, photo: String, date: Date }],
+    content: [{ user_id: String, photo: Array, date: Date }],
     date: { type: Date, default: Date.now }
   },
   { collection: "placeData" }

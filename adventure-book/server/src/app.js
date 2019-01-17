@@ -1,16 +1,17 @@
 "use strict";
+//Módulos para el servidor y BBDD
 var express = require("express");
 var bodyParse = require("body-parser");
 var cors = require("cors");
 var morgan = require("morgan");
 var Mongoose = require("mongoose");
-//requires to authorization
+//Módulos para la autorización y registro
 const config = require("./config");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 var path = require("path");
 var fs = require("fs");
-//to upload files
+//Para subir archivos binarios
 const multer = require("multer");
 const sharp = require("sharp");
 var sys = require("sys");
@@ -33,7 +34,7 @@ app.use(cors());
 /* Creando los esquemas de los datos */
 var Schema = Mongoose.Schema;
 
-//Modelo de la colleción de los usuarios
+//Esquema de la colleción de los usuarios
 var UserDataSchema = new Schema(
   {
     name: String,
@@ -48,7 +49,7 @@ var UserDataSchema = new Schema(
 );
 var UserData = Mongoose.model("UserData", UserDataSchema);
 
-//Esquema de la colección de datos
+//Esquema de la colección del lugares
 var PlaceDataSchema = new Schema(
   {
     place: String,
@@ -107,22 +108,19 @@ for(var i = 0; i < comunidades.length; i++){
 /*Aquí empieza el API-REST*/
 
 
-
-
 app.post("/signup", (req, res) => {
   
-  //Check that the mail is not in the database because we could not have two equal emails
+  //Comprobamos que no hayan dos emails iguales.
   UserData.findOne({ mail: req.body.mail }, (err, user_found) => {
     if(err){
       return res.status(500).send("Hubo un problema en el registro de usuario");
     }
 
     if (user_found) {
-      console.log("Usuario ya registrado");
       return res.status(500).send("Usuario ya registrado");
     } 
     else {
-      //Introducing the user data into de schema in order to introduce it into the database
+      //Creando el regiastro de la base de datos con su contraseña cifrada
       var data = new UserData({
         name: req.body.name,
         password: bcrypt.hashSync(req.body.pass, 8),
@@ -130,26 +128,21 @@ app.post("/signup", (req, res) => {
       });
 
 
-      //Introducing the user in our database
+      //Guardando el user en la BBDD
       data.save().then(function(info, err) {
         if (err) {
-          console.log("error 1");
           return res.status(500).send("Hubo un problema en el registro de usuario");
         }
 
-        //If the user is registered successfully we create his token
+        //Si se crea correctamente, se crea el token para la sesión
         UserData.findOne({ mail: data.mail }, function(err, user) {
           if (err) {
-            console.log("error 2");
-            console.log(err);
             return res.status(500).send("Problema para encontrar el usuario");
           }
-          //create the authentication token for the user with the jwt package
-          //the token expires in 24 hours -> 86400seconds
+          //El token dura 24h
           let token = jwt.sign({ id: user._id }, config.secret, {
             expiresIn: 86400
           });
-
           res.status(200).send({ auth: true, token: token, user: user });
         });
       });
@@ -157,41 +150,37 @@ app.post("/signup", (req, res) => {
   });
 });
 
-
-
-
+//Función para el Login del usuario
 app.post("/login", (req, res) => {
   console.log(req.body.mail);
   console.log(req.body.pass);
   UserData.findOne({ mail: req.body.mail }, function(err, user) {
-    //Server error
+    //Error del servidor
     if (err) {
       console.log(err);
       return res.status(500).send("Problema para encontrar el usuario");
     }
 
-    //user not found
+    //Usuario no encontrado
     if (!user) {
-      console.log("usuario no registrado");
       return res.status(404).send("Usuario no registrado");
     }
 
-    console.log("vamos a mostrar el password valid");
-    //Useing bcrypt to compare our hashed password with the user supplied password
+    //Usamos bcrypt para comparar su contraseña cifrada
     let passwordIsValid = bcrypt.compareSync(req.body.pass, user.password);
     console.log(passwordIsValid);
 
     if (!passwordIsValid) {
       return res.status(401).send({ auth: false, token: null });
     }
-    //create the authentication token for the user with the jwt package
-    //the token expires in 24 hours -> 86400seconds
+    //EL token dura 24h
     let token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 10 });
 
     res.status(200).send({ auth: true, token: token, user: user });
   });
 });
 
+ //Función para comprobar que existe un token
 app.post("/waiting", (req, res) => {
   var token = req.body.token;
   if (token == null || token == "undefined") {
@@ -199,14 +188,13 @@ app.post("/waiting", (req, res) => {
     console.log("usuario sin token");
     res.send({ path: "/login" });
   } else {
-    res.status(200).send({ path: "/userboard" }); //Aqui hay que pasar el user
+    res.status(200).send({ path: "/userboard" });
   }
 });
 
-/*await fs.readdirSync(dir + "/" + doc.visited_places[i]).forEach(function(file){
-                                response.push(dir + "/" + doc.visited_places[i] + "/" + file) //Esto es lo que necesito para 
-                                //devolver todas las fotos de un sitio
-                                });*/
+
+
+//Esta función devuelve la información del userboard del usuario
 
 app.get("/userboard/:mail", async (req, res) => {
   var aux = [];
@@ -223,6 +211,7 @@ app.get("/userboard/:mail", async (req, res) => {
     var exit = 0;
     var i = 0;
 
+    //Si hay lugares visitados de devuelven todos los lugares visitados
     if(doc.visited_places.length != 0){
       while (exit == 0 && i < doc.visited_places.length) {
         console.log("i = " + i + "  visit: " + doc.visited_places[i])
@@ -236,10 +225,10 @@ app.get("/userboard/:mail", async (req, res) => {
                 console.log("docs es null");
               } 
               else {
+                //Leemos su carpeta de los lugares para buscar una foto
                 try {
                   var all_files = fs.readdirSync(dir + "/" + doc.visited_places[i]);
                   if (all_files.length == 0) {
-                    console.log("Sin foto");
                     exit = 1;
                   } 
                   else {
@@ -259,12 +248,7 @@ app.get("/userboard/:mail", async (req, res) => {
                       { mail: req.params.mail },
                       { $set: { visited_places: new_visited_places } },
                       function(err, docs) {
-                        if (err == null) {
-                          console.log(
-                            "Modificando registro de visited_places porque la carpeta no está creada"
-                          );
-                        } else {
-                          console.log("Hubo un error");
+                        if (err) {
                           console.log(err);
                         }
                       }
@@ -283,6 +267,7 @@ app.get("/userboard/:mail", async (req, res) => {
       if (exit == 1) {
         return res.status(500).send("Error de inconsistencia");
       } else {
+        //Enviamos toda la información
         response.push(doc.visited_places);
         response.push(aux);
         response.push(doc.wished_places);
@@ -294,6 +279,8 @@ app.get("/userboard/:mail", async (req, res) => {
   });
 });
 
+
+//Función para añadir un lugar a favoritos
 app.post("/follow_Wished/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate(
     { name: req.params.mail },
@@ -309,6 +296,7 @@ app.post("/follow_Wished/:mail/:place", (req, res) => {
     }
   );
 });
+
 
 app.post("/sites/:place", async (req, res) => {
   var visited_place = req.params.place.toUpperCase();
@@ -347,6 +335,8 @@ const upload = multer({
   }
 });
 
+
+//Función para subir fotos
 app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
   var files_ = [];
   var aux_ = __dirname.split("server");
@@ -425,11 +415,7 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
             content: [{ user_id: doc._id, photo: files_, date: new Date() }],
             date: new Date()
           });
-          data.save(); /*.then(function() {
-                PlaceData.findOne({ author_name: req.params.name }, function(err, doc) {
-                console.log(err);
-                });
-            });*/
+          data.save();
         });
       } 
       else {
@@ -465,18 +451,20 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
   res.json({ files: files_ });
 });
 
+//Función para borrar un lugar deseado
 app.post("/delete_Wished/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
     { $pull: { wished_places: req.params.place } },
     function(err, doc) {
       console.log("Modificando registro ...");
-      console.log(doc); //Esto si funciona perfecto
+      console.log(doc); 
     }
   );
   res.send(200);
 });
 
+//Función para borrar un lugar deseado
 app.post("/delete_Visited/:mail/:place", (req, res) => {
   console.log(req.params.place);
   UserData.findOneAndUpdate(
@@ -484,12 +472,14 @@ app.post("/delete_Visited/:mail/:place", (req, res) => {
     { $pull: { visited_places: req.params.place } },
     function(err, doc) {
       console.log("Modificando registro ...");
-      console.log(doc); //Esto si funciona perfecto
+      console.log(doc); 
     }
   );
   res.status(200);
 });
 
+
+//Función para borrar una foto del lugar
 app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
   fs.unlinkSync(
     __dirname.split("server")[0] +
@@ -521,6 +511,8 @@ app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
   res.status(200);
 });
 
+
+//Función para añadir un grupo de viaje
 app.post("/add_group/:author_name/:place", async (req, res) => {
   var aux_ = __dirname.split("server");
   var array_user = [req.params.author_name];
@@ -559,6 +551,8 @@ app.post("/add_group/:author_name/:place", async (req, res) => {
   });
 });
 
+
+//Función para borrar un grupo de viaje
 app.post("/delete_group/:mail/:group", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
@@ -570,6 +564,7 @@ app.post("/delete_group/:mail/:group", (req, res) => {
   res.send(200);
 });
 
+//Función para seguir un grupo de viaje
 app.post("/follow_group/:mail/:group", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
@@ -581,6 +576,7 @@ app.post("/follow_group/:mail/:group", (req, res) => {
   res.send(200);
 });
 
+//Función que devuelgve lños grupos de viajes disponibles
 app.get("/groups/", async (req, res) => {
   try {
     var response = [];
@@ -592,6 +588,7 @@ app.get("/groups/", async (req, res) => {
   } catch (err) {}
 });
 
+//Función que devulve los grupos de viaje de un usuario
 app.get("/groups/:mail/", (req, res) => {
   var response = [];
   var aux = [];
@@ -603,14 +600,13 @@ app.get("/groups/:mail/", (req, res) => {
           docs
         ) {
           if (docs != null) {
-            aux.push(docs); //Aqui devulevo los grupos que existen que sean al lugar que el user tenga como deseados
+            aux.push(docs);
           }
         });
       } catch (err) {
         console.log(err);
       }
     }
-    //ESTO A VECES FUNCIONA, ES MAGIA
     response.push(doc.groupsTravel);
     response.push(aux);
     res.send(response);
@@ -646,16 +642,7 @@ app.get("/comprobar", (req, res) => {
   });
 });
 
-
-
-
-
-
-
-
-
-
-
+//Función para cambiar el NICKNAME del usuario
 app.post("/change_name/:new/:mail", async(req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
@@ -667,7 +654,7 @@ app.post("/change_name/:new/:mail", async(req, res) => {
   res.send(200);
 });
 
-
+//Función para cambiar la contraseña del usuario
 app.post("/change_pass/:new/:mail", async(req, res) => {
 
   var pass = "";
@@ -685,20 +672,10 @@ app.post("/change_pass/:new/:mail", async(req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*await fs.readdirSync(dir + "/" + doc.visited_places[i]).forEach(function(file){
+                                response.push(dir + "/" + doc.visited_places[i] + "/" + file) //Esto es lo que necesito para 
+                                //devolver todas las fotos de un sitio
+                                });*/
 
 
 let server = app.listen(process.env.PORT || 8081, function(err) {

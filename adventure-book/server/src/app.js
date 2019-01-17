@@ -17,21 +17,15 @@ var sys = require("sys");
 var exec = require("child_process").exec;
 var fs = require("fs");
 
+//Conexión a base de datos
 Mongoose.connect("mongodb://localhost:27017/test");
 //Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
+
 Mongoose.set("useFindAndModify", false);
 var app = express();
-app.use(
-  "/uploads",
-  express.static(path.join("/home/sergio/E10/adventure-book", "uploads"))
-);
+app.use("/uploads",express.static(path.join("/home/sergio/E10/adventure-book", "uploads")));
 app.use(morgan("combined"));
-
-app.use(
-  bodyParse.urlencoded({
-    extended: true
-  })
-);
+app.use(bodyParse.urlencoded({extended: true}));
 app.use(bodyParse.json());
 //control de acceso (CORS)
 app.use(cors());
@@ -39,6 +33,7 @@ app.use(cors());
 /* Creando los esquemas de los datos */
 var Schema = Mongoose.Schema;
 
+//Modelo de la colleción de los usuarios
 var UserDataSchema = new Schema(
   {
     name: String,
@@ -53,6 +48,7 @@ var UserDataSchema = new Schema(
 );
 var UserData = Mongoose.model("UserData", UserDataSchema);
 
+//Esquema de la colección de datos
 var PlaceDataSchema = new Schema(
   {
     place: String,
@@ -63,6 +59,7 @@ var PlaceDataSchema = new Schema(
 );
 var PlaceData = Mongoose.model("PlaceData", PlaceDataSchema);
 
+//Esquema de los sitios por defecto
 var SitesDataSchema = new Schema(
   {
     place: String,
@@ -72,6 +69,7 @@ var SitesDataSchema = new Schema(
 );
 var SitesData = Mongoose.model("SitesData", SitesDataSchema);
 
+//Esquema de la colección de los grupos de viaje
 var GroupTravelSchema = new Schema(
   {
     place: String,
@@ -85,6 +83,8 @@ var GroupTravelSchema = new Schema(
 );
 var GroupTravel = Mongoose.model("groupTravelData", GroupTravelSchema);
 
+
+//Código a ejecutar cuando estemos en producción para crear la base de datos de los lugares por defecto
 /*
 var comunidades = ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
                     'GALICIA','LA RIOJA','CANTABRIA',
@@ -104,17 +104,12 @@ for(var i = 0; i < comunidades.length; i++){
     data.save()
 } */
 
-/*Here start de application*/
+/*Aquí empieza el API-REST*/
 
-app.get("/", (req, res) => {
-  var directorio = __dirname;
-  var aux = __dirname.split("server");
-  console.log(aux[0]);
-  res.sendFile(aux[0] + "/client/" + "index.html");
-});
+
+
 
 app.post("/signup", (req, res) => {
-  /*curl -X POST -H 'Content-Type: application/json' --data '{"name":"sergio","pass":"12345"}' http://localhost:8081/registrar*/
   
   //Check that the mail is not in the database because we could not have two equal emails
   UserData.findOne({ mail: req.body.mail }, (err, user_found) => {

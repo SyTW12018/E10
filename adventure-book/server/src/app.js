@@ -77,9 +77,9 @@ var GroupTravelSchema = new Schema(
     place: String,
     members: Array,
     author_name: String,
-    comments: Array,
-    photos: String,
-    date: Date
+    photo: String,
+    date_ini: Date,
+    date_fini: Date
   },
   { collection: "groupTravelData" }
 );
@@ -299,10 +299,9 @@ app.get("/userboard/:mail", async (req, res) => {
   });
 });
 
+
 app.post("/follow_Wished/:mail/:place", (req, res) => {
-  UserData.findOneAndUpdate(
-    { name: req.params.mail },
-    { $push: { wished_places: req.params.place } },
+  UserData.findOneAndUpdate({ name: req.params.mail }, { $push: { wished_places: req.params.place } },
     function(err, doc) {
       if (err == null) {
         console.log("Modificando registro de wished_places");
@@ -314,6 +313,8 @@ app.post("/follow_Wished/:mail/:place", (req, res) => {
     }
   );
 });
+
+
 
 app.post("/sites/:place", async (req, res) => {
   var visited_place = req.params.place.toUpperCase();
@@ -470,6 +471,7 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
   res.json({ files: files_ });
 });
 
+
 app.post("/delete_Wished/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
@@ -481,6 +483,7 @@ app.post("/delete_Wished/:mail/:place", (req, res) => {
   );
   res.send(200);
 });
+
 
 app.post("/delete_Visited/:mail/:place", (req, res) => {
   console.log(req.params.place);
@@ -494,6 +497,7 @@ app.post("/delete_Visited/:mail/:place", (req, res) => {
   );
   res.status(200);
 });
+
 
 app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
   fs.unlinkSync(
@@ -526,43 +530,68 @@ app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
   res.status(200);
 });
 
-app.post("/add_group/:author_name/:place", async (req, res) => {
+
+
+app.post("/add_group/:author_name/:place/:date_ini/:date_fini", async (req, res) => {
   var aux_ = __dirname.split("server");
   var array_user = [req.params.author_name];
   var photo_group = "";
-  try {
-    await UserData.findOneAndUpdate(
-      { name: req.params.name },
-      { $push: { groupsTravel: req.params.group } },
-      function(err, doc) {
-        console.log("Aqui se añade un grupo a los del user...");
-      }
-    );
-  } catch (err) {
-    console.log(err);
-  }
+  var group_id = "";
 
   try {
     await PlaceData.findOne({ place: req.params.place }, function(err, doc) {
       photo_group = doc.photos[0];
       console.log("Aqui se añade una foto al grupo...");
     });
-  } catch (err) {
+
+    var data = new GroupTravel({
+      place: req.params.place,
+      members: array_user,
+      author_name: req.params.author_name,
+      photo: photo_group,
+      date_ini: req.params.date_ini,
+      date_fini: req.params.date_fini
+    });  
+    data.save().then(function(err,group) {
+      if(err){
+        console.log(err)
+      }
+      else{
+        group_id = group._id
+      }
+    });
+  } 
+  catch (err) {
+    console.log(err);
+  }  
+
+  try {
+    await UserData.findOneAndUpdate({ name: req.params.name }, { $push: { groupsTravel:  group_id} },
+      function(err, doc) {
+        console.log("Aqui se añade un grupo a los del user...");
+      }
+    );
+  } 
+  catch (err) {
     console.log(err);
   }
+
+  
 
   var data = new GroupTravel({
     place: req.params.place,
     members: array_user,
     author_name: req.params.author_name,
-    comments: [],
-    photos: photo_group,
-    date: new Date()
+    photo: photo_group,
+    date_ini: req.params.date_ini,
+    date_fini: req.params.date_fini
   });
   data.save().then(function() {
     res.send(200);
   });
 });
+
+
 
 app.post("/delete_group/:mail/:group", (req, res) => {
   UserData.findOneAndUpdate(
@@ -575,6 +604,8 @@ app.post("/delete_group/:mail/:group", (req, res) => {
   res.send(200);
 });
 
+
+//añadir el usuario a un grupo
 app.post("/follow_group/:mail/:group", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
@@ -585,6 +616,8 @@ app.post("/follow_group/:mail/:group", (req, res) => {
   );
   res.send(200);
 });
+
+
 
 app.get("/groups/", async (req, res) => {
   try {
@@ -597,30 +630,49 @@ app.get("/groups/", async (req, res) => {
   } catch (err) {}
 });
 
-app.get("/groups/:mail/", (req, res) => {
+
+
+app.get("/wished_groups/:mail/", (req, res) => {
   var response = [];
-  var aux = [];
+  var aux = {};
   UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
     for (var i = 0; i < doc.wished_places.length; i++) {
       try {
-        await GroupTravel.findOne({ place: doc.wished_places[i] }, function(
-          err,
-          docs
-        ) {
+        await GroupTravel.find({ place: doc.wished_places[i] }, function(err, docs){
           if (docs != null) {
+
+            Object.assign(aux,{place: doc.wished_places[i]});
+            Object.assign(aux,{numero_fechas: docs.length});
+            Object.assign(aux,{base: true})
+            Object.assign(aux,{fecham: false})
+            
+            var date_array = []
+            for(var i = 0; i<docs.length; i++){
+              console.log(docs[i])
+              var date_ = {}
+              Object.assign(date_, {camuflado: false})
+              Object.assign(date_, {fecha:docs[i].date_ini})
+              Object.assign(date_, {fecha_f: docs[i].date_fini})
+              Object.assign(date_, {personas:docs[i].members.length})
+              date_array.push(data_)
+            }
+            Object.assign(aux, date: date_array)
+            console.log("aux: ")
+            console.log(aux)
             aux.push(docs); //Aqui devulevo los grupos que existen que sean al lugar que el user tenga como deseados
           }
         });
-      } catch (err) {
+      } 
+      catch (err) {
         console.log(err);
       }
+      response.push(aux)
     }
     //ESTO A VECES FUNCIONA, ES MAGIA
-    response.push(doc.groupsTravel);
-    response.push(aux);
     res.send(response);
   });
 });
+
 
 app.use(function(err, req, res, next) {
   if (err.code === "LIMIT_FILE_TYPES") {
@@ -653,14 +705,6 @@ app.get("/comprobar", (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
 app.post("/change_name/:new/:mail", async(req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
@@ -688,22 +732,6 @@ app.post("/change_pass/:new/:mail", async(req, res) => {
   res.send(pass);
   }catch(err){};
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 let server = app.listen(process.env.PORT || 8081, function(err) {

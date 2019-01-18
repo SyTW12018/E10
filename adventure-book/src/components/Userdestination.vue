@@ -18,9 +18,22 @@ body {
   margin-top: 20px;
 }
 
+.contenido2 {
+  background-color: white;
+  color: #54c2c3;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+  border-width: 2px;
+  border: solid white;
+  margin-top: 8px;
+}
+
 .Fecha {
   font-size: 12px;
+  margin-left: 8px;
 }
+
 .Plus {
   height: 20px;
   width: 20px;
@@ -31,20 +44,18 @@ body {
   width: 17px;
 }
 
+.avion{
+  margin:2px;
+}
+
 .contenido:hover {
   border-width: 2px;
   border: solid rgb(84, 194, 195, 0.7);
   border-radius: 5px;
 }
 
-.contenido2 {
-  margin: 8px;
-  margin-left: 0px;
-}
-
-.personas {
-  border-width: 2px;
-  border: solid rgb(84, 194, 195);
+.contenido2:hover {
+  background-color:rgb(84, 194, 195, 0.2);
 }
 
 .card {
@@ -52,198 +63,321 @@ body {
 }
 
 .img {
-  width: 12rem;
+  width: 9.5rem;
 }
+
+.boton {
+  color:white ;
+  background-color:#54C2C3;
+  border-radius: 6px;
+  border: 2px solid rgb(84, 194, 195,.3);
+  margin-top:10px;
+}
+
+.boton:hover {
+  background-color: rgb(84, 194, 195,.7);
+  border: 2px solid rgb(84, 194, 195,.3);
+}
+
+.contenido3{
+  text-align:center;
+  background-color: white;
+  color: #54c2c3;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+  border-width: 2px;
+  border: solid white;
+  margin-top: 20px;
+}
+
+.fondo {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0, 0, 0,.7);
+  display: table;
+}
+
+.cuadrado {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.contenedor {
+  width: 300px;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+}
+
+.form{
+  margin:12px;
+  border: 2px solid rgb(84, 194, 195);
+}
+
+.margin{
+  margin-right:-18px;
+}
+
+.Foto{
+  margin:8px;
+}
+
+.Titulo{
+  margin-top:8px;
+}
+
 </style>
-
-
 
 <template>
   <div class="main">
+    <transition v-if="cuestionario">
+      <div class="fondo">
+        <div class="cuadrado">
+          <div class="contenedor">
+            <div class="contenido3">
+              <h4> Añadir lugar </h4>
+              <b-form-input class= "form" type="text" placeholder="Nombre lugar" v-model="place_"></b-form-input>
+              <b-form-input class= "form" type="date" placeholder="Fecha viaje" v-model="fecha_"></b-form-input>
+              <b-form-input class= "form" type="date" placeholder="Fecha final viaje" v-model="fechaf_"></b-form-input>
+              <b-button type="submit" class="boton" v-on:click= "nuevoviaje">
+                Añadir
+              </b-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
     <div class="container">
       <b-row>
         <b-col cols="6" id="sitio_deseados">
           <b-row>
             <h2>Destinos deseados</h2>
           </b-row>
-          <div v-for="sitio in destinos_deseados" :key="sitio" class="contenido">
-            <b-row class="contenido2" v-if="sitio.base">
+          <div v-for="sitio in destinos_deseados" :key="sitio" class="contenido" v-if="sitio.base">
+            <b-row>
+              <div @click="mostrarfechas(sitio)">
+                <b-col>
+                  <div class="img">
+                    <img class="card-img-top Foto" src="../C.jpg">
+                  </div>
+                </b-col>
+              </div>
               <b-col>
-                <div class="img">
-                  <img class="card-img-top" src="../C.jpg">
+                <div @click="mostrarfechas(sitio)">
+                  <b-row>
+                    <h3 class="Titulo">{{sitio.place}}</h3>
+                  </b-row>
+                  <b-row>
+                    <b-col>
+                      <b-row>{{sitio.pais}}</b-row>
+                    </b-col>
+                  </b-row>
                 </div>
               </b-col>
-              <b-col>
-                <b-row @click="cambiarEstado(sitio)">
-                  <h3>{{sitio.lugar}}</h3>
-                </b-row>
-                <b-row>
-                  <b-col>
-                    <b-row>{{sitio.pais}}</b-row>
-                  </b-col>
-                  <b-col cols="4" class="personas">
-                    <b-row>
-                      <b-col cols="1">{{sitio.personas}}</b-col>
-                      <b-col cols="1">
-                        <div class="card">
-                          <img class="card-img-top" src="../person.jpg" alt="Card image">
-                        </div>
-                      </b-col>
-                    </b-row>
-                  </b-col>
-                </b-row>
-                <b-row class="Fecha">
-                  <b-col cols="10">
-                    <b-row>{{sitio.fecha}}</b-row>
-                  </b-col>
-                  <b-col v-if="sitio.mostrar" cols="1">
-                    <img
-                      @click="personaapuntada(sitio)"
-                      class="card-img-top Plus"
-                      src="../assets/add.png"
-                      alt="Card image"
-                    >
-                  </b-col>
-                </b-row>
-              </b-col>
             </b-row>
+            <div v-for="fech in sitio.date" :key="date" class="contenido2" v-if="sitio.fecham">
+              <b-row  v-if="fech.camuflado">
+                <b-col cols="4" class="Fecha"> {{fech.fecha}} </b-col>
+                <b-col cols="1"> - </b-col>
+                <b-col cols="4" class="Fecha"> {{fech.fecha_f}} </b-col>
+                <b-col>
+                  <b-row>
+                    <b-col cols="1" class="margin"> {{fech.personas}} </b-col>
+                    <b-col cols="1">
+                      <div class="card">
+                        <img class="card-img-top" src="../assets/person.png" alt="Card image">
+                      </div>
+                    </b-col>
+                    <b-col>
+                      <img
+                        @click="personaapuntada(sitio,fech,destinos_deseados)"
+                        class="card-img-top Plus"
+                        src="../assets/add.png"
+                        alt="Card image"
+                      >
+                    </b-col>
+                  </b-row>
+                </b-col>
+              </b-row>
+            </div>
           </div>
           <b-row class="mb-3">
-            <h2>Este mes</h2>
+            <h2 class="Titulo">Este mes</h2>
           </b-row>
-          <div v-for="sitio in este_mes" :key="sitio" class="contenido">
-            <b-row class="contenido2" v-if="sitio.base">
+          <div v-for="sitio in este_mes" :key="sitio" class="contenido" v-if="sitio.base">
+            <b-row>
+              <div @click="mostrarfechas(sitio)">
+                <b-col>
+                  <div class="img">
+                    <img class="card-img-top Foto" src="../C.jpg">
+                  </div>
+                </b-col>
+              </div>
               <b-col>
-                <div class="img">
-                  <img class="card-img-top" src="../C.jpg">
+                <div @click="mostrarfechas(sitio)">
+                  <b-row>
+                    <h3 class="Titulo">{{sitio.place}}</h3>
+                  </b-row>
+                  <b-row>
+                    <b-col>
+                      <b-row>{{sitio.pais}}</b-row>
+                    </b-col>
+                  </b-row>
                 </div>
               </b-col>
-              <b-col>
-                <b-row @click="cambiarEstado(sitio)">
-                  <h3>{{sitio.lugar}}</h3>
-                </b-row>
-                <b-row>
-                  <b-col>
-                    <b-row>{{sitio.pais}}</b-row>
-                  </b-col>
-                  <b-col cols="4" class="personas">
-                    <b-row>
-                      <b-col cols="1">{{sitio.personas}}</b-col>
-                      <b-col cols="1">
-                        <div class="card">
-                          <img class="card-img-top" src="../person.jpg" alt="Card image">
-                        </div>
-                      </b-col>
-                    </b-row>
-                  </b-col>
-                </b-row>
-                <b-row class="Fecha">
-                  <b-col cols="10">
-                    <b-row>{{sitio.fecha}}</b-row>
-                  </b-col>
-                  <b-col v-if="sitio.mostrar" cols="1">
-                    <img
-                      @click="personaapuntada(sitio)"
-                      class="card-img-top Plus"
-                      src="../assets/add.png"
-                      alt="Card image"
-                    >
-                  </b-col>
-                </b-row>
-              </b-col>
             </b-row>
+            <div v-for="fech in sitio.date" :key="date" class="contenido2" v-if="sitio.fecham">
+              <b-row  v-if="fech.camuflado">
+                <b-col cols="4" class="Fecha"> {{fech.fecha}} </b-col>
+                <b-col cols="1"> - </b-col>
+                <b-col cols="4" class="Fecha"> {{fech.fecha_f}} </b-col>
+                <b-col>
+                  <b-row>
+                    <b-col cols="1" class="margin"> {{fech.personas}} </b-col>
+                    <b-col cols="1">
+                      <div class="card">
+                        <img class="card-img-top" src="../assets/person.png" alt="Card image">
+                      </div>
+                    </b-col>
+                    <b-col>
+                      <img
+                        @click="personaapuntada(sitio,fech)"
+                        class="card-img-top Plus"
+                        src="../assets/add.png"
+                        alt="Card image"
+                      >
+                    </b-col>
+                  </b-row>
+                </b-col>
+              </b-row>
+            </div>
           </div>
           <b-row>
             <h2>Todos los viajes organizados</h2>
           </b-row>
-          <div v-for="sitio in todo_organizado" :key="sitio" class="contenido">
-            <b-row class="contenido2" v-if="sitio.base">
+          <div v-for="sitio in todo_organizado" :key="sitio" class="contenido" v-if="sitio.base">
+            <b-row>
+              <div @click="mostrarfechas(sitio)">
+                <b-col>
+                  <div class="img">
+                    <img class="card-img-top Foto" src="../C.jpg">
+                  </div>
+                </b-col>
+              </div>
               <b-col>
-                <div class="img">
-                  <img class="card-img-top" src="../C.jpg">
+                <div @click="mostrarfechas(sitio)">
+                  <b-row>
+                    <h3 class="Titulo">{{sitio.place}}</h3>
+                  </b-row>
+                  <b-row>
+                    <b-col>
+                      <b-row>{{sitio.pais}}</b-row>
+                    </b-col>
+                  </b-row>
                 </div>
               </b-col>
-              <b-col>
-                <b-row @click="cambiarEstado(sitio)">
-                  <h3>{{sitio.lugar}}</h3>
-                </b-row>
-                <b-row>
-                  <b-col>
-                    <b-row>{{sitio.pais}}</b-row>
-                  </b-col>
-                  <b-col cols="4" class="personas">
-                    <b-row>
-                      <b-col cols="1">{{sitio.personas}}</b-col>
-                      <b-col cols="1">
-                        <div class="card">
-                          <img class="card-img-top" src="../person.jpg" alt="Card image">
-                        </div>
-                      </b-col>
-                    </b-row>
-                  </b-col>
-                </b-row>
-                <b-row class="Fecha">
-                  <b-col cols="10">
-                    <b-row>{{sitio.fecha}}</b-row>
-                  </b-col>
-                  <b-col v-if="sitio.mostrar" cols="1">
-                    <img
-                      @click="personaapuntada(sitio)"
-                      class="card-img-top Plus"
-                      src="../assets/add.png"
-                      alt="Card image"
-                    >
-                  </b-col>
-                </b-row>
-              </b-col>
             </b-row>
+            <div v-for="fech in sitio.date" :key="date" class="contenido2" v-if="sitio.fecham">
+              <b-row  v-if="fech.camuflado">
+                <b-col cols="4" class="Fecha"> {{fech.fecha}} </b-col>
+                <b-col cols="1"> - </b-col>
+                <b-col cols="4" class="Fecha"> {{fech.fecha_f}} </b-col>
+                <b-col>
+                  <b-row>
+                    <b-col cols="1" class="margin"> {{fech.personas}} </b-col>
+                    <b-col cols="1">
+                      <div class="card">
+                        <img class="card-img-top" src="../assets/person.png" alt="Card image">
+                      </div>
+                    </b-col>
+                    <b-col>
+                      <img
+                        @click="personaapuntada(sitio,fech)"
+                        class="card-img-top Plus"
+                        src="../assets/add.png"
+                        alt="Card image"
+                      >
+                    </b-col>
+                  </b-row>
+                </b-col>
+              </b-row>
+            </div>
           </div>
         </b-col>
         <b-col cols="6" id="proximos_viajes" class="w-100">
           <b-row>
-            <h2>Tus proximos viajes</h2>
+            <h2 class="Titulo">Tus proximos viajes</h2>
           </b-row>
-          <div v-for="sitio in futuros_viajes" :key="sitio" class="contenido">
-            <b-row v-if="sitio.base" class="contenido2">
+          <b-row>
+            <div class="contenido" @click="cuestionario=true">
+              <img  class="card-img-top Plus" src="../assets/add.png">
+              Añade un viaje
+            </div>
+          </b-row>
+          <div v-for="sitio in futuros_viajes" :key="sitio" class="contenido" v-if="sitio.base">
+            <b-row>
+              <div @click="mostrarfechas(sitio)">
+                <b-col>
+                  <div class="img">
+                    <img class="card-img-top Foto" src="../C.jpg">
+                  </div>
+                </b-col>
+              </div>
               <b-col>
-                <div class="img">
-                  <img class="card-img-top" src="../C.jpg">
+                <div @click="mostrarfechas(sitio)">
+                  <b-row>
+                    <h3 class="Titulo">{{sitio.place}}</h3>
+                  </b-row>
+                  <b-row>
+                    <b-col>
+                      <b-row>{{sitio.pais}}</b-row>
+                    </b-col>
+                  </b-row>
+                  <b-row>
+                    <col>
+                      <div class="card">
+                        <img class="card-img-top" src="../assets/vije.png" alt="Card image">
+                      </div>
+                    </col>
+                    <col class="avion">
+                      {{sitio.numero_fechas}}
+                    <col>
+                  </b-row>
                 </div>
               </b-col>
-              <b-col>
-                <b-row @click="cambiarEstado(sitio)">
-                  <h3>{{sitio.lugar}}</h3>
-                </b-row>
-                <b-row>
-                  <b-col>
-                    <b-row>{{sitio.pais}}</b-row>
-                  </b-col>
-                  <b-col cols="4" class="personas">
-                    <b-row>
-                      <b-col cols="1">{{sitio.personas}}</b-col>
-                      <b-col cols="1">
-                        <div class="card">
-                          <img class="card-img-top" src="../person.jpg" alt="Card image">
-                        </div>
-                      </b-col>
-                    </b-row>
-                  </b-col>
-                </b-row>
-                <b-row class="Fecha">
-                  <b-col cols="10">
-                    <b-row>{{sitio.fecha}}</b-row>
-                  </b-col>
-                  <b-col v-if="sitio.mostrar" cols="1">
-                    <img
-                      @click="personadesapuntada(sitio)"
-                      class="card-img-top Echis"
-                      src="../assets/echis.png"
-                      alt="Card image"
-                    >
-                  </b-col>
-                </b-row>
-              </b-col>
             </b-row>
+            <div v-for="fech in sitio.date" :key="date" class="contenido2" v-if="sitio.fecham">
+              <b-row  v-if="fech.camuflado">
+                <b-col cols="4" class="Fecha"> {{fech.fecha}} </b-col>
+                <b-col cols="1"> - </b-col>
+                <b-col cols="4" class="Fecha"> {{fech.fecha_f}} </b-col>
+                <b-col>
+                  <b-row>
+                    <b-col cols="1" class="margin"> {{fech.personas}} </b-col>
+                    <b-col cols="1">
+                      <div class="card">
+                        <img class="card-img-top" src="../assets/person.png" alt="Card image">
+                      </div>
+                    </b-col>
+                    <b-col>
+                      <img
+                        @click="personadesapuntada(sitio,fech)"
+                        class="card-img-top Plus"
+                        src="../assets/echis.png"
+                        alt="Card image"
+                      >
+                    </b-col>
+                  </b-row>
+                </b-col>
+              </b-row>
+            </div>
           </div>
         </b-col>
       </b-row>
@@ -252,128 +386,136 @@ body {
 </template>
 <script>
 export default {
-  data() {
-    return {
-      destinos_deseados: [
-        {
-          lugar: "Venecia",
-          pais: "Italia",
-          fecha: "Marzo 2016",
-          personas: 3,
-          codigo: "3",
-          mostrar: false,
-          base: true
-        },
-        {
-          lugar: "Oporto",
-          pais: "Portugal",
-          fecha: "Mayo 2016",
-          personas: 4,
-          codigo: "4",
-          mostrar: false,
-          base: true
-        }
+	data(){
+    return{
+      cuestionario:false,
+		  destinos_deseados: [
+			  {place: 'Andalucia', numero_fechas:2, base:true,fecham:false,date:[{camuflado:false,fecha:'19/01/2019',fecha_f: '5 de Abril de 2019', personas:5},{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+        {place: 'Cantabria', numero_fechas:2, base:true,fecham:false,date:[{camuflado:false,fecha:'3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+      ],
+
+			este_mes: [
+        {place: 'Andalucia', numero_fechas:2, base:true, fecham:false,date:[{camuflado:false,fecha:'27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+        {place: 'Cantabria', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{cantidad:true,camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+      ],
+
+			todo_organizado: [
+        {place: 'Venecia', pais: 'Italia',numero_fechas:2,fecham:false,base:true,codigo:'5',date:[{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+        {place: 'Oporto' ,pais: 'Portugal',numero_fechas:2,fecham:false,base:true,codigo:'6',date:[{camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
       ],
 
       futuros_viajes: [
-        {
-          lugar: "Venecia",
-          pais: "Italia",
-          fecha: "Marzo 2016",
-          personas: 8,
-          codigo: "5",
-          mostrar: false,
-          base: true
-        },
-        {
-          lugar: "Oporto",
-          pais: "Portugal",
-          fecha: "Mayo 2016",
-          personas: 4,
-          codigo: "6",
-          mostrar: false,
-          base: true
-        }
-      ],
-
-      este_mes: [
-        {
-          lugar: "Venecia",
-          pais: "Italia",
-          fecha: "Marzo 2016",
-          personas: 3,
-          codigo: "7",
-          mostrar: false,
-          base: true
-        },
-        {
-          lugar: "Oporto",
-          pais: "Portugal",
-          fecha: "Mayo 2016",
-          personas: 4,
-          codigo: "8",
-          mostrar: false,
-          base: true
-        }
-      ],
-
-      todo_organizado: [
-        {
-          lugar: "Madrid",
-          pais: "España",
-          fecha: "Marzo 2017",
-          personas: 12,
-          codigo: "1",
-          mostrar: false,
-          base: true
-        },
-        {
-          lugar: "Oporto",
-          pais: "Portugal",
-          fecha: "Mayo 2016",
-          personas: 4,
-          codigo: "2",
-          mostrar: false,
-          base: true
-        }
+        {place: 'Venecia',numero_fechas:2,fecham:false,base:true,codigo:'5',date:[{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+        {place: 'Oporto' ,pais: 'Portugal',numero_fechas:2,fecham:false,base:true,codigo:'6',date:[{camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+        {place: 'Andalucia', pais: 'España',numero_fechas:2,fecham:false,codigo:'3',base:true,date:[{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
       ]
-    };
+    }
   },
 
-  mounted() {},
-
-  methods: {
-    personaapuntada: function(object) {
-      object.personas = object.personas + 1;
-      object.base = !object.base;
-      this.futuros_viajes.push({
-        lugar: object.lugar,
-        pais: object.pais,
-        fecha: object.fecha,
-        personas: object.personas,
-        codigo: object.codigo,
-        mostrar: false,
-        base: true
-      });
+	methods: {
+		personaapuntada: function(object,vector){
+			vector.personas = vector.personas+1;
+      var cont=0;
+      object.numero_fechas = object.numero_fechas-1;
+      vector.camuflado = !vector.camuflado;
+			if (object.numero_fechas==0){
+        object.base=!object.base;
+        object.fecham=!object.fecham;
+      }
+      for(var i=0;i<this.futuros_viajes.length;i++){
+        if(this.futuros_viajes[i].place==object.place){
+          this.futuros_viajes[i].date.push({camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas});
+          this.futuros_viajes[i].numero_fechas=this.futuros_viajes[i].numero_fechas+1;
+          i=this.futuros_viajes.length;
+        }else{
+          cont++;
+        }
+      }
+      if(cont==this.futuros_viajes.length){
+        this.futuros_viajes.push({place:object.place,pais:'España',numero_fechas:1,fecham:false,base:true,codigo:object.codigo,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas}]});
+      }
     },
 
-    personadesapuntada: function(object) {
-      object.personas = object.personas - 1;
-      object.base = !object.base;
-      this.todo_organizado.push({
-        lugar: object.lugar,
-        pais: object.pais,
-        fecha: object.fecha,
-        personas: object.personas,
-        codigo: object.codigo,
-        mostrar: false,
-        base: true
-      });
+		personadesapuntada: function(object,vector){
+      vector.personas = vector.personas-1;
+      var cont=0;
+      vector.camuflado = !vector.camuflado
+      object.numero_fechas = object.numero_fechas-1;
+      if (object.numero_fechas==0){
+        object.base=!object.base;
+        object.fecham=!object.fecham;
+      }
+      for(var i=0;i<this.todo_organizado.length;i++){
+        if(this.todo_organizado[i].place==object.place){
+          this.todo_organizado.date.push({camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas});
+          this.todo_organizado[i].numero_fechas=this.todo_organizado[i].numero_fechas+1;
+          i=this.todo_organizado.length;
+        }else{
+          cont++;
+        }
+      }
+      if(cont==this.todo_organizado.length){
+        this.todo_organizado.push({place:object.place,pais:'España',numero_fechas:1,fecham:false,base:true,codigo:object.codigo,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas}]});
+      }
     },
 
-    cambiarEstado: function(object) {
-      object.mostrar = !object.mostrar;
+
+    nuevoviaje: function(){
+      if ((this.place_!= undefined) && (this.fecha_!= undefined) && (this.fechaf_!= undefined)){
+        this.cuestionario=!this.cuestionario;
+        for(var i=0;i<this.futuros_viajes.length;i++){
+          //si el lugar que introduces ya está en tus futuros viajes entonces solo añadimos la fecha
+          if(this.futuros_viajes[i].place==this.place_){
+            this.futuros_viajes[i].date.push({camuflado:false,fecha:this.fecha_,fecha_f:this.fechaf_, personas:1});
+            this.futuros_viajes[i].numero_fechas=this.futuros_viajes[i].numero_fechas+1;
+            i=this.futuros_viajes.length;
+        }else{
+          cont++;
+        }
+      }
+      if(cont==this.futuros_viajes.length){
+        this.futuros_viajes.push({place:this.place_,numero_fechas:1,mostrar:false,base:true,camuflado:false,codigo:'9', date:[{fecha:this.fecha_,fecha_f:this.fechaf_,personas:1}]});
+      }
+      //this.todo_organizado.push({place:this.place_,pais: 'España',numero_fechas:1,mostrar:false,base:true,camuflado:false,codigo:'9',date:[{fecha:this.fecha_,fecha_f:this.fechaf_, personas:1}]});
+       //Creo que no deberia salir aqui, osea deberia añadise a todo organizado menos asi mismo no?
+    }else{
+      alert("Existe un campo vacío");
     }
+
+    try {
+      await this.$http
+        .get("http://localhost:8081//wished_groups/:mail/" + this.mail)
+        .then(response => {
+          console.log(response.data);
+          this.destinos_deseados = response.data;
+        });
+    } catch (err) {
+      
+    }
+
+  },
+
+    mostrarfechas: function(object){
+      object.fecham=!object.fecham;
+      for (var i=0;i<object.date.length;i++){
+        object.date[i].camuflado=!object.date[i].camuflado;
+      }
+    }
+  },
+  
+  async mounted(){
+    //if (localStorage.getItem("jwt") == null || localStorage.getItem("jwt") == "undefined"){
+      //this.$router.push("/");
+    //}
+
+    try {
+      await this.$http
+        .get("http://localhost:8081//wished_groups/:mail/" + this.mail)
+        .then(response => {
+          console.log(response.data);
+          this.destinos_deseados = response.data;
+        });
+    } catch (err) {}
   },
 
   components: {}

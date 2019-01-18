@@ -673,11 +673,12 @@ app.get("/sites/:place", async (req, res) => {
     await PlaceData.findOne({ place: req.params.place}, function(err, doc) {
       response = doc.content;
     });
+    res.send(response);
   } 
   catch (err) {
     console.log(err);
   }
-  res.send(response);
+  
 });
 
 

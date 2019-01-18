@@ -677,8 +677,21 @@ app.get("/sites/:place", async (req, res) => {
   } 
   catch (err) {
     console.log(err);
-  }
+  }  
+});
+
+app.get("/get_name/:user_id", async (req, res) => {
   
+  var response = [];
+  try {
+    await UserData.findOne({ _id: req.params.user_id}, function(err, doc) {
+      response = doc.name;
+    });
+    res.send(response);
+  } 
+  catch (err) {
+    console.log(err);
+  }
 });
 
 

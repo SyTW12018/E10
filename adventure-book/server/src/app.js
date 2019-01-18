@@ -104,6 +104,44 @@ for(var i = 0; i < comunidades.length; i++){
     data.save()
 } */
 
+async function seek_places (docs, response){
+  var aux = {}
+  for (var j = 0; j < response.length; j++){
+    if(docs[0].place == response[j].place){
+      response[j].numero_fechas = response[j].numero_fechas + 1
+      var date_ = {};
+      Object.assign(date_, {camuflado: false})
+      Object.assign(date_, {fecha:docs[0].date_ini})
+      Object.assign(date_, {fecha_f: docs[0].date_fini})
+      Object.assign(date_, {personas:docs[0].members.length})
+      Object.assign(date_, {id: docs[0]._id})
+      response[j].date.push(date_)
+    }
+    else{
+      aux = {}
+      Object.assign(aux,{place: docs[0].place});
+      Object.assign(aux,{numero_fechas: 1})
+      Object.assign(aux,{base: true})
+      Object.assign(aux,{fecham: false})
+
+      var date_ = {}
+      Object.assign(date_, {camuflado: false})
+      Object.assign(date_, {fecha:docs[0].date_ini})
+      Object.assign(date_, {fecha_f: docs[0].date_fini})
+      Object.assign(date_, {personas:docs[0].members.length})
+      Object.assign(date_, {id: docs[0]._id})
+
+      var date_array = []
+      date_array.push(date_)
+      Object.assign(aux, {date: date_array})
+      response.push(aux)
+      aux = {}
+    }
+  }
+
+  return response
+}
+
 /*Here start de application*/
 
 app.get("/", (req, res) => {
@@ -532,16 +570,18 @@ app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
 
 
 
-app.post("/add_group/:author_name/:place/:date_ini/:date_fini", async (req, res) => {
-  var aux_ = __dirname.split("server");
+app.post("/add_group/:author_name/:place/:date_ini/:date_fini/", async (req, res) => {
   var array_user = [req.params.author_name];
   var photo_group = "";
   var group_id = "";
 
   try {
     await PlaceData.findOne({ place: req.params.place }, function(err, doc) {
-      photo_group = doc.photos[0];
-      console.log("Aqui se añade una foto al grupo...");
+      if(doc != null){
+        photo_group = doc.content[0].photo;
+        console.log("Aqui se añade una foto al grupo...");
+      }
+      
     });
 
     var data = new GroupTravel({
@@ -552,43 +592,37 @@ app.post("/add_group/:author_name/:place/:date_ini/:date_fini", async (req, res)
       date_ini: req.params.date_ini,
       date_fini: req.params.date_fini
     });  
-    data.save().then(function(err,group) {
+
+    await data.save().then(function(group,err) {
       if(err){
         console.log(err)
       }
       else{
+        console.log("Ya metió el dato")
         group_id = group._id
       }
     });
-  } 
-  catch (err) {
-    console.log(err);
-  }  
 
-  try {
-    await UserData.findOneAndUpdate({ name: req.params.name }, { $push: { groupsTravel:  group_id} },
+    await UserData.findOneAndUpdate({ mail: req.params.author_name }, { $addToSet: { groupsTravel:  group_id} },
       function(err, doc) {
+        
+        console.log(group_id)
+        if(err){
+          console.log(err)
+        }
+        else{
+          console.log(doc)
+        }
         console.log("Aqui se añade un grupo a los del user...");
       }
     );
   } 
   catch (err) {
     console.log(err);
-  }
+  }    
 
+  res.send("Enviando respuesta")
   
-
-  var data = new GroupTravel({
-    place: req.params.place,
-    members: array_user,
-    author_name: req.params.author_name,
-    photo: photo_group,
-    date_ini: req.params.date_ini,
-    date_fini: req.params.date_fini
-  });
-  data.save().then(function() {
-    res.send(200);
-  });
 });
 
 
@@ -631,46 +665,113 @@ app.get("/groups/", async (req, res) => {
 });
 
 
-
-app.get("/wished_groups/:mail/", (req, res) => {
+app.get("/future_trips/:mail/", async (req,res) => {
+  console.log("Entra en el future trip")
   var response = [];
   var aux = {};
-  UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
-    for (var i = 0; i < doc.wished_places.length; i++) {
-      try {
-        await GroupTravel.find({ place: doc.wished_places[i] }, function(err, docs){
-          if (docs != null) {
-
-            Object.assign(aux,{place: doc.wished_places[i]});
-            Object.assign(aux,{numero_fechas: docs.length});
-            Object.assign(aux,{base: true})
-            Object.assign(aux,{fecham: false})
-            
-            var date_array = []
-            for(var i = 0; i<docs.length; i++){
-              console.log(docs[i])
-              var date_ = {}
-              Object.assign(date_, {camuflado: false})
-              Object.assign(date_, {fecha:docs[i].date_ini})
-              Object.assign(date_, {fecha_f: docs[i].date_fini})
-              Object.assign(date_, {personas:docs[i].members.length})
-              date_array.push(data_)
-            }
-            Object.assign(aux, date: date_array)
-            console.log("aux: ")
-            console.log(aux)
-            aux.push(docs); //Aqui devulevo los grupos que existen que sean al lugar que el user tenga como deseados
-          }
-        });
-      } 
-      catch (err) {
-        console.log(err);
+  var cont = 0;
+  try{
+    await UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
+      if(err){
+        console.log(err)
       }
-      response.push(aux)
-    }
-    //ESTO A VECES FUNCIONA, ES MAGIA
+      else{
+        for (var i = 0; i < doc.groupsTravel.length; i++) {
+          try {
+            await GroupTravel.find({ _id: doc.groupsTravel[i] }, async function(err, docs){
+              if (docs != null) {
+                console.log("count: " + cont);
+                cont = cont+1
+                console.log(response)
+                if(response.length == 0){
+                  Object.assign(aux,{place: docs[0].place});
+                  Object.assign(aux,{numero_fechas: 1})
+                  Object.assign(aux,{base: true})
+                  Object.assign(aux,{fecham: false})
+
+                  var date_ = {}
+                  Object.assign(date_, {camuflado: false})
+                  Object.assign(date_, {fecha:docs[0].date_ini})
+                  Object.assign(date_, {fecha_f: docs[0].date_fini})
+                  Object.assign(date_, {personas:docs[0].members.length})
+                  Object.assign(date_, {id: docs[0]._id})
+
+                  var date_array = []
+                  date_array.push(date_)
+                  Object.assign(aux, {date: date_array})
+                  console.log("AUX " + cont + ": " + aux)
+                  response.push(aux)
+                  aux = {}
+                }
+                else{
+                  response = await seek_places(docs, response)
+                }
+              }
+            });
+          }catch(err){
+            console.log(err)
+          }
+        }
+        console.log("fuera del for")
+        console.log(response)
+      }
+      console.log("response" + response)
+      res.send(response);
+    });
+    
+  }
+  catch(err){
+    console.log(err)
+  }
+  
+})
+
+app.get("/wished_groups/:mail/", (req, res) => {
+  console.log("Entra en el sitios deseados")
+  var response = [];
+  var aux = {};
+  try{
+    UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
+      for (var i = 0; i < doc.wished_places.length; i++) {
+        try {
+          await GroupTravel.find({ place: doc.wished_places[i] }, function(err, docs){
+            if (docs != null) {
+
+              Object.assign(aux,{place: doc.wished_places[i]});
+              Object.assign(aux,{numero_fechas: docs.length});
+              Object.assign(aux,{base: true})
+              Object.assign(aux,{fecham: false})
+              
+              var date_array = []
+              for(var i = 0; i<docs.length; i++){
+                console.log(docs[i])
+                var date_ = {}
+                Object.assign(date_, {camuflado: false})
+                Object.assign(date_, {fecha:docs[i].date_ini})
+                Object.assign(date_, {fecha_f: docs[i].date_fini})
+                Object.assign(date_, {personas:docs[i].members.length})
+                Object.assign(date_, {id: docs[i]._id})
+                date_array.push(data_)
+              }
+              Object.assign(aux, {date: date_array})
+              console.log("aux: ")
+              console.log(aux)
+              aux.push(docs); //Aqui devulevo los grupos que existen que sean al lugar que el user tenga como deseados
+            }
+          });
+        } 
+        catch (err) {
+          console.log(err);
+        }
+        response.push(aux)
+      }
+      //ESTO A VECES FUNCIONA, ES MAGIA    
+    });
     res.send(response);
-  });
+  }
+  catch(err){
+    console.log(err)
+  }
 });
 
 

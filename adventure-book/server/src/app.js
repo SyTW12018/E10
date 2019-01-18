@@ -56,21 +56,12 @@ var UserData = Mongoose.model("UserData", UserDataSchema);
 var PlaceDataSchema = new Schema(
   {
     place: String,
-    content: [{ user_id: String, photo: String, date: Date }],
+    content: [{ user_id: String, photo: Array, date: Date }],
     date: { type: Date, default: Date.now }
   },
   { collection: "placeData" }
 );
 var PlaceData = Mongoose.model("PlaceData", PlaceDataSchema);
-
-var SitesDataSchema = new Schema(
-  {
-    place: String,
-    id_num: Number
-  },
-  { collection: "sitesData" }
-);
-var SitesData = Mongoose.model("SitesData", SitesDataSchema);
 
 var GroupTravelSchema = new Schema(
   {
@@ -85,24 +76,28 @@ var GroupTravelSchema = new Schema(
 );
 var GroupTravel = Mongoose.model("groupTravelData", GroupTravelSchema);
 
-/*
-var comunidades = ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
+
+
+
+/*var comunidades = ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
                     'GALICIA','LA RIOJA','CANTABRIA',
                     'CASTILLA Y LEÓN','CATALUÑA','COMUNIDAD VALENCIANA',
                     'CASTILLA LA MANCHA','EXTREMADURA','REGIÓN DE MURCIA','COMUNIDAD DE MADRID',
                     'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'];
 
 comunidades = comunidades.sort();
+console.log(comunidades)
 
 
 for(var i = 0; i < comunidades.length; i++){   
 
-    var data = SitesData({
-        place: comunidades[i],
-        id_num: i
-    });
+  var data = new PlaceData({
+    place: i,
+    content: [{ user_id: "", photo: [], date: new Date() }],
+    date: new Date(),
+  });
     data.save()
-} */
+}*/
 
 async function seek_places (docs, response){
   var aux = {}
@@ -354,7 +349,7 @@ app.post("/follow_Wished/:mail/:place", (req, res) => {
 
 
 
-app.post("/sites/:place", async (req, res) => {
+/*app.post("/sites/:place", async (req, res) => {
   var visited_place = req.params.place.toUpperCase();
   var response = [];
   try {
@@ -368,7 +363,7 @@ app.post("/sites/:place", async (req, res) => {
 
   res.send(response);
 });
-
+*/
 
 
 const fileFilter = function(req, file, cb) {
@@ -832,6 +827,35 @@ app.post("/change_pass/:new/:mail", async(req, res) => {
   );
   res.send(pass);
   }catch(err){};
+});
+
+
+app.get("/sites/:place", async (req, res) => {
+  
+  var response = [];
+  try {
+    await PlaceData.findOne({ place: req.params.place}, function(err, doc) {
+      response = doc.content;
+    });
+    res.send(response);
+  } 
+  catch (err) {
+    console.log(err);
+  }  
+});
+
+app.get("/get_name/:user_id", async (req, res) => {
+  
+  var response = [];
+  try {
+    await UserData.findOne({ _id: req.params.user_id}, function(err, doc) {
+      response = doc.name;
+    });
+    res.send(response);
+  } 
+  catch (err) {
+    console.log(err);
+  }
 });
 
 

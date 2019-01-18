@@ -23,7 +23,16 @@
   font-size: 14px;
   border-width: 2px;
   border: solid white;
-  margin-top: 8px;
+}
+
+.contenido:hover {
+  border-width: 2px;
+  border: solid rgb(84, 194, 195, 0.7);
+  border-radius: 5px;
+}
+
+.contenido2:hover {
+  background-color: rgb(84, 194, 195, 0.1);
 }
 
 .Fecha {
@@ -43,17 +52,6 @@
 
 .avion{
   margin:2px;
-}
-
-.contenido:hover {
-  border-width: 2px;
-  border: solid rgb(84, 194, 195, 0.7);
-  border-radius: 5px;
-}
-
-.contenido2:hover {
-  border-width: 2px;
-  border: solid rgb(84, 194, 195, 0.7);
 }
 
 .card {
@@ -130,6 +128,24 @@
   margin-top:8px;
 }
 
+.participante{
+  color: rgb(84, 194, 195,0.7);
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-left: 40px;
+  margin-bottom: 20px;
+}
+
+.Equis{
+  margin-left:230px;
+  margin-top:-10px;
+}
+
+.Titulo2{
+  text-align: center;
+  margin-bottom: 20px;
+}
+
 </style>
 
 <template>
@@ -138,13 +154,48 @@
       <div class="fondo">
         <div class="cuadrado">
           <div class="contenedor">
+            <b-row><b-col class="Equis">
+              <img
+                @click="cuestionario=false"
+                class="card-img-top Plus"
+                src="../assets/echis.png"
+                alt="Card image"
+              >
+            </b-col></b-row>
             <div class="contenido3">
               <h4> Añadir lugar </h4>
-              <b-form-input class= "form" type="text" placeholder="Nombre lugar" v-model="lugar_"></b-form-input>
+              <b-form-input class= "form" type="text" placeholder="Nombre lugar" v-model="place_"></b-form-input>
               <b-form-input class= "form" type="text" placeholder="Fecha viaje" v-model="fecha_"></b-form-input>
               <b-form-input class= "form" type="text" placeholder="Fecha final viaje" v-model="fechaf_"></b-form-input>
               <b-button type="submit" class="boton" v-on:click= "nuevoviaje">
                 Añadir
+              </b-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <transition v-if="miembros">
+      <div class="fondo">
+        <div class="cuadrado">
+          <div class="contenedor">
+            <div class="contenido3">
+              <h4 class="Titulo2"> Participantes </h4>
+              <b-row>
+                <b-col cols="4"> <h5> Chat </h5> </b-col>
+                <div v-for="sitio in aux2" :key="sitio">
+                  <div v-for="fech in aux" :key="sitio">
+                    <div v-for="i in fech.members" :key="sitio" >
+                      <b-row>
+                        <b-col class="participante" cols="8">{{i}}</b-col>
+                      </b-row>
+                    </div>
+                  </div>
+                </div>
+              </b-row>
+              <b-button type="submit" class="boton" v-on:click= "cambiar_estado(fech)">
+                Aceptar
               </b-button>
             </div>
           </div>
@@ -170,7 +221,7 @@
               <b-col>
                 <div @click="mostrarfechas(sitio)">
                   <b-row>
-                    <h3 class="Titulo">{{sitio.lugar}}</h3>
+                    <h3 class="Titulo">{{sitio.place}}</h3>
                   </b-row>
                   <b-row>
                     <b-col>
@@ -221,22 +272,12 @@
               <b-col>
                 <div @click="mostrarfechas(sitio)">
                   <b-row>
-                    <h3 class="Titulo">{{sitio.lugar}}</h3>
+                    <h3 class="Titulo">{{sitio.place}}</h3>
                   </b-row>
                   <b-row>
                     <b-col>
                       <b-row>{{sitio.pais}}</b-row>
                     </b-col>
-                  </b-row>
-                  <b-row>
-                    <col>
-                      <div class="card">
-                        <img class="card-img-top" src="../assets/vije.png" alt="Card image">
-                      </div>
-                    </col>
-                    <col class="avion">
-                      {{sitio.numero_fechas}}
-                    <col>
                   </b-row>
                 </div>
               </b-col>
@@ -282,22 +323,12 @@
               <b-col>
                 <div @click="mostrarfechas(sitio)">
                   <b-row>
-                    <h3 class="Titulo">{{sitio.lugar}}</h3>
+                    <h3 class="Titulo">{{sitio.place}}</h3>
                   </b-row>
                   <b-row>
                     <b-col>
                       <b-row>{{sitio.pais}}</b-row>
                     </b-col>
-                  </b-row>
-                  <b-row>
-                    <col>
-                      <div class="card">
-                        <img class="card-img-top" src="../assets/vije.png" alt="Card image">
-                      </div>
-                    </col>
-                    <col class="avion">
-                      {{sitio.numero_fechas}}
-                    <col>
                   </b-row>
                 </div>
               </b-col>
@@ -351,7 +382,7 @@
               <b-col>
                 <div @click="mostrarfechas(sitio)">
                   <b-row>
-                    <h3 class="Titulo">{{sitio.lugar}}</h3>
+                    <h3 class="Titulo">{{sitio.place}}</h3>
                   </b-row>
                   <b-row>
                     <b-col>
@@ -407,26 +438,35 @@
 export default {
 	  data(){
       return{
+        aux: [
+
+        ],
+
+        aux2:[
+
+        ],
+
         cuestionario:false,
+        miembros:false,
 				destinos_deseados: [
-					{lugar: 'Andalucia', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
-          {lugar: 'Cantabria', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{cantidad:true,camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+					{place: 'Andalucia', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{añadir:false,members:["juan@g.com","david@g.com"],fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{añadir:false,members:["julian@g.com","roman@g.com"],cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+          {place: 'Cantabria', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{añadir:false,members:["juan@g.com","david@g.com"],fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
         ],
 
 				este_mes: [
-          {lugar: 'Andalucia', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
-          {lugar: 'Cantabria', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{cantidad:true,camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+          {place: 'Andalucia', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+          {place: 'Cantabria', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
         ],
 
 				todo_organizado: [
-          {lugar: 'Venecia', pais: 'Italia',numero_fechas:2,fecham:false,base:true,codigo:'5',date:[{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
-          {lugar: 'Oporto' ,pais: 'Portugal',numero_fechas:2,fecham:false,base:true,codigo:'6',date:[{camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+          {correcto:false,place: 'Venecia', pais: 'Italia',numero_fechas:2,fecham:false,base:true,codigo:'5',date:[{añadir:false,members:["juan@g.com","david@g.com"],camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{añadir:false,members:["juan@g.com","david@g.com"],fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+          {correcto:false,place: 'Oporto' ,pais: 'Portugal',numero_fechas:2,fecham:false,base:true,codigo:'6',date:[{añadir:false,members:["juan@g.com","david@g.com"],camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{añadir:false,members:["juan@g.com","david@g.com"],fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
         ],
 
         futuros_viajes: [
-          {lugar: 'Venecia', pais: 'Italia',numero_fechas:2,fecham:false,base:true,codigo:'5',date:[{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
-          {lugar: 'Oporto' ,pais: 'Portugal',numero_fechas:2,fecham:false,base:true,codigo:'6',date:[{camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
-          {lugar: 'Andalucia', pais: 'España',numero_fechas:2,fecham:false,codigo:'3',base:true,date:[{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+          {place: 'Venecia', pais: 'Italia',numero_fechas:2,fecham:false,base:true,codigo:'5',date:[{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+          {place: 'Oporto' ,pais: 'Portugal',numero_fechas:2,fecham:false,base:true,codigo:'6',date:[{camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+          {place: 'Andalucia', pais: 'España',numero_fechas:2,fecham:false,codigo:'3',base:true,date:[{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
         ]
       }
     },
@@ -435,7 +475,17 @@ export default {
     },
 
 		methods: {
+
+      cambiar_estado: function(objecto,vector){
+        this.miembros=false;
+      },
+
 			personaapuntada: function(object,vector){
+        this.aux2 =[];
+        this.aux = [];
+        this.aux2.push(object);
+        this.aux.push(vector);
+        this.miembros=true;
 				vector.personas = vector.personas+1;
         var cont=0;
         object.numero_fechas = object.numero_fechas-1;
@@ -445,7 +495,7 @@ export default {
           object.fecham=!object.fecham;
         }
         for(var i=0;i<this.futuros_viajes.length;i++){
-          if(this.futuros_viajes[i].lugar==object.lugar){
+          if(this.futuros_viajes[i].place==object.place){
             this.futuros_viajes[i].date.push({camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas});
             this.futuros_viajes[i].numero_fechas=this.futuros_viajes[i].numero_fechas+1;
             i=this.futuros_viajes.length;
@@ -454,7 +504,7 @@ export default {
           }
         }
         if(cont==this.futuros_viajes.length){
-           this.futuros_viajes.push({lugar:object.lugar,pais:'España',numero_fechas:1,fecham:false,base:true,codigo:object.codigo,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas}]});
+           this.futuros_viajes.push({place:object.place,pais:'España',numero_fechas:1,fecham:false,base:true,codigo:object.codigo,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas}]});
         }
       },
 
@@ -468,7 +518,7 @@ export default {
           object.fecham=!object.fecham;
         }
         for(var i=0;i<this.todo_organizado.length;i++){
-          if(this.todo_organizado[i].lugar==object.lugar){
+          if(this.todo_organizado[i].place==object.place){
             this.todo_organizado.date.push({camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas});
             this.todo_organizado[i].numero_fechas=this.todo_organizado[i].numero_fechas+1;
             i=this.todo_organizado.length;
@@ -477,15 +527,15 @@ export default {
           }
         }
         if(cont==this.todo_organizado.length){
-           this.todo_organizado.push({lugar:object.lugar,pais:'España',numero_fechas:1,fecham:false,base:true,codigo:object.codigo,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas}]});
+           this.todo_organizado.push({place:object.place,pais:'España',numero_fechas:1,fecham:false,base:true,codigo:object.codigo,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas}]});
         }
       },
 
       nuevoviaje: function(){
-        if ((this.lugar_!= undefined) && (this.fecha_!= undefined) && (this.fechaf_!= undefined)){
+        if ((this.place_!= undefined) && (this.fecha_!= undefined) && (this.fechaf_!= undefined)){
           this.cuestionario=!this.cuestionario;
           for(var i=0;i<this.futuros_viajes.length;i++){
-            if(this.futuros_viajes[i].lugar==this.lugar_){
+            if(this.futuros_viajes[i].place==this.place_){
               this.futuros_viajes[i].date.push({camuflado:false,fecha:this.fecha_,fecha_f:this.fechaf_, personas:1});
               this.futuros_viajes[i].numero_fechas=this.futuros_viajes[i].numero_fechas+1;
               i=this.futuros_viajes.length;
@@ -494,9 +544,9 @@ export default {
             }
           }
           if(cont==this.futuros_viajes.length){
-            this.futuros_viajes.push({lugar:this.lugar_,pais: 'España',numero_fechas:1,mostrar:false,base:true,camuflado:false,codigo:'9', date:[{fecha:this.fecha_,fecha_f:this.fechaf_,personas:1}]});
+            this.futuros_viajes.push({place:this.place_,pais: 'España',numero_fechas:1,mostrar:false,base:true,camuflado:false,codigo:'9', date:[{fecha:this.fecha_,fecha_f:this.fechaf_,personas:1}]});
           }
-          //this.todo_organizado.push({lugar:this.lugar_,pais: 'España',numero_fechas:1,mostrar:false,base:true,camuflado:false,codigo:'9',date:[{fecha:this.fecha_,fecha_f:this.fechaf_, personas:1}]});
+          //this.todo_organizado.push({place:this.place_,pais: 'España',numero_fechas:1,mostrar:false,base:true,camuflado:false,codigo:'9',date:[{fecha:this.fecha_,fecha_f:this.fechaf_, personas:1}]});
           //Creo que no deberia salir aqui, osea deberia añadise a todo organizado menos asi mismo no?
         }else{
           alert("Existe un campo vacío");

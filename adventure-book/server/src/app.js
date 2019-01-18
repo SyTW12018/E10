@@ -1,27 +1,66 @@
+/**
+  * Desarrollado para la asignatura de "Sistema y tecnologías web"
+  * de 4to de Grado en Ingenería Informática
+  * de la Universidad de La Laguna - ULL (España)
+  * 
+  * @fileoverview Fichero que forma la Api Rest de nuestra web
+  * 
+  * @author       Sergio Del Pino Hernández
+  * @author       Juan Carlos González Pascolo
+  * @author       Pedro Antonio Lima Adrián
+  * @author       Ana Beatriz Gil González
+  * @author       Marta Mireia Scholz Díaz
+  * 
+  * @version      1.0.0
+  * 
+  * @requires     mongodb
+  * @requires     npm
+ */
+
 "use strict";
-//Módulos para el servidor y BBDD
+/**
+  * Módulos para el servidor y la base de datos
+  * @requires      express
+  * @requires      bodyParse
+  * @requires      cors
+  * @requires      morgan
+  * @requires      mongoose
+ */
 var express = require("express");
 var bodyParse = require("body-parser");
 var cors = require("cors");
 var morgan = require("morgan");
 var Mongoose = require("mongoose");
-//Módulos para la autorización y registro
+/**
+  * Módulos para la autentificación y el registro
+  * @requires      config
+  * @requires      bcrypt
+  * @requires      jwt
+  * @requires      path
+  * @requires      fs
+ */
 const config = require("./config");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 var path = require("path");
 var fs = require("fs");
-//Para subir archivos binarios
+/**
+  * Módulos para subir archivos en binarios
+  * @requires      multer
+  * @requires      sharp
+ */
 const multer = require("multer");
 const sharp = require("sharp");
-var sys = require("sys");
-var exec = require("child_process").exec;
-var fs = require("fs");
 
-//Conexión a base de datos
+
+/**
+  * @summary       Conexión a la base de datos
+  * @requires      mongoose.connect
+ */
 Mongoose.connect("mongodb://localhost:27017/test");
-//Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
 
+//revisar app.use
+//Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
 Mongoose.set("useFindAndModify", false);
 var app = express();
 app.use("/uploads",express.static(path.join("/home/sergio/E10/adventure-book", "uploads")));
@@ -31,10 +70,24 @@ app.use(bodyParse.json());
 //control de acceso (CORS)
 app.use(cors());
 
-/* Creando los esquemas de los datos */
+/**
+  * @summary       Crear esquemas de la base de datos
+  * @requires      mongoose.Schema
+  * @requires      mongoose.model
+ */
 var Schema = Mongoose.Schema;
 
-//Esquema de la colleción de los usuarios
+/**
+  * @summary       Esquema de la coleción de usuarios
+  * @requires      collection userData
+  * @param         name                   {String}        Nombre del usuario
+  * @param         password               {String}        Contraseña del usuario
+  * @param         mail                   {String}        Correo electrónico del usuario
+  * @param         visited_places         {Array}         Sitios visitados por el usuario
+  * @param         wished_places          {Array}         Sitios deseados por el usuario
+  * @param         uploadsphotos          {Array}         Fotos subidas por el usuario
+  * @param         GroupTravel            {Array}         Grupos de viaje del usuario
+ */
 var UserDataSchema = new Schema(
   {
     name: String,
@@ -49,7 +102,15 @@ var UserDataSchema = new Schema(
 );
 var UserData = Mongoose.model("UserData", UserDataSchema);
 
-//Esquema de la colección del lugares
+/**
+  * @summary       Esquema de la coleción de lugares
+  * @requires      collection placeData
+  * @param         place                  {String}        Nombre del lugar
+  * @param         content                {Array}         Vector de contenido del lugar
+  *                content.user_id        {String}        ID del usuario
+  *                content.photo          {String}        Foto del lugar
+  *                content.date           {Date}          Fecha de subida de la foto
+ */
 var PlaceDataSchema = new Schema(
   {
     place: String,
@@ -60,7 +121,12 @@ var PlaceDataSchema = new Schema(
 );
 var PlaceData = Mongoose.model("PlaceData", PlaceDataSchema);
 
-//Esquema de los sitios por defecto
+/**
+  * @summary       Esquema de los lugares por defecto
+  * @requires      collection sitesData
+  * @param         place                  {String}        Nombre del lugar
+  * @param         id_num                 {Number}        Número identificador del lugar
+ */
 var SitesDataSchema = new Schema(
   {
     place: String,
@@ -70,7 +136,17 @@ var SitesDataSchema = new Schema(
 );
 var SitesData = Mongoose.model("SitesData", SitesDataSchema);
 
-//Esquema de la colección de los grupos de viaje
+/**
+  * @summary       Esquema de la coleción de los gurpos de viaje
+  * @requires      collection groupTravelData
+  * @param         place                  {String}        Nombre del lugar
+  * @param         members                {Array}         Miembros del grupos de viaje
+  * @param         author_name            {String}        Nombre del creador del grupo de viaje
+  * @param         comments               {Array}         Comentarios del grupo de viaje
+  * @param         wished_places          {Array}         Sitios deseados por el usuario
+  * @param         photos                 {String}        Foto del grupo de viaje
+  * @param         date                   {Date}          Fecha del grupo de viaje del usuario
+ */
 var GroupTravelSchema = new Schema(
   {
     place: String,
@@ -84,8 +160,11 @@ var GroupTravelSchema = new Schema(
 );
 var GroupTravel = Mongoose.model("groupTravelData", GroupTravelSchema);
 
-
-//Código a ejecutar cuando estemos en producción para crear la base de datos de los lugares por defecto
+/**
+  * @summary       Código a ejecutar cuando estemos en producción para crear la base de datos de los lugares por defecto
+  * @requires      SitesData
+  * @param         comunidades  {Array}   Vector de String con los nombres de los lugares
+ */
 /*
 var comunidades = ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
                     'GALICIA','LA RIOJA','CANTABRIA',
@@ -105,12 +184,18 @@ for(var i = 0; i < comunidades.length; i++){
     data.save()
 } */
 
-/*Aquí empieza el API-REST*/
-
-
+/**
+  * @summary       Función de registro
+  *                1-Comprobar que no hayan dos emails iguales
+  *                2-Crear el registro de la base de datos con su contraseña cifrada
+  *                3-Guardar el usurio en la base de datos
+  *                4-Crear token con 24 horas de duración si se registra correctamente
+  * @requires      UserData
+  * @param         req.body.mail  {String}  Email recogido en Front-End
+ */
 app.post("/signup", (req, res) => {
   
-  //Comprobamos que no hayan dos emails iguales.
+  //1
   UserData.findOne({ mail: req.body.mail }, (err, user_found) => {
     if(err){
       return res.status(500).send("Hubo un problema en el registro de usuario");
@@ -120,7 +205,7 @@ app.post("/signup", (req, res) => {
       return res.status(500).send("Usuario ya registrado");
     } 
     else {
-      //Creando el regiastro de la base de datos con su contraseña cifrada
+      //2
       var data = new UserData({
         name: req.body.name,
         password: bcrypt.hashSync(req.body.pass, 8),
@@ -128,18 +213,17 @@ app.post("/signup", (req, res) => {
       });
 
 
-      //Guardando el user en la BBDD
+      //3
       data.save().then(function(info, err) {
         if (err) {
           return res.status(500).send("Hubo un problema en el registro de usuario");
         }
 
-        //Si se crea correctamente, se crea el token para la sesión
+        //4
         UserData.findOne({ mail: data.mail }, function(err, user) {
           if (err) {
             return res.status(500).send("Problema para encontrar el usuario");
           }
-          //El token dura 24h
           let token = jwt.sign({ id: user._id }, config.secret, {
             expiresIn: 86400
           });
@@ -150,37 +234,49 @@ app.post("/signup", (req, res) => {
   });
 });
 
-//Función para el Login del usuario
+/**
+  * @summary       Función de inicio de sesión
+  *                1-Usuario no encontrado
+  *                2-Uso de bcrypt para comparar su contraseña cifrada
+  * @requires      UserData
+  * @param         req.body.mail  {String}  Email recogido en Front-End
+  *                req.body.pass  {String}  Contraseña del usuario
+ */
 app.post("/login", (req, res) => {
   console.log(req.body.mail);
   console.log(req.body.pass);
   UserData.findOne({ mail: req.body.mail }, function(err, user) {
-    //Error del servidor
+    //Error del servidor 
+    //try catch??
     if (err) {
       console.log(err);
       return res.status(500).send("Problema para encontrar el usuario");
     }
 
-    //Usuario no encontrado
+    //1
     if (!user) {
       return res.status(404).send("Usuario no registrado");
     }
 
-    //Usamos bcrypt para comparar su contraseña cifrada
+    //2
     let passwordIsValid = bcrypt.compareSync(req.body.pass, user.password);
     console.log(passwordIsValid);
 
     if (!passwordIsValid) {
       return res.status(401).send({ auth: false, token: null });
     }
-    //EL token dura 24h
     let token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 10 });
 
     res.status(200).send({ auth: true, token: token, user: user });
   });
 });
 
- //Función para comprobar que existe un token
+ /**
+  * @summary       Función de comprobación del token
+  *                1-Si es nulo o undefined redirigir a Inicio de sesión
+  *                2-Si es correcto permitir acceso
+  * @param         req.body.token  {String}  Token del usuario que inicia sesión
+ */
 app.post("/waiting", (req, res) => {
   var token = req.body.token;
   if (token == null || token == "undefined") {
@@ -192,16 +288,22 @@ app.post("/waiting", (req, res) => {
   }
 });
 
-
-
-//Esta función devuelve la información del userboard del usuario
-
+/**
+  * @summary       Función para devolver la información del userboard del usuario
+  *                1-Devolver todos los lugares visitados
+  *                2-Leemos la carpeta de cada lugar para buscar una foto que mostrar
+  * @requires      UserData
+  * @param         req.body.mail      {String}  Email recogido en Front-End
+  *                doc._id            {String}  ID del usuario
+  *                doc.visited_places {Array}   Vector de lugares visitados por el usuario
+ */
 app.get("/userboard/:mail", async (req, res) => {
   var aux = [];
   var response = [];
 
   await UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
     //Server error
+    //try catch??
     if (err) {
       console.log(err);
       return res.status(500).send("Problema para encontrar el usuario");
@@ -211,7 +313,7 @@ app.get("/userboard/:mail", async (req, res) => {
     var exit = 0;
     var i = 0;
 
-    //Si hay lugares visitados de devuelven todos los lugares visitados
+    //1
     if(doc.visited_places.length != 0){
       while (exit == 0 && i < doc.visited_places.length) {
         console.log("i = " + i + "  visit: " + doc.visited_places[i])
@@ -225,7 +327,7 @@ app.get("/userboard/:mail", async (req, res) => {
                 console.log("docs es null");
               } 
               else {
-                //Leemos su carpeta de los lugares para buscar una foto
+                //2
                 try {
                   var all_files = fs.readdirSync(dir + "/" + doc.visited_places[i]);
                   if (all_files.length == 0) {
@@ -267,7 +369,6 @@ app.get("/userboard/:mail", async (req, res) => {
       if (exit == 1) {
         return res.status(500).send("Error de inconsistencia");
       } else {
-        //Enviamos toda la información
         response.push(doc.visited_places);
         response.push(aux);
         response.push(doc.wished_places);
@@ -279,8 +380,12 @@ app.get("/userboard/:mail", async (req, res) => {
   });
 });
 
-
-//Función para añadir un lugar a favoritos
+/**
+  * @summary       Función para añadir un lugar a favoritos
+  * @requires      UserData
+  * @param         req.params.mail      {String}  Email recogido en Front-End
+  *                req.params.place     {String}  Nombre del lugar recogido en Front-End
+ */
 app.post("/follow_Wished/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate(
     { name: req.params.mail },
@@ -297,7 +402,12 @@ app.post("/follow_Wished/:mail/:place", (req, res) => {
   );
 });
 
-
+/**
+  * @summary       Función para devolver toda la información del sitio
+  * @requires      PlaceData
+  * @param         req.params.place     {String}  Nombre del lugar recogido en Front-End
+  *                doc.content          {Array}   Contenido del lugar (Nombre, Autor, Foto, Fecha, etc)
+ */
 app.post("/sites/:place", async (req, res) => {
   var visited_place = req.params.place.toUpperCase();
   var response = [];
@@ -314,7 +424,13 @@ app.post("/sites/:place", async (req, res) => {
 });
 
 
-
+/**
+  * @summary       Función para permitir ciertos formatos en las fotos a subir
+  * @constant      fileFilter
+  * @constant      allowedType       {Array}   Vector con los formatos posibles para la subida de la foto
+  * @param         file.mimetype     {String}  Tipo del archivo subido
+  *                cb                             Función callback
+ */
 const fileFilter = function(req, file, cb) {
   const allowedType = ["image/jpeg", "image/png", "image/gif"];
 
@@ -326,6 +442,13 @@ const fileFilter = function(req, file, cb) {
   cb(null, true);
 };
 
+/**
+  * @summary       Estructura de subida de ficheros
+  * @constant      MAX_SIZE                 {Number}    Límite de tamaño del archivo subido
+  * @constant      upload.dest              {String}    Ruta de subida
+  *                upload.fileFilter                    Componente creada para saber si el tipo del archivo subido está permitido
+  *                upload.limits.filesize   {Number}    Componente con el MAX_SIZE 
+ */
 const MAX_SIZE = 20000000;
 const upload = multer({
   dest: "./uploads/",

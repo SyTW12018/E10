@@ -10,7 +10,8 @@
     "server": "node server/src/app",
     "build": "node build/build.js",
     "test": "cd server && mocha --exit",
-    "test-front": "cross-env NODE_ENV=test nyc mocha-webpack --webpack-config build/webpack.base.conf.js --require test/setup.js test/**/*.spec.js"
+    "test-front": "cross-env NODE_ENV=test nyc mocha-webpack --webpack-config build/webpack.base.conf.js --require test/setup.js test/**/*.spec.js",
+    "inspect": "node --inspect --inspect-brk node_modules/mocha-webpack/bin/mocha-webpack --webpack-config build/webpack.base.conf.js --require test/setup.js test/**/*.spec.js"
   },
   "nyc": {
     "include": [

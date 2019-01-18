@@ -12,7 +12,7 @@
 export default {
   data: function() {
     return {
-      mail_: "",
+      mail_: "pepe@gmail.com",
       pass_: ""
     };
   },

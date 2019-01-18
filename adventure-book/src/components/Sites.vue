@@ -44,7 +44,7 @@ body {
                     <b-row>
                         <div v-for="sitio in comunidades_autonomas" :key="sitio">
                             <div class="card" style="width: 16rem;" @click="route(sitio.cod)">
-                                <img class="card-img-top" src="../C.jpg" alt="Card image">
+                                <img class="card-img-top" :src="place_data[sitio.cod][0].photo[0]" alt="Card image">
                                 <div class="card-body">
                                     <p class="item">  {{ sitio.nombre }} </p>
                                 </div>
@@ -65,33 +65,85 @@ export default {
   data(){
     return{
 	nombre: "Todos los sitios",
-	descripcion: "Descubre todas las comunidades y ciudades autónomas españolas.",
+    descripcion: "Descubre todas las comunidades y ciudades autónomas españolas.",
+    place_data:[],
 	comunidades_autonomas: [
                             {
-                              cod: '1',
+                              cod: '0',
                               nombre: 'Andalucía'
                             },
                             {
-                              cod: '2',
+                              cod: '1',
                               nombre: 'Aragón'
                             },
                             {
+                              cod: '2',
+                              nombre: 'Cantabria'
+                            },
+                            {
                               cod: '3',
-                              nombre: 'Asturias'
+                              nombre: 'Castilla la Mancha'
                             },
                             {
                               cod: '4',
-                              nombre: 'Islas Baleares'
+                              nombre: 'Castilla y León'
                             },
                             {
                               cod: '5',
-                              nombre: 'Islas Canarias'
+                              nombre: 'Cataluña'
                             },
                             {
                               cod: '6',
-                              nombre: 'Cantabria'
+                              nombre: 'Ceuta'
+                            },
+                            {
+                              cod: '7',
+                              nombre: 'Comunidad de Madrid'
+                            },
+                            {
+                              cod: '8',
+                              nombre: 'Comunidad Foral de Navarra'
+                            },
+                            {
+                              cod: '9',
+                              nombre: 'Comunidad Valenciana'
+                            },
+                            {
+                              cod: '10',
+                              nombre: 'Extremadura'
+                            },
+                            {
+                              cod: '11',
+                              nombre: 'Galicia'
+                            },
+                            {
+                              cod: '12',
+                              nombre: 'Islas Baleares'
+                            },
+                            {
+                              cod: '13',
+                              nombre: 'Islas Canarias'
+                            },
+                            {
+                              cod: '14',
+                              nombre: 'La Rioja'
+                            },
+                            {
+                              cod: '15',
+                              nombre: 'Melilla'
+                            },
+                            {
+                              cod: '16',
+                              nombre: 'Pais Vasco'
+                            },
+                            {
+                              cod: '17',
+                              nombre: 'Principado de Asturias'
+                            },
+                            {
+                              cod: '18',
+                              nombre: 'Región de Murcia'
                             }
-
 				]
 
     }
@@ -111,13 +163,16 @@ export default {
     ) {
       this.$router.push("/");
     }
+
+    for (var i=0; i < this.comunidades_autonomas.length; i++){
     this.$http
-      .post("http://localhost:8081/sites", {
-        user_: JSON.parse(localStorage.getItem("user"))._id
-      })
+      .get("http://localhost:8081/sites/" + this.comunidades_autonomas[i].cod)
       .then(response => {
-        this.user_data = response.data;
+        this.place_data = response.data
+        console.log(this.place_data);
       });
+    }
+    
   },
   components: {
 

@@ -56,21 +56,12 @@ var UserData = Mongoose.model("UserData", UserDataSchema);
 var PlaceDataSchema = new Schema(
   {
     place: String,
-    content: [{ user_id: String, photo: String, date: Date }],
+    content: [{ user_id: String, photo: Array, date: Date }],
     date: { type: Date, default: Date.now }
   },
   { collection: "placeData" }
 );
 var PlaceData = Mongoose.model("PlaceData", PlaceDataSchema);
-
-var SitesDataSchema = new Schema(
-  {
-    place: String,
-    id_num: Number
-  },
-  { collection: "sitesData" }
-);
-var SitesData = Mongoose.model("SitesData", SitesDataSchema);
 
 var GroupTravelSchema = new Schema(
   {
@@ -85,24 +76,28 @@ var GroupTravelSchema = new Schema(
 );
 var GroupTravel = Mongoose.model("groupTravelData", GroupTravelSchema);
 
-/*
-var comunidades = ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
+
+
+
+/*var comunidades = ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
                     'GALICIA','LA RIOJA','CANTABRIA',
                     'CASTILLA Y LEÓN','CATALUÑA','COMUNIDAD VALENCIANA',
                     'CASTILLA LA MANCHA','EXTREMADURA','REGIÓN DE MURCIA','COMUNIDAD DE MADRID',
                     'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'];
 
 comunidades = comunidades.sort();
+console.log(comunidades)
 
 
 for(var i = 0; i < comunidades.length; i++){   
 
-    var data = SitesData({
-        place: comunidades[i],
-        id_num: i
-    });
+  var data = new PlaceData({
+    place: i,
+    content: [{ user_id: "", photo: [], date: new Date() }],
+    date: new Date(),
+  });
     data.save()
-} */
+}*/
 
 /*Here start de application*/
 
@@ -232,7 +227,7 @@ app.get("/userboard/:mail", (req, res) => {
     var exit = 0;
     var i = 0;
 
-    if(doc.visited_place.length != 0){
+    if(doc.visited_places.length != 0){
       while (exit == 0 && i < doc.visited_places.length) {
         try {
           await PlaceData.find({place: doc.visited_places[i].toUpperCase(),"content.user_id": doc._id}, function(err, docs){
@@ -317,21 +312,6 @@ app.post("/follow_Wished/:mail/:place", (req, res) => {
       }
     }
   );
-});
-
-app.post("/sites/:place", async (req, res) => {
-  var visited_place = req.params.place.toUpperCase();
-  var response = [];
-  try {
-    await PlaceData.findOne({ place: visited_place }, function(err, doc) {
-      response = doc.content;
-    });
-  } 
-  catch (err) {
-    console.log(err);
-  }
-
-  res.send(response);
 });
 
 
@@ -657,14 +637,6 @@ app.get("/comprobar", (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
 app.post("/change_name/:new/:mail", async(req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
@@ -694,20 +666,19 @@ app.post("/change_pass/:new/:mail", async(req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.get("/sites/:place", async (req, res) => {
+  
+  var response = [];
+  try {
+    await PlaceData.findOne({ place: req.params.place}, function(err, doc) {
+      response = doc.content;
+    });
+  } 
+  catch (err) {
+    console.log(err);
+  }
+  res.send(response);
+});
 
 
 let server = app.listen(process.env.PORT || 8081, function(err) {

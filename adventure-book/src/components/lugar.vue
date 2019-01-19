@@ -1,13 +1,12 @@
 <style>
-  #lugar{
-    background-color: rgb(0,0,0,0.);
-    margin: 0px 50px 50px 0px;
-  }
+#lugar {
+  background-color: rgb(0, 0, 0, 0);
+  margin: 0px 50px 50px 0px;
+}
 
-  .foto{
-    margin: 0px 0px 10px 10px;
-  }
-
+.foto {
+  margin: 0px 0px 10px 10px;
+}
 
 .fondo {
   position: fixed;
@@ -16,7 +15,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgb(0, 0, 0,.7);
+  background-color: rgb(0, 0, 0, 0.7);
   display: table;
 }
 .cuadrado {
@@ -24,13 +23,12 @@
   vertical-align: middle;
 }
 .contenedor {
-
   width: 80%;
   margin: 0px auto;
   padding: 20px 30px;
   background-color: #fff;
   border-radius: 2px;
-  text-align:center;
+  text-align: center;
   background-color: white;
   color: #54c2c3;
   font-weight: bold;
@@ -39,40 +37,37 @@
   border: solid white;
   margin-top: 20px;
 }
-
 </style>
 
 <template>
   <div class="fondo">
     <div class="cuadrado">
       <div class="contenedor">
-
-    <div id="lugar" class="w-100">
-        <b-row>
-          <b-col>
-            <h2> {{ nombre }} </h2>
-          </b-col>
-          <b-col cols="1">
-            <img @click="close()" src="../close.png" alt="cerrar">
-          </b-col>
-        </b-row>
-        <b-row>
+        <div id="lugar" class="w-100">
+          <b-row>
+            <b-col>
+              <h2>{{ nombre }}</h2>
+            </b-col>
+            <b-col cols="1">
+              <img @click="close()" src="../close.png" alt="cerrar">
+            </b-col>
+          </b-row>
+          <b-row>
             <div v-for="foto in fotos">
-                <b-row class="foto">
-                    <img :src="foto.src" height="200">
-                </b-row>
-                <b-row class="foto">
-                    <b-col style="text-align">
-                        <p> {{foto.usuario}} - {{ foto.fecha}}</p>
-                    </b-col>
-                </b-row>
+              <b-row class="foto">
+                <img :src="foto.src" height="200">
+              </b-row>
+              <b-row class="foto">
+                <b-col style="text-align">
+                  <p>{{foto.usuario}} - {{ foto.fecha}}</p>
+                </b-col>
+              </b-row>
             </div>
-        </b-row>
-    </div>
+          </b-row>
+        </div>
       </div>
     </div>
   </div>
-
 </template>
 
 
@@ -132,24 +127,32 @@ export default {
     try{
         await this.$http
           .get("http://localhost:8081/sites/" + this.codigo)
-          .then(response => {
+          .then(async response => {
             this.nombre = this.comunidades[this.codigo]
            // console.log(this.nombre)
             for (var i =0; i < response.data.length; i++){
               for (var j =0; j < response.data[i].photo.length; j++){ 
                 try{
-                await this.$http
-                .get("http://localhost:8081/get_name/" + response.data[i].user_id)
-                .then(res => {
-                var data = {
-                    src : response.data[i].photo[j].split("adventure-book")[1],
-                    fecha : response.data[i].date.split('T')[0],
-                    usuario: res.data
-                }; 
-                console.log(data);
-                this.fotos.push(data); 
-              }
-            }catch(err){}
+                    await this.$http
+                    .get("http://localhost:8081/get_name/" + response.data[i].user_id)
+                    .then(res => { 
+                      if(res.data == ""){
+                        var data = {
+                          src : response.data[i].photo[j].split("adventure-book")[1],
+                          fecha : response.data[i].date.split('T')[0],
+                          usuario: "Anónimo"
+                        }; 
+                      }else{
+                        var data = {
+                          src : response.data[i].photo[j].split("adventure-book")[1],
+                          fecha : response.data[i].date.split('T')[0],
+                          usuario: res.data
+                        }; 
+                      }
+                      console.log(data);
+                      this.fotos.push(data); 
+                  });
+                }catch(err){}
               }
             }
           });

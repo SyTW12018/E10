@@ -686,6 +686,7 @@ app.get("/get_name/:user_id", async (req, res) => {
   try {
     await UserData.findOne({ _id: req.params.user_id}, function(err, doc) {
       response = doc.name;
+      console.log(doc.mail)
     });
     res.send(response);
   } 

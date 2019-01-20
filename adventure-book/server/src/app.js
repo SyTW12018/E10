@@ -458,15 +458,25 @@ const upload = multer({
   }
 });
 
-
-//Función para subir fotos
+/**
+  * @summary       Función para subir fotos
+  *                1-Comprobar si el usuario ya posee ese lugar como visitado, sino añadirlo.
+  *                2-Crear rutas y carpetas del directorio del lugar, si fuese necesario, y de las fotos que irian a dicho directorio.
+  *                3-Modificar en la base de datos dicha información del usuario tras la subida de las fotos.
+  * @requires      PlaceData, UserData
+  * @constant      upload
+  * @param         req.params.place  {String}     Lugar del que pertenece la foto a subir
+  *                req.params.mail   {String}     Email del usuario que sube la foto
+  *                doc._id           {String}     ID del usuario
+  *                doc.visited_places{Array}      Vector de lugares visitados por el usuario
+ */
 app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
   var files_ = [];
   var aux_ = __dirname.split("server");
   var in_visited_places = false;
   var visited_place = req.params.place.toUpperCase();
   var user_monid = ""
-
+  //1
   try {
     await UserData.findOne({ mail: req.params.mail }, function(err, doc) {
       user_monid = doc._id;
@@ -492,7 +502,7 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
       }
     );
   }
-
+  //2
   var dirPath = `${aux_[0]}static/uploads/${user_monid}/${visited_place}`;
   var dirPathWithOut = `${aux_[0]}static/uploads/${user_monid}`;
 
@@ -527,7 +537,7 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
   } catch (err) {
     res.status(428).json({ err });
   }
-
+  //3
   try {
     PlaceData.findOne({ place: visited_place }, function(err, doc) {
       if (doc == null) {
@@ -574,7 +584,12 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
   res.json({ files: files_ });
 });
 
-//Función para borrar un lugar deseado
+/**
+  * @summary       Función para borrar un lugar deseado
+  * @requires      UserData
+  * @param         req.params.place  {String}     Nombre del lugar deseado
+  *                req.params.mail   {String}     Email del usuario que se apunta a dicho lugar
+ */
 app.post("/delete_Wished/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
@@ -587,7 +602,12 @@ app.post("/delete_Wished/:mail/:place", (req, res) => {
   res.send(200);
 });
 
-//Función para borrar un lugar deseado
+/**
+  * @summary       Función para borrar un lugar visitado
+  * @requires      UserData
+  * @param         req.params.place  {String}     Nombre del lugar visitado
+  *                req.params.mail   {String}     Email del usuario que quiere borrar dicho lugar visitado
+ */
 app.post("/delete_Visited/:mail/:place", (req, res) => {
   console.log(req.params.place);
   UserData.findOneAndUpdate(
@@ -601,8 +621,13 @@ app.post("/delete_Visited/:mail/:place", (req, res) => {
   res.status(200);
 });
 
-
-//Función para borrar una foto del lugar
+/**
+  * @summary       Función para borrar una foto del lugar
+  * @requires      UserData
+  * @param         req.params.place  {String}     Nombre del lugar deseado
+  *                req.params.mail   {String}     Email del usuario que se apunta a dicho lugar
+  *                req.params.photo  {String}     Ruta a la foto que se desea borrar
+ */
 app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
   fs.unlinkSync(
     __dirname.split("server")[0] +
@@ -634,8 +659,14 @@ app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
   res.status(200);
 });
 
-
-//Función para añadir un grupo de viaje
+/**
+  * @summary       Función para añadir un grupo de viaje
+  * @requires      UserData, PlaceData
+  * @param         req.params.place         {String}     Nombre del lugar 
+  *                req.params.author_name   {String}     Autor del grupo de viaje
+  *                req.params.name          {String}     Nombre del usuario
+  *                req.params.group         {Array}      Información del grupo de viaje
+ */
 app.post("/add_group/:author_name/:place", async (req, res) => {
   var aux_ = __dirname.split("server");
   var array_user = [req.params.author_name];
@@ -674,8 +705,12 @@ app.post("/add_group/:author_name/:place", async (req, res) => {
   });
 });
 
-
-//Función para borrar un grupo de viaje
+/**
+  * @summary       Función para borrar un grupo de viaje
+  * @requires      UserData
+  * @param         req.params.mail         {String}     Email del usuario 
+  *                req.params.group        {Array}      Información del grupo de viaje
+ */
 app.post("/delete_group/:mail/:group", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
@@ -687,7 +722,12 @@ app.post("/delete_group/:mail/:group", (req, res) => {
   res.send(200);
 });
 
-//Función para seguir un grupo de viaje
+/**
+  * @summary       Función para seguir a un grupo de viaje
+  * @requires      UserData
+  * @param         req.params.mail         {String}     Email del usuario 
+  *                req.params.group        {Array}      Información del grupo de viaje
+ */
 app.post("/follow_group/:mail/:group", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
@@ -699,7 +739,12 @@ app.post("/follow_group/:mail/:group", (req, res) => {
   res.send(200);
 });
 
-//Función que devuelgve lños grupos de viajes disponibles
+
+/**
+  * @summary       Función que devuelve los grupos de viaje disponibles
+  * @requires      GroupTravel
+  * @param         doc    {Array}     Contenido de un grupo de viaje
+ */
 app.get("/groups/", async (req, res) => {
   try {
     var response = [];
@@ -711,7 +756,12 @@ app.get("/groups/", async (req, res) => {
   } catch (err) {}
 });
 
-//Función que devulve los grupos de viaje de un usuario
+/**
+  * @summary       Función que devuelve los grupos de viajes de un usuario
+  * @requires      UserData, GroupTravel
+  * @param         req.params.mail         {String}     Email del usuario 
+  *                doc.wished_places       {Array}      Vector de lugares deseados
+ */
 app.get("/groups/:mail/", (req, res) => {
   var response = [];
   var aux = [];
@@ -735,7 +785,9 @@ app.get("/groups/:mail/", (req, res) => {
     res.send(response);
   });
 });
-
+/**
+  * @summary       Manejo de errores en la subida de archivos por formato y tamaño
+ */
 app.use(function(err, req, res, next) {
   if (err.code === "LIMIT_FILE_TYPES") {
     res
@@ -751,6 +803,11 @@ app.use(function(err, req, res, next) {
   }
 });
 
+/**
+  * @summary       Función de comprobación de usuario
+  * @requires      UserData
+  * @param         req.body.mail      {String}        Email del usuario  
+ */
 app.get("/comprobar", (req, res) => {
 
   UserData.findOne({ mail: req.body.mail }, function(err, docs) {
@@ -760,12 +817,16 @@ app.get("/comprobar", (req, res) => {
     } else {
       console.log("documento:" + docs);
       res.send(docs);
-      //res.send("Usuario está registrado");
     }
   });
 });
 
-//Función para cambiar el NICKNAME del usuario
+/**
+  * @summary       Función para cambiar el nickname del usuario
+  * @requires      UserData
+  * @param         req.body.mail      {String}        Email del usuario
+  *                req.params.new     {String}        Nuevo nickname para el usuario
+ */
 app.post("/change_name/:new/:mail", async(req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
@@ -777,7 +838,12 @@ app.post("/change_name/:new/:mail", async(req, res) => {
   res.send(200);
 });
 
-//Función para cambiar la contraseña del usuario
+/**
+  * @summary       Función para cambiar la contraseña del usuario
+  * @requires      UserData
+  * @param         req.body.mail      {String}        Email del usuario
+  *                req.params.new     {String}        Nueva contraseña para el usuario
+ */
 app.post("/change_pass/:new/:mail", async(req, res) => {
 
   var pass = "";

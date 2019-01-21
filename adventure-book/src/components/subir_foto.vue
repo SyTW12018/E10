@@ -66,6 +66,11 @@
   margin-top: 20px;
 }
 
+.error{
+  color: red;
+  font-weight: normal;
+}
+
 </style>
 
 <template>
@@ -117,6 +122,7 @@
               </div>
             </b-col>
           </b-row>
+          <p class="error"> {{ error_ }} </p>
         </form>
       </div>
     </div>
@@ -167,6 +173,7 @@ export default {
       progress: 0,
       groups: [],
       sitios_visitados_fotos:[],
+      error_: "",
 
     };
   },
@@ -200,10 +207,16 @@ export default {
       }
       return "";
     },
+
     async sendFiles() {
-      console.log("Ento en la funcion");
+      this.error_ = "";
       if (this.uploadFiles.length == 0) {
-        this.err_msg = "No hay ningún archivo que subir";
+        this.error_ = "No hay ningún archivo que subir";
+        return "";
+      }
+      else if(this.place_ == null)
+      {
+        this.error_ = "Selecciona un lugar";
         return "";
       }
       /*

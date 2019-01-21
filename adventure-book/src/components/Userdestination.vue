@@ -481,7 +481,7 @@ export default {
         futuros_viajes: []
         /*
         futuros_viajes: [
-          {place: 'Venecia', pais: 'Italia',numero_fechas:2,fecham:false,base:true,codigo:'5',date:[{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
+          {place: 'Venecia', numero_fechas:2, fecham:false, base:true, date:[{camuflado:false,fecha:'27 de Marzo de 2019', fecha_f: '5 de Abril de 2019', personas:5}, {camuflado:false,fecha:' 27 de Marzo de 2019', fecha_f: '5 de Abril de 2019', personas:3}]},
           {place: 'Oporto' ,pais: 'Portugal',numero_fechas:2,fecham:false,base:true,codigo:'6',date:[{camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
           {place: 'Andalucia', pais: 'España',numero_fechas:2,fecham:false,codigo:'3',base:true,date:[{camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
         ]

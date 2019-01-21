@@ -110,8 +110,10 @@ async function seek_places (docs, response){
       response[j].numero_fechas = response[j].numero_fechas + 1
       var date_ = {};
       Object.assign(date_, {camuflado: false})
-      Object.assign(date_, {fecha:docs.date_ini})
-      Object.assign(date_, {fecha_f: docs.date_fini})
+      var f_ini = docs.date_ini.split("T")
+      Object.assign(date_, {fecha:f_ini[0]})
+      var f_fin = docs.date_fini.split("T")
+      Object.assign(date_, {fecha_f: f_fin[0]})
       Object.assign(date_, {personas:docs.members.length})
       Object.assign(date_, {id: docs._id})
       response[j].date.push(date_)      
@@ -127,8 +129,10 @@ async function seek_places (docs, response){
 
     var date_ = {}
     Object.assign(date_, {camuflado: false})
-    Object.assign(date_, {fecha:docs.date_ini})
-    Object.assign(date_, {fecha_f: docs.date_fini})
+    var f_ini = docs.date_ini.split("T")
+    Object.assign(date_, {fecha:f_ini[0]})
+    var f_fin = docs.date_fini.split("T")
+    Object.assign(date_, {fecha_f: f_fin[0]})
     Object.assign(date_, {personas:docs.members.length})
     Object.assign(date_, {id: docs._id})
 
@@ -691,8 +695,10 @@ app.get("/future_trips/:mail/", async (req,res) => {
 
                   var date_ = {}
                   Object.assign(date_, {camuflado: false})
-                  Object.assign(date_, {fecha:docs.date_ini})
-                  Object.assign(date_, {fecha_f: docs.date_fini})
+                  var f_ini = docs.date_ini.split("T")
+                  Object.assign(date_, {fecha:f_ini[0]})
+                  var f_fin = docs.date_fini.split("T")
+                  Object.assign(date_, {fecha_f: f_fin[0]})
                   Object.assign(date_, {personas:docs.members.length})
                   Object.assign(date_, {id: docs._id})
 

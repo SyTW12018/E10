@@ -100,40 +100,45 @@ for(var i = 0; i < comunidades.length; i++){
 }*/
 
 async function seek_places (docs, response){
+  var in_response = false
   var aux = {}
-  for (var j = 0; j < response.length; j++){
-    if(docs[0].place == response[j].place){
+
+  for(var j = 0; j< response.length; j++){
+    if(docs.place == response[j].place){
+      in_response = true;
+
       response[j].numero_fechas = response[j].numero_fechas + 1
       var date_ = {};
       Object.assign(date_, {camuflado: false})
-      Object.assign(date_, {fecha:docs[0].date_ini})
-      Object.assign(date_, {fecha_f: docs[0].date_fini})
-      Object.assign(date_, {personas:docs[0].members.length})
-      Object.assign(date_, {id: docs[0]._id})
-      response[j].date.push(date_)
-    }
-    else{
-      aux = {}
-      Object.assign(aux,{place: docs[0].place});
-      Object.assign(aux,{numero_fechas: 1})
-      Object.assign(aux,{base: true})
-      Object.assign(aux,{fecham: false})
-
-      var date_ = {}
-      Object.assign(date_, {camuflado: false})
-      Object.assign(date_, {fecha:docs[0].date_ini})
-      Object.assign(date_, {fecha_f: docs[0].date_fini})
-      Object.assign(date_, {personas:docs[0].members.length})
-      Object.assign(date_, {id: docs[0]._id})
-
-      var date_array = []
-      date_array.push(date_)
-      Object.assign(aux, {date: date_array})
-      response.push(aux)
-      aux = {}
+      Object.assign(date_, {fecha:docs.date_ini})
+      Object.assign(date_, {fecha_f: docs.date_fini})
+      Object.assign(date_, {personas:docs.members.length})
+      Object.assign(date_, {id: docs._id})
+      response[j].date.push(date_)      
     }
   }
 
+  if(in_response == false){
+    aux = {}
+    Object.assign(aux,{place: docs.place});
+    Object.assign(aux,{numero_fechas: 1})
+    Object.assign(aux,{base: true})
+    Object.assign(aux,{fecham: false})
+
+    var date_ = {}
+    Object.assign(date_, {camuflado: false})
+    Object.assign(date_, {fecha:docs.date_ini})
+    Object.assign(date_, {fecha_f: docs.date_fini})
+    Object.assign(date_, {personas:docs.members.length})
+    Object.assign(date_, {id: docs._id})
+
+    var date_array = []
+    date_array.push(date_)
+    Object.assign(aux, {date: date_array})
+    response.push(aux)
+    aux = {}
+  }
+  
   return response
 }
 
@@ -573,7 +578,7 @@ app.post("/add_group/:author_name/:place/:date_ini/:date_fini/", async (req, res
   try {
     await PlaceData.findOne({ place: req.params.place }, function(err, doc) {
       if(doc != null){
-        photo_group = doc.content[0].photo;
+        photo_group = doc.content[0].photo[0];
         console.log("Aqui se añade una foto al grupo...");
       }
       
@@ -673,23 +678,23 @@ app.get("/future_trips/:mail/", async (req,res) => {
       else{
         for (var i = 0; i < doc.groupsTravel.length; i++) {
           try {
-            await GroupTravel.find({ _id: doc.groupsTravel[i] }, async function(err, docs){
+            await GroupTravel.findOne({ _id: doc.groupsTravel[i] }, async function(err, docs){
               if (docs != null) {
                 console.log("count: " + cont);
                 cont = cont+1
                 console.log(response)
                 if(response.length == 0){
-                  Object.assign(aux,{place: docs[0].place});
+                  Object.assign(aux,{place: docs.place});
                   Object.assign(aux,{numero_fechas: 1})
                   Object.assign(aux,{base: true})
                   Object.assign(aux,{fecham: false})
 
                   var date_ = {}
                   Object.assign(date_, {camuflado: false})
-                  Object.assign(date_, {fecha:docs[0].date_ini})
-                  Object.assign(date_, {fecha_f: docs[0].date_fini})
-                  Object.assign(date_, {personas:docs[0].members.length})
-                  Object.assign(date_, {id: docs[0]._id})
+                  Object.assign(date_, {fecha:docs.date_ini})
+                  Object.assign(date_, {fecha_f: docs.date_fini})
+                  Object.assign(date_, {personas:docs.members.length})
+                  Object.assign(date_, {id: docs._id})
 
                   var date_array = []
                   date_array.push(date_)
@@ -711,6 +716,7 @@ app.get("/future_trips/:mail/", async (req,res) => {
         console.log(response)
       }
       console.log("response" + response)
+      
       res.send(response);
     });
     
@@ -720,6 +726,7 @@ app.get("/future_trips/:mail/", async (req,res) => {
   }
   
 })
+
 
 app.get("/wished_groups/:mail/", (req, res) => {
   console.log("Entra en el sitios deseados")

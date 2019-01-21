@@ -468,15 +468,20 @@ export default {
           {place: 'Cantabria', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{añadir:false,members:["juan@g.com","david@g.com"],fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
         ],*/
 
+        este_mes:[],
+        /*
 				este_mes: [
           {place: 'Andalucia', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
           {place: 'Cantabria', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
         ],
-
+        */
+        todo_organizado: [], 
+        /*
 				todo_organizado: [
           {correcto:false,place: 'Venecia', pais: 'Italia',numero_fechas:2,fecham:false,base:true,codigo:'5',date:[{añadir:false,members:["juan@g.com","david@g.com"],camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{añadir:false,members:["juan@g.com","david@g.com"],fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
           {correcto:false,place: 'Oporto' ,pais: 'Portugal',numero_fechas:2,fecham:false,base:true,codigo:'6',date:[{añadir:false,members:["juan@g.com","david@g.com"],camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{añadir:false,members:["juan@g.com","david@g.com"],fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
         ],
+        */
 
         futuros_viajes: []
         /*
@@ -495,7 +500,7 @@ export default {
         this.miembros=false;
       },
 
-			personaapuntada: function(object,vector){
+			personaapuntada: async function(object,vector){
         this.aux2 =[];
         this.aux = [];
         this.aux2.push(object);
@@ -521,9 +526,17 @@ export default {
         if(cont==this.futuros_viajes.length){
            this.futuros_viajes.push({place:object.place,pais:'España',numero_fechas:1,fecham:false,base:true,codigo:object.codigo,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas}]});
         }
+
+        try {
+          var usermail = JSON.parse(localStorage.getItem("user")).mail
+          await this.$http.post("http://localhost:8081/follow_group/" + usermail +"/"+  vector.id)
+          .then(response => {
+            console.log(response.data);
+          });
+        } catch(err) {}
       },
 
-			personadesapuntada: function(object,vector){
+			personadesapuntada: async function(object,vector){
         vector.personas = vector.personas-1;
         var cont=0;
         vector.camuflado = !vector.camuflado
@@ -544,6 +557,14 @@ export default {
         if(cont==this.todo_organizado.length){
            this.todo_organizado.push({place:object.place,pais:'España',numero_fechas:1,fecham:false,base:true,codigo:object.codigo,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas}]});
         }
+
+        try {
+          var usermail = JSON.parse(localStorage.getItem("user")).mail
+          await this.$http.post("http://localhost:8081/delete_group/" + usermail +"/"+  vector.id)
+          .then(response => {
+            console.log(response.data);
+          });
+        } catch(err) {}
       },
 
       nuevoviaje: async function(){
@@ -606,8 +627,20 @@ export default {
           this.futuros_viajes = response.data;
         });
 
-        console.log("futuros viajes")
-        console.log(this.futuros_viajes)
+        await this.$http
+        .get("http://localhost:8081/this_month/" + JSON.parse(localStorage.getItem("user")).mail)
+        .then(response => {
+          console.log(response.data);
+          this.este_mes = response.data;
+        });
+
+        await this.$http
+        .get("http://localhost:8081/all_groups/" + JSON.parse(localStorage.getItem("user")).mail)
+        .then(response => {
+          console.log(response.data);
+          this.todo_organizado = response.data;
+        });
+
     } catch (err) {}
   },
 

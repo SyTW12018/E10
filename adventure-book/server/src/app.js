@@ -99,9 +99,9 @@ for(var i = 0; i < comunidades.length; i++){
     data.save()
 }*/
 
-async function seek_places (docs, response){
+async function seek_places (docs, response, options){
   var in_response = false
-  var aux = {}
+  var aux = {}  
 
   for(var j = 0; j< response.length; j++){
     if(docs.place == response[j].place){
@@ -110,11 +110,10 @@ async function seek_places (docs, response){
       response[j].numero_fechas = response[j].numero_fechas + 1
       var date_ = {};
       Object.assign(date_, {camuflado: false})
-      var f_ini = docs.date_ini.split("T")
-      Object.assign(date_, {fecha:f_ini[0]})
-      var f_fin = docs.date_fini.split("T")
-      Object.assign(date_, {fecha_f: f_fin[0]})
+      Object.assign(date_, {fecha: docs.date_ini.toLocaleDateString('es-ES', options)})
+      Object.assign(date_, {fecha_f: docs.date_fini.toLocaleDateString('es-ES', options)})
       Object.assign(date_, {personas:docs.members.length})
+      Object.assign(date_, {members:docs.members})
       Object.assign(date_, {id: docs._id})
       response[j].date.push(date_)      
     }
@@ -129,11 +128,10 @@ async function seek_places (docs, response){
 
     var date_ = {}
     Object.assign(date_, {camuflado: false})
-    var f_ini = docs.date_ini.split("T")
-    Object.assign(date_, {fecha:f_ini[0]})
-    var f_fin = docs.date_fini.split("T")
-    Object.assign(date_, {fecha_f: f_fin[0]})
+    Object.assign(date_, {fecha: docs.date_ini.toLocaleDateString('es-ES', options)})
+    Object.assign(date_, {fecha_f: docs.date_fini.toLocaleDateString('es-ES', options)})
     Object.assign(date_, {personas:docs.members.length})
+    Object.assign(date_, {members:docs.members})
     Object.assign(date_, {id: docs._id})
 
     var date_array = []
@@ -631,49 +629,63 @@ app.post("/add_group/:author_name/:place/:date_ini/:date_fini/", async (req, res
 
 
 
-app.post("/delete_group/:mail/:group", (req, res) => {
-  UserData.findOneAndUpdate(
-    { mail: req.params.mail },
-    { $pull: { groupsTravel: req.params.group } },
-    function(err, doc) {
-      console.log("Aqui se elimina un grupo...");
-    }
-  );
-  res.send(200);
+app.post("/delete_group/:mail/:group", async (req, res) => {
+  try{
+    await UserData.findOneAndUpdate(
+      { mail: req.params.mail },
+      { $pull: { groupsTravel: req.params.group } },
+      function(err, doc) {
+        console.log("Aqui se elimina un grupo...");
+      }
+    );
+  
+    await GroupTravel.findOneAndUpdate(
+      { _id: req.params.group },
+      { $pull: { members: req.params.mail } },
+      function(err, doc) {
+        console.log("Aqui se elimina un grupo...");
+      }
+    );
+  }
+  catch(err){
+    console.log(err)
+  }
+  
+  res.sendStatus(200);
 });
 
 
 //añadir el usuario a un grupo
-app.post("/follow_group/:mail/:group", (req, res) => {
-  UserData.findOneAndUpdate(
-    { mail: req.params.mail },
-    { $push: { groupsTravel: req.params.group } },
-    function(err, doc) {
-      console.log("Aqui se añade un grupo a los del user...");
-    }
-  );
-  res.send(200);
+app.post("/follow_group/:mail/:group", async (req, res) => {
+  try{
+    await UserData.findOneAndUpdate(
+      { mail: req.params.mail },
+      { $addToSet: { groupsTravel: req.params.group } },
+      function(err, doc) {
+      }
+    );
+  
+    await GroupTravel.findOneAndUpdate(
+      { _id: req.params.group },
+      { $addToSet: { members: req.params.mail } },
+      function(err, doc) {
+      }
+    );
+  }
+  catch(err){
+    console.log(err)
+  }
+  
+  res.sendStatus(200);
 });
 
-
-
-app.get("/groups/", async (req, res) => {
-  try {
-    var response = [];
-    await GroupTravel.find({}, function(err, doc) {
-      response.push(doc);
-    });
-
-    res.send(response);
-  } catch (err) {}
-});
 
 
 app.get("/future_trips/:mail/", async (req,res) => {
   console.log("Entra en el future trip")
   var response = [];
   var aux = {};
-  var cont = 0;
+  var options = { year: 'numeric', month: 'long', day: 'numeric' };
   try{
     await UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
       if(err){
@@ -684,9 +696,6 @@ app.get("/future_trips/:mail/", async (req,res) => {
           try {
             await GroupTravel.findOne({ _id: doc.groupsTravel[i] }, async function(err, docs){
               if (docs != null) {
-                console.log("count: " + cont);
-                cont = cont+1
-                console.log(response)
                 if(response.length == 0){
                   Object.assign(aux,{place: docs.place});
                   Object.assign(aux,{numero_fechas: 1})
@@ -695,22 +704,20 @@ app.get("/future_trips/:mail/", async (req,res) => {
 
                   var date_ = {}
                   Object.assign(date_, {camuflado: false})
-                  var f_ini = docs.date_ini.split("T")
-                  Object.assign(date_, {fecha:f_ini[0]})
-                  var f_fin = docs.date_fini.split("T")
-                  Object.assign(date_, {fecha_f: f_fin[0]})
+                  Object.assign(date_, {fecha: docs.date_ini.toLocaleDateString('es-ES', options)})
+                  Object.assign(date_, {fecha_f: docs.date_fini.toLocaleDateString('es-ES', options)})
                   Object.assign(date_, {personas:docs.members.length})
+                  Object.assign(date_, {members:docs.members})
                   Object.assign(date_, {id: docs._id})
 
                   var date_array = []
                   date_array.push(date_)
                   Object.assign(aux, {date: date_array})
-                  console.log("AUX " + cont + ": " + aux)
                   response.push(aux)
                   aux = {}
                 }
                 else{
-                  response = await seek_places(docs, response)
+                  response = await seek_places(docs, response, options)
                 }
               }
             });
@@ -718,10 +725,7 @@ app.get("/future_trips/:mail/", async (req,res) => {
             console.log(err)
           }
         }
-        console.log("fuera del for")
-        console.log(response)
       }
-      console.log("response" + response)
       
       res.send(response);
     });
@@ -758,6 +762,7 @@ app.get("/wished_groups/:mail/", (req, res) => {
                 Object.assign(date_, {fecha:docs[i].date_ini})
                 Object.assign(date_, {fecha_f: docs[i].date_fini})
                 Object.assign(date_, {personas:docs[i].members.length})
+                Object.assign(date_, {members:docs[i].members})
                 Object.assign(date_, {id: docs[i]._id})
                 date_array.push(data_)
               }
@@ -781,6 +786,191 @@ app.get("/wished_groups/:mail/", (req, res) => {
     console.log(err)
   }
 });
+
+
+app.get("/this_month/:mail", async (req, res) => {
+  console.log("entra en el this month")
+  var response = [];
+  var aux = {};
+  var options = { year: 'numeric', month: 'long', day: 'numeric' };
+  var today = new Date();
+  var lastDayOfMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
+
+
+  try{
+    //await GroupTravel.find({$and:[{memebers: {$ne: req.params.mail}}, {date_ini: {"$gte": today, "$lt": lastDayOfMonth}}] }, function(err, docs){
+    await GroupTravel.find({date_ini: {"$gte": today, "$lt": lastDayOfMonth} }, function(err, docs){
+    //await GroupTravel.find({memebers: {$ne: req.params.mail}}, function(err, docs){
+
+      if(err){
+        console.log(err)
+      }
+
+      if (docs != null) {
+        for(var i = 0; i < docs.length; i++){
+          if(response.length == 0){
+            Object.assign(aux,{place: docs[i].place});
+            Object.assign(aux,{numero_fechas: 1})
+            Object.assign(aux,{base: true})
+            Object.assign(aux,{fecham: false})
+
+            var date_ = {}
+            Object.assign(date_, {camuflado: false})
+            Object.assign(date_, {fecha: docs[i].date_ini.toLocaleDateString('es-ES', options)})
+            Object.assign(date_, {fecha_f: docs[i].date_fini.toLocaleDateString('es-ES', options)})
+            Object.assign(date_, {personas:docs[i].members.length})
+            Object.assign(date_, {members:docs[i].members})
+            Object.assign(date_, {id: docs[i]._id})
+
+            var date_array = []
+            date_array.push(date_)
+            Object.assign(aux, {date: date_array})
+            response.push(aux)
+            aux = {}
+          }
+          else{
+            var in_response = false
+            
+            for(var j = 0; j< response.length; j++){
+              if(docs[i].place == response[j].place){
+                in_response = true;
+
+                response[j].numero_fechas = response[j].numero_fechas + 1
+                var date_ = {};
+                Object.assign(date_, {camuflado: false})
+                Object.assign(date_, {fecha: docs[i].date_ini.toLocaleDateString('es-ES', options)})
+                Object.assign(date_, {fecha_f: docs[i].date_fini.toLocaleDateString('es-ES', options)})
+                Object.assign(date_, {personas:docs[i].members.length})
+                Object.assign(date_, {members:docs[i].members})
+                Object.assign(date_, {id: docs[i]._id})
+                response[j].date.push(date_)      
+              }
+            }
+
+            if(in_response == false){
+              aux = {}
+              Object.assign(aux,{place: docs[i].place});
+              Object.assign(aux,{numero_fechas: 1})
+              Object.assign(aux,{base: true})
+              Object.assign(aux,{fecham: false})
+
+              var date_ = {}
+              Object.assign(date_, {camuflado: false})
+              Object.assign(date_, {fecha: docs[i].date_ini.toLocaleDateString('es-ES', options)})
+              Object.assign(date_, {fecha_f: docs[i].date_fini.toLocaleDateString('es-ES', options)})
+              Object.assign(date_, {personas:docs[i].members.length})
+              Object.assign(date_, {members:docs[i].members})
+              Object.assign(date_, {id: docs[i]._id})
+
+              var date_array = []
+              date_array.push(date_)
+              Object.assign(aux, {date: date_array})
+              response.push(aux)
+              aux = {}
+            }
+          }
+        }
+      }
+
+    });
+    res.send(response)
+  }
+  catch(err){
+    console.log(err);
+  }
+})
+
+app.get("/all_groups/:mail", async (req, res) => {
+  console.log("entra en el todos los grupos")
+  var response = [];
+  var aux = {};
+  var options = { year: 'numeric', month: 'long', day: 'numeric' };
+  var today = new Date();
+  var lastDayOfMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
+
+
+  try{
+    //await GroupTravel.find({ $and: [{date_ini: {"$gte": lastDayOfMonth}}, {memebers: {$ne: req.params.mail} }] }).sort({'date': -1}).limit(5).exec(function(err, docs){
+    await GroupTravel.find({date_ini: {"$gte": lastDayOfMonth}}).sort({'date': -1}).limit(5).exec(function(err, docs){
+  
+      if(err){
+        console.log(err)
+      }
+      console.log(docs)
+      if (docs != null) {
+        for(var i = 0; i < docs.length; i++){
+          if(response.length == 0){
+            Object.assign(aux,{place: docs[i].place});
+            Object.assign(aux,{numero_fechas: 1})
+            Object.assign(aux,{base: true})
+            Object.assign(aux,{fecham: false})
+
+            var date_ = {}
+            Object.assign(date_, {camuflado: false})
+            Object.assign(date_, {fecha: docs[i].date_ini.toLocaleDateString('es-ES', options)})
+            Object.assign(date_, {fecha_f: docs[i].date_fini.toLocaleDateString('es-ES', options)})
+            Object.assign(date_, {personas:docs[i].members.length})
+            Object.assign(date_, {members:docs[i].members})
+            Object.assign(date_, {id: docs[i]._id})
+
+            var date_array = []
+            date_array.push(date_)
+            Object.assign(aux, {date: date_array})
+            response.push(aux)
+            aux = {}
+          }
+          else{
+            var in_response = false
+            
+            for(var j = 0; j< response.length; j++){
+              if(docs[i].place == response[j].place){
+                in_response = true;
+
+                response[j].numero_fechas = response[j].numero_fechas + 1
+                var date_ = {};
+                Object.assign(date_, {camuflado: false})
+                Object.assign(date_, {fecha: docs[i].date_ini.toLocaleDateString('es-ES', options)})
+                Object.assign(date_, {fecha_f: docs[i].date_fini.toLocaleDateString('es-ES', options)})
+                Object.assign(date_, {personas:docs[i].members.length})
+                Object.assign(date_, {members:docs[i].members})
+                Object.assign(date_, {id: docs[i]._id})
+                response[j].date.push(date_)      
+              }
+            }
+
+            if(in_response == false){
+              aux = {}
+              Object.assign(aux,{place: docs[i].place});
+              Object.assign(aux,{numero_fechas: 1})
+              Object.assign(aux,{base: true})
+              Object.assign(aux,{fecham: false})
+
+              var date_ = {}
+              Object.assign(date_, {camuflado: false})
+              Object.assign(date_, {fecha: docs[i].date_ini.toLocaleDateString('es-ES', options)})
+              Object.assign(date_, {fecha_f: docs[i].date_fini.toLocaleDateString('es-ES', options)})
+              Object.assign(date_, {personas:docs[i].members.length})
+              Object.assign(date_, {members:docs[i].members})
+              Object.assign(date_, {id: docs[i]._id})
+
+              var date_array = []
+              date_array.push(date_)
+              Object.assign(aux, {date: date_array})
+              response.push(aux)
+              aux = {}
+            }
+          }
+        }
+      }
+      res.send(response)
+    });
+    
+    
+  }
+  catch(err){
+    console.log(err);
+  }
+})
 
 
 app.use(function(err, req, res, next) {

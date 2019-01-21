@@ -121,20 +121,6 @@ var PlaceDataSchema = new Schema(
 );
 var PlaceData = Mongoose.model("PlaceData", PlaceDataSchema);
 
-/**
-  * @summary       Esquema de los lugares por defecto
-  * @requires      collection sitesData
-  * @param         place                  {String}        Nombre del lugar
-  * @param         id_num                 {Number}        Número identificador del lugar
- */
-var SitesDataSchema = new Schema(
-  {
-    place: String,
-    id_num: Number
-  },
-  { collection: "sitesData" }
-);
-var SitesData = Mongoose.model("SitesData", SitesDataSchema);
 
 /**
   * @summary       Esquema de la coleción de los gurpos de viaje
@@ -173,16 +159,18 @@ var comunidades = ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARE
                     'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'];
 
 comunidades = comunidades.sort();
+console.log(comunidades)
 
 
 for(var i = 0; i < comunidades.length; i++){   
 
-    var data = SitesData({
-        place: comunidades[i],
-        id_num: i
-    });
+  var data = new PlaceData({
+    place: i,
+    content: [{ user_id: "", photo: [], date: new Date() }],
+    date: new Date(),
+  });
     data.save()
-} */
+}*/
 
 /**
   * @summary       Función de registro
@@ -400,27 +388,6 @@ app.post("/follow_Wished/:mail/:place", (req, res) => {
       }
     }
   );
-});
-
-/**
-  * @summary       Función para devolver toda la información del sitio
-  * @requires      PlaceData
-  * @param         req.params.place     {String}  Nombre del lugar recogido en Front-End
-  *                doc.content          {Array}   Contenido del lugar (Nombre, Autor, Foto, Fecha, etc)
- */
-app.post("/sites/:place", async (req, res) => {
-  var visited_place = req.params.place.toUpperCase();
-  var response = [];
-  try {
-    await PlaceData.findOne({ place: visited_place }, function(err, doc) {
-      response = doc.content;
-    });
-  } 
-  catch (err) {
-    console.log(err);
-  }
-
-  res.send(response);
 });
 
 
@@ -861,10 +828,42 @@ app.post("/change_pass/:new/:mail", async(req, res) => {
 });
 
 
-/*await fs.readdirSync(dir + "/" + doc.visited_places[i]).forEach(function(file){
-                                response.push(dir + "/" + doc.visited_places[i] + "/" + file) //Esto es lo que necesito para 
-                                //devolver todas las fotos de un sitio
-                                });*/
+/**
+  * @summary       Función para devolver toda la información del sitio
+  * @requires      PlaceData
+  * @param         req.params.place     {String}  Nombre del lugar recogido en Front-End
+  *                doc.content          {Array}   Contenido del lugar (Nombre, Autor, Foto, Fecha, etc)
+ */
+
+app.get("/sites/:place", async (req, res) => {
+  
+  var response = [];
+  try {
+    await PlaceData.findOne({ place: req.params.place}, function(err, doc) {
+      response = doc.content;
+    });
+    res.send(response);
+  } 
+  catch (err) {
+    console.log(err);
+  }  
+});
+
+
+app.get("/get_name/:user_id", async (req, res) => {
+  
+  var response = [];
+  try {
+    await UserData.findOne({ _id: req.params.user_id}, function(err, doc) {
+      response = doc.name;
+      console.log(doc.mail)
+    });
+    res.send(response);
+  } 
+  catch (err) {
+    console.log(err);
+  }
+});
 
 
 let server = app.listen(process.env.PORT || 8081, function(err) {

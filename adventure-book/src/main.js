@@ -15,6 +15,7 @@ import Userdestination from './components/Userdestination.vue';
 import Profile from './components/Profile.vue';
 import Sites from './components/Sites.vue';
 import Lugar from './components/lugar.vue';
+import Lugar_usuario from './components/lugar_usuario.vue';
 import Subir_foto from './components/subir_foto.vue';
 //Vue authentication
 Vue.prototype.$http = Axios;
@@ -41,6 +42,11 @@ const routes = [
             {
               path: 'upload',
               component: Subir_foto,
+              props: { default: true, sidebar: false }
+            },
+            {
+              path: ':lugar',
+              component: Lugar_usuario,
               props: { default: true, sidebar: false }
             }
           ]

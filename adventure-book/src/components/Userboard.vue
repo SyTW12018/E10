@@ -81,7 +81,6 @@
   <div>
     <div class="main">
       <div class="container">
-
           <router-view></router-view>
         <b-row>
           <b-col cols="9" id="mis_sitios">
@@ -99,7 +98,7 @@
             </b-row>
             <b-row>
               <div v-for="(sitio,index) in sitios_visitados[0].sitios" :key="index">
-                <div class="card" style="width: 16rem;">
+                <div class="card" style="width: 16rem;" @click="route(sitio.cod)">
                   <img class="card-img-top" :src="sitios_visitados_fotos[index]" alt="Card image">
                   <div class="card-body">
                     <p class="card-text">{{ sitio }}</p>
@@ -169,15 +168,19 @@ export default {
   },
 
   methods: {
-    log_out() {
-      window.localStorage.clear();
-      this.$router.push("/");
+    upload(){
+        this.$router.push('/userboard/upload');
+        this.subir_foto = 1;
     },
 
     get_photo(index) {
       console.log(this.sitios_visitados_fotos[index]);
       return "http//:localhost:3000/static/prueba/CANTABRIA/coche3.jpg";
       //return this.sitios_visitados_fotos[index];
+    },
+
+    route(lugar){
+        this.$router.push('/userboard/' + lugar);
     },
 
     selectFile() {
@@ -244,7 +247,7 @@ export default {
         for (var j = 0; j < res.data.files.length; j++) {
           this.uploadedFiles.push(res.data.files[j]);
         }
-
+        
         this.uploading = false;
 
         this.files = [];
@@ -264,7 +267,6 @@ export default {
     ) {
       this.$router.push("/");
     }
-    this.sitios_visitados[0].sitios = ["Tamo activo"];
     try {
       await this.$http
         .get("http://localhost:8081/userboard/" + this.mail)
@@ -276,12 +278,7 @@ export default {
         });
     } catch (err) {}
   },
-  methods: {
-    upload(){
-        this.$router.push('/userboard/upload');
-        this.subir_foto = 1;
-    },
-  },
+
   components: {
 
   }

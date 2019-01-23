@@ -605,7 +605,7 @@ app.post("/add_group/:author_name/:place/:date_ini/:date_fini/", async (req, res
       }
     });
 
-    await UserData.findOneAndUpdate({ mail: req.params.author_name }, { $addToSet: { groupsTravel:  group_id} },
+    await UserData.findOneAndUpdate({ mail: req.params.author_name }, { $addToSet: { groupsTravel:  group_id.toString()} },
       function(err, doc) {
         
         console.log(group_id)
@@ -635,15 +635,21 @@ app.post("/delete_group/:mail/:group", async (req, res) => {
       { mail: req.params.mail },
       { $pull: { groupsTravel: req.params.group } },
       function(err, doc) {
-        console.log("Aqui se elimina un grupo...");
+        console.log("Aqui se elimina un grupo del usuario...");
       }
     );
   
     await GroupTravel.findOneAndUpdate(
       { _id: req.params.group },
       { $pull: { members: req.params.mail } },
-      function(err, doc) {
-        console.log("Aqui se elimina un grupo...");
+      async function(err, doc) {
+        if((doc.members.length == 0) || ((doc.members.length == 1) && (doc.members[0] == req.params.mail) )){
+          GroupTravel.deleteOne({ _id: Mongoose.Types.ObjectId(req.params.group)}, function(err,docs){
+            console.log(docs)
+          })
+        }
+        
+        console.log("Aqui se elimina un usuario del grupo...");
       }
     );
   }

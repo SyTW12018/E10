@@ -516,7 +516,7 @@ export default {
         }
         for(var i=0;i<this.futuros_viajes.length;i++){
           if(this.futuros_viajes[i].place==object.place){
-            this.futuros_viajes[i].date.push({camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas});
+            this.futuros_viajes[i].date.push({camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas, id:vector.id});
             this.futuros_viajes[i].numero_fechas=this.futuros_viajes[i].numero_fechas+1;
             i=this.futuros_viajes.length;
           }else{
@@ -524,9 +524,9 @@ export default {
           }
         }
         if(cont==this.futuros_viajes.length){
-           this.futuros_viajes.push({place:object.place,pais:'España',numero_fechas:1,fecham:false,base:true,codigo:object.codigo,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas}]});
+           this.futuros_viajes.push({place:object.place,numero_fechas:1,fecham:false,base:true,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas, id:vector.id}]});
         }
-
+        console.log(this.futuros_viajes)
         try {
           var usermail = JSON.parse(localStorage.getItem("user")).mail
           await this.$http.post("http://localhost:8081/follow_group/" + usermail +"/"+  vector.id)
@@ -547,7 +547,7 @@ export default {
         }
         for(var i=0;i<this.todo_organizado.length;i++){
           if(this.todo_organizado[i].place==object.place){
-            this.todo_organizado[i].date.push({camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas});
+            this.todo_organizado[i].date.push({camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas, id:vector.id});
             this.todo_organizado[i].numero_fechas=this.todo_organizado[i].numero_fechas+1;
             i=this.todo_organizado.length;
           }else{
@@ -555,7 +555,7 @@ export default {
           }
         }
         if(cont==this.todo_organizado.length){
-           this.todo_organizado.push({place:object.place,pais:'España',numero_fechas:1,fecham:false,base:true,codigo:object.codigo,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas}]});
+           this.todo_organizado.push({place:object.place, numero_fechas:1, fecham:false, base:true, date:[{camuflado:false, fecha:vector.fecha, fecha_f:vector.fecha_f, personas:vector.personas, id:vector.id}]});
         }
 
         try {

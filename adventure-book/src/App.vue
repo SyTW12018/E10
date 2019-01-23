@@ -52,10 +52,39 @@
     border-color: grey;
   }
 
+  .footer{
+    position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  background-color: #efefef;
+  text-align: center;
+  }
+
+  #container {
+
+  }
+
+  .Site {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+  .site_content {
+    flex: 1;
+  }
+
+  #footer {
+    padding: 5px;
+    background-color: #DDD;
+  }
+
 </style>
 
 <template>
-	<div>
+	<div class="site">
 		<div id="nav">
 			<b-row id="header">
 				<span>
@@ -77,10 +106,17 @@
       </b-row>
       </div>
 
+    <div class="site_content">
+		    <router-view></router-view>
+    </div>
 
-		<router-view></router-view>
+    <footer id="footer">
+      <div class="footer-copyright text-center py-3">
+        © 2019 Copyright: AdventureBook
+      </div>
+    </footer>
+  </div>
 
-	</div>
 </template>
 
 
@@ -96,7 +132,7 @@ export default {
     }
   },
   watch:{
-    
+
   },
 
   methods:{
@@ -104,7 +140,7 @@ export default {
     log_out(){
       console.log("voy a salir, ma");
       window.localStorage.clear();
-      this.$router.push("/");  
+      this.$router.push("/");
     }
 
   },

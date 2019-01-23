@@ -1,5 +1,4 @@
 <style>
-
   #nav{
     background-color: white;
     margin: 0 0 0px 0px;
@@ -26,11 +25,14 @@
   }
 
   .item {
-    margin: 7px 10px 0px 10px;
+    position: relative;
+    top: 10px;
+    margin: 0px 10px 0px 10px;
     font-size: 16px;
   }
 
   #links{
+    width: inherit;
     padding: 10px;
     background-color: #54C2C3
   }
@@ -52,20 +54,6 @@
     border-color: grey;
   }
 
-  .footer{
-    position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 1rem;
-  background-color: #efefef;
-  text-align: center;
-  }
-
-  #container {
-
-  }
-
   .Site {
   display: flex;
   min-height: 100vh;
@@ -79,6 +67,10 @@
   #footer {
     padding: 5px;
     background-color: #DDD;
+  }
+
+  #logout{
+    float: right;
   }
 
 </style>
@@ -96,13 +88,16 @@
 			</b-row>
 
       <b-row id="links">
-        <b-nav>
+        <b-col>
           <router-link to='/perfil' class="item"> Cuenta </router-link>
           <router-link to='/userboard' class="item"> Mis Sitios </router-link>
           <router-link to='/Userdestination' class="item"> Grupos viaje </router-link>
           <router-link to='/sitios' class="item"> Sitios </router-link>
+        </b-col>
+        <div id="logout">
           <b-button @click="log_out"> Salir </b-button>
-        </b-nav>
+        </div>
+
       </b-row>
       </div>
 

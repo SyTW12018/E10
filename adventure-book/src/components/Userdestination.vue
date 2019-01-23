@@ -177,7 +177,8 @@ body {
             </b-col></b-row>
             <div class="contenido3">
               <h4> Añadir lugar </h4>
-              <b-form-input class= "form" type="text" placeholder="Nombre lugar" v-model="place_"></b-form-input>
+              <b-form-select v-model="place_" :options="options" class="mb-3">
+              </b-form-select>
               <b-form-input class= "form" type="date" placeholder="Fecha viaje" v-model="fecha_"></b-form-input>
               <b-form-input class= "form" type="date" placeholder="Fecha final viaje" v-model="fechaf_"></b-form-input>
               <b-button type="submit" class="boton" v-on:click= "nuevoviaje">
@@ -450,13 +451,32 @@ body {
 export default {
 	  data(){
       return{
-        aux: [
+        aux: [],
 
-        ],
+        aux2:[],
 
-        aux2:[
-
-        ],
+        options: [
+        { value: null, text: 'Lugar' },
+        { value: 'ANDALUCÍA', text: 'Andalucía' },
+        { value: 'ARAGÓN', text: 'Aragón' },
+        { value: 'CANTABRIA', text: 'Cantabria' },
+        { value: 'CASTILLA LA MANCHA', text: 'Castilla la Mancha'},
+        { value: 'CASTILLA Y LEÓN', text: 'Castilla y León'},
+        { value: 'CATALUÑA', text: 'Cataluña'},
+        { value: 'CEUTA', text: 'Ceuta'},
+        { value: 'COMUNIDAD DE MADRID', text: 'Comunidad de Madrid'},
+        { value: 'COMUNIDAD FORAL DE NAVARRA', text: 'Comunidad Foral de Navarra'},
+        { value: 'COMUNIDAD VALENCIANA', text: 'Comunidad Valenciana'},
+        { value: 'EXTREMADURA', text: 'Extremadura'},
+        { value: 'GALICIA', text: 'Galicia'},
+        { value: 'ISLAS BALEARES', text: 'Islas Baleares'},
+        { value: 'ISLAS CANARIAS', text: 'Islas Canarias'},
+        { value: 'LA RIOJA', text: 'La Rioja'},
+        { value: 'MELILLA', text: 'Melilla'},
+        { value: 'PAÍS VACO', text: 'País Vasco'},
+        { value: 'PRINCIPADO DE ASTURIAS', text: 'Principado de Asturias'},
+        { value: 'REGIÓN DE MURCIA', text: 'Región de Murcia'}
+      ],
 
         cuestionario:false,
         miembros:false,
@@ -569,11 +589,24 @@ export default {
 
       nuevoviaje: async function(){
         var cont = 0;
+        var options = { year: 'numeric', month: 'long', day: 'numeric' };
         if ((this.place_!= undefined) && (this.fecha_!= undefined) && (this.fechaf_!= undefined)){
+          var new_id = ""
+          try {
+            var usermail = JSON.parse(localStorage.getItem("user")).mail
+            await this.$http.post("http://localhost:8081/add_group/" + usermail +"/"+  this.place_ +"/"+ this.fecha_ +"/"+ this.fechaf_)
+            .then(response => {
+              new_id = response.data
+              console.log(response.data);
+          });
+          } 
+          catch(err) {
+
+          }
           this.cuestionario=!this.cuestionario;
           for(var i=0;i<this.futuros_viajes.length;i++){
             if(this.futuros_viajes[i].place==this.place_){
-              this.futuros_viajes[i].date.push({camuflado:false,fecha:this.fecha_,fecha_f:this.fechaf_, personas:1});
+              this.futuros_viajes[i].date.push({camuflado:false,fecha:(new Date(this.fecha_)).toLocaleDateString('es-ES', options), fecha_f:(new Date(this.fechaf_)).toLocaleDateString('es-ES', options), personas:1, id:new_id});
               this.futuros_viajes[i].numero_fechas=this.futuros_viajes[i].numero_fechas+1;
               i=this.futuros_viajes.length;
             }else{
@@ -581,20 +614,14 @@ export default {
             }
           }
           if(cont==this.futuros_viajes.length){
-            this.futuros_viajes.push({place:this.place_, numero_fechas:1, mostrar:false, base:true, camuflado:false, date:[{fecha:this.fecha_,fecha_f:this.fechaf_,personas:1}]});
+            this.futuros_viajes.push({place:this.place_, fecham:false, numero_fechas:1, mostrar:false, base:true, camuflado:false, date:[{fecha:(new Date(this.fecha_)).toLocaleDateString('es-ES', options), fecha_f:(new Date(this.fechaf_)).toLocaleDateString('es-ES', options), personas:1, id:new_id}]});
           }
           //this.todo_organizado.push({place:this.place_,pais: 'España',numero_fechas:1,mostrar:false,base:true,camuflado:false,codigo:'9',date:[{fecha:this.fecha_,fecha_f:this.fechaf_, personas:1}]});
           //Creo que no deberia salir aqui, osea deberia añadise a todo organizado menos asi mismo no?
         }else{
-          cont++;
+          alert("No pueden existir campos vacíos")
         }
-        try {
-          var usermail = JSON.parse(localStorage.getItem("user")).mail
-          await this.$http.post("http://localhost:8081/add_group/" + usermail +"/"+  this.place_ +"/"+ this.fecha_ +"/"+ this.fechaf_)
-          .then(response => {
-            console.log(response.data);
-          });
-        } catch(err) {}
+        
       },
       
     

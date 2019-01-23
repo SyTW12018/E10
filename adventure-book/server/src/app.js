@@ -623,7 +623,7 @@ app.post("/add_group/:author_name/:place/:date_ini/:date_fini/", async (req, res
     console.log(err);
   }    
 
-  res.send("Enviando respuesta")
+  res.send(group_id.toString())
   
 });
 

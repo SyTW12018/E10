@@ -247,7 +247,7 @@ export default {
         for (var j = 0; j < res.data.files.length; j++) {
           this.uploadedFiles.push(res.data.files[j]);
         }
-        
+
         this.uploading = false;
 
         this.files = [];

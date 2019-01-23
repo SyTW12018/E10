@@ -24,9 +24,12 @@
 	color: #6c6c6c;
   }
 
-  .item {
+  .link{
     position: relative;
     top: 10px;
+  }
+
+  .item {
     margin: 0px 10px 0px 10px;
     font-size: 16px;
   }
@@ -89,10 +92,10 @@
 
       <b-row id="links">
         <b-col>
-          <router-link to='/perfil' class="item"> Cuenta </router-link>
-          <router-link to='/userboard' class="item"> Mis Sitios </router-link>
-          <router-link to='/Userdestination' class="item"> Grupos viaje </router-link>
-          <router-link to='/sitios' class="item"> Sitios </router-link>
+          <router-link to='/perfil' class="item link"> Cuenta </router-link>
+          <router-link to='/userboard' class="item link"> Mis Sitios </router-link>
+          <router-link to='/Userdestination' class="item link"> Grupos viaje </router-link>
+          <router-link to='/sitios' class="item link"> Sitios </router-link>
         </b-col>
         <div id="logout">
           <b-button @click="log_out"> Salir </b-button>

@@ -187,7 +187,7 @@ export default {
         await this.$http
           .get("http://localhost:8081/sites/" + this.comunidades_autonomas[i].cod)
           .then(response => {
-            this.comunidades_autonomas[i].photo = response.data[1].photo[0].split("adventure-book")[1]; 
+            this.comunidades_autonomas[i].photo = response.data[1].photo[0].split("adventure-book")[1];
             console.log(this.comunidades_autonomas[i].photo);
           });
       }catch(err){};

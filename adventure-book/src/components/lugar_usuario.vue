@@ -83,14 +83,8 @@ export default {
                     'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'],
 	      codigo: '3',
         nombre: "Andalucía",
-        fotos: null /*[
-                  {
-                    src: require('../C.jpg'),
-                    fecha: "12/12/12",
-                    usuario: "Mireia"
-                  }
-
-        ]*/,
+        fotos: [
+        ],
     }
   },
   props: ['test'],
@@ -110,21 +104,16 @@ export default {
         await this.$http
           .get("http://localhost:8081/get_photos_place/" + 
           JSON.parse(localStorage.getItem("user"))._id + "/" + this.codigo)
-          .then(async response => {
-            try{
-             response.data.forEach(await function(res){
+          .then(response => {
+            console.log(response.data.length)
+             for (var i = 0; i < response.data.length; i++){
                   var aux = {
-                    src: res.photo.split("adventure-book")[1],
-                    fecha: res.fecha.split('T')[0],
+                    src: response.data[i].photo.split("adventure-book")[1],
+                    fecha: response.data[i].fecha.split('T')[0],
                     usuario: "Tú"
                   };
-                //console.log(aux);  
-                //console.log(this.fotos);
-                console.log(this.codigo);
-                //this.fotos.push(data);
-              });
-            }catch(err){};
-            
+                this.fotos.push(aux);
+              };
           });
       }catch(err){};
       

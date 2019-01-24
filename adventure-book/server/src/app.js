@@ -805,8 +805,8 @@ app.get("/this_month/:mail", async (req, res) => {
 
   try{
     //await GroupTravel.find({$and:[{memebers: {$ne: req.params.mail}}, {date_ini: {"$gte": today, "$lt": lastDayOfMonth}}] }, function(err, docs){
-    await GroupTravel.find({date_ini: {"$gte": today, "$lt": lastDayOfMonth} }, function(err, docs){
-    //await GroupTravel.find({memebers: {$ne: req.params.mail}}, function(err, docs){
+    //await GroupTravel.find({date_ini: {"$gte": today, "$lt": lastDayOfMonth} }, function(err, docs){
+    await GroupTravel.find({$and:[{"members":{ "$not":{"$all": [req.params.mail]}}}, {date_ini:{"$gte":today, "$lt": lastDayOfMonth}}]}, function(err, docs){
 
       if(err){
         console.log(err)
@@ -896,8 +896,9 @@ app.get("/all_groups/:mail", async (req, res) => {
 
 
   try{
+    await GroupTravel.find({$and:[{"members":{ "$not":{"$all": [req.params.mail]}}}, {date_ini:{"$gte": lastDayOfMonth}}]}, function(err, docs){
     //await GroupTravel.find({ $and: [{date_ini: {"$gte": lastDayOfMonth}}, {memebers: {$ne: req.params.mail} }] }).sort({'date': -1}).limit(5).exec(function(err, docs){
-    await GroupTravel.find({date_ini: {"$gte": lastDayOfMonth}}).sort({'date': -1}).limit(5).exec(function(err, docs){
+    //await GroupTravel.find({date_ini: {"$gte": lastDayOfMonth}}).sort({'date': -1}).limit(5).exec(function(err, docs){
   
       if(err){
         console.log(err)

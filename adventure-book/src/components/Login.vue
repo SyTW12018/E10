@@ -18,6 +18,11 @@ export default {
   },
 
   methods: {
+    //this method is to prove test
+    change_mail(new_mail){
+      this.mail_ = new_mail;
+    },
+
     handleSubmit(e){
       e.preventDefault()
       if(this.pass_.length > 0){

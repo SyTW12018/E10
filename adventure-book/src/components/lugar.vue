@@ -53,7 +53,7 @@
             </b-col>
           </b-row>
           <b-row>
-            <div v-for="foto in fotos">
+            <div v-for="foto in fotos" :key="foto">
               <b-row class="foto">
                 <img :src="foto.src" height="200">
               </b-row>
@@ -106,18 +106,6 @@ export default {
       close(){
           this.$router.push('/sitios/');
       },
-      get_name(user_id){
-        this.$http
-          .get("http://localhost:8081/get_name/" + user_id)
-          .then(response => {
-           if(response.data = ""){
-             return "Anónimo";
-           }
-           else{
-             return response.data;
-           }
-          });
-      }
   },
 
   async mounted() {

@@ -98,7 +98,7 @@
             </b-row>
             <b-row>
               <div v-for="(sitio,index) in sitios_visitados[0].sitios" :key="index">
-                <div class="card" style="width: 16rem;" @click="route(sitio.cod)">
+                <div class="card" style="width: 16rem;" @click="route(sitio)">
                   <img class="card-img-top" :src="sitios_visitados_fotos[index]" alt="Card image">
                   <div class="card-body">
                     <p class="card-text">{{ sitio }}</p>
@@ -171,12 +171,6 @@ export default {
     upload(){
         this.$router.push('/userboard/upload');
         this.subir_foto = 1;
-    },
-
-    get_photo(index) {
-      console.log(this.sitios_visitados_fotos[index]);
-      return "http//:localhost:3000/static/prueba/CANTABRIA/coche3.jpg";
-      //return this.sitios_visitados_fotos[index];
     },
 
     route(lugar){

@@ -63,9 +63,9 @@ Mongoose.connect("mongodb://localhost:27017/test");
 //Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
 Mongoose.set("useFindAndModify", false);
 var app = express();
-app.use("/uploads",express.static(path.join("/home/sergio/E10/adventure-book", "uploads")));
+app.use("/uploads", express.static(path.join("/home/sergio/E10/adventure-book", "uploads")));
 app.use(morgan("combined"));
-app.use(bodyParse.urlencoded({extended: true}));
+app.use(bodyParse.urlencoded({ extended: true }));
 app.use(bodyParse.json());
 //control de acceso (CORS)
 app.use(cors());
@@ -182,16 +182,16 @@ for(var i = 0; i < comunidades.length; i++){
   * @param         req.body.mail  {String}  Email recogido en Front-End
  */
 app.post("/signup", (req, res) => {
-  
+
   //1
   UserData.findOne({ mail: req.body.mail }, (err, user_found) => {
-    if(err){
+    if (err) {
       return res.status(500).send("Hubo un problema en el registro de usuario");
     }
 
     if (user_found) {
       return res.status(500).send("Usuario ya registrado");
-    } 
+    }
     else {
       //2
       var data = new UserData({
@@ -202,13 +202,13 @@ app.post("/signup", (req, res) => {
 
 
       //3
-      data.save().then(function(info, err) {
+      data.save().then(function (info, err) {
         if (err) {
           return res.status(500).send("Hubo un problema en el registro de usuario");
         }
 
         //4
-        UserData.findOne({ mail: data.mail }, function(err, user) {
+        UserData.findOne({ mail: data.mail }, function (err, user) {
           if (err) {
             return res.status(500).send("Problema para encontrar el usuario");
           }
@@ -233,7 +233,7 @@ app.post("/signup", (req, res) => {
 app.post("/login", (req, res) => {
   console.log(req.body.mail);
   console.log(req.body.pass);
-  UserData.findOne({ mail: req.body.mail }, function(err, user) {
+  UserData.findOne({ mail: req.body.mail }, function (err, user) {
     //Error del servidor 
     //try catch??
     if (err) {
@@ -259,12 +259,12 @@ app.post("/login", (req, res) => {
   });
 });
 
- /**
-  * @summary       Función de comprobación del token
-  *                1-Si es nulo o undefined redirigir a Inicio de sesión
-  *                2-Si es correcto permitir acceso
-  * @param         req.body.token  {String}  Token del usuario que inicia sesión
- */
+/**
+ * @summary       Función de comprobación del token
+ *                1-Si es nulo o undefined redirigir a Inicio de sesión
+ *                2-Si es correcto permitir acceso
+ * @param         req.body.token  {String}  Token del usuario que inicia sesión
+*/
 app.post("/waiting", (req, res) => {
   var token = req.body.token;
   if (token == null || token == "undefined") {
@@ -289,7 +289,7 @@ app.get("/userboard/:mail", async (req, res) => {
   var aux = [];
   var response = [];
 
-  await UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
+  await UserData.findOne({ mail: req.params.mail }, async function (err, doc) {
     //Server error
     //try catch??
     if (err) {
@@ -302,54 +302,54 @@ app.get("/userboard/:mail", async (req, res) => {
     var i = 0;
 
     //1
-    if(doc.visited_places.length != 0){
+    if (doc.visited_places.length != 0) {
       while (exit == 0 && i < doc.visited_places.length) {
         console.log("i = " + i + "  visit: " + doc.visited_places[i])
         try {
-          await PlaceData.find({place: doc.visited_places[i].toUpperCase(),"content.user_id": doc._id}, function(err, docs){
-              if (err) {
-                return res.status(500).send("Problema para encontrar el usuario");
-              } 
-              else if (docs == null) {
-                exit = 1;
-                console.log("docs es null");
-              } 
-              else {
-                //2
-                try {
-                  var all_files = fs.readdirSync(dir + "/" + doc.visited_places[i]);
-                  if (all_files.length == 0) {
-                    exit = 1;
-                  } 
-                  else {
-                    var url = dir + "/" + doc.visited_places[i] + "/" + all_files[0];
-                    aux.push(url.split("adventure-book")[1]);
-                    ++i;
-                  }
-                } 
-                catch (err) {
-                  console.log(err);
-                  if (err) {
-                    var new_visited_places = doc.visited_places;
-  
-                    new_visited_places.splice(i, 1);
-  
-                    UserData.findOneAndUpdate(
-                      { mail: req.params.mail },
-                      { $set: { visited_places: new_visited_places } },
-                      function(err, docs) {
-                        if (err) {
-                          console.log(err);
-                        }
+          await PlaceData.find({ place: doc.visited_places[i].toUpperCase(), "content.user_id": doc._id }, function (err, docs) {
+            if (err) {
+              return res.status(500).send("Problema para encontrar el usuario");
+            }
+            else if (docs == null) {
+              exit = 1;
+              console.log("docs es null");
+            }
+            else {
+              //2
+              try {
+                var all_files = fs.readdirSync(dir + "/" + doc.visited_places[i]);
+                if (all_files.length == 0) {
+                  exit = 1;
+                }
+                else {
+                  var url = dir + "/" + doc.visited_places[i] + "/" + all_files[0];
+                  aux.push(url.split("adventure-book")[1]);
+                  ++i;
+                }
+              }
+              catch (err) {
+                console.log(err);
+                if (err) {
+                  var new_visited_places = doc.visited_places;
+
+                  new_visited_places.splice(i, 1);
+
+                  UserData.findOneAndUpdate(
+                    { mail: req.params.mail },
+                    { $set: { visited_places: new_visited_places } },
+                    function (err, docs) {
+                      if (err) {
+                        console.log(err);
                       }
-                    );
-                    exit = 1;
-                  }
+                    }
+                  );
+                  exit = 1;
                 }
               }
             }
+          }
           );
-        } 
+        }
         catch (err) {
           console.log(err);
         }
@@ -364,7 +364,7 @@ app.get("/userboard/:mail", async (req, res) => {
         res.send(enviar);
       }
     }
-    
+
   });
 });
 
@@ -378,7 +378,7 @@ app.post("/follow_Wished/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate(
     { name: req.params.mail },
     { $push: { wished_places: req.params.place } },
-    function(err, doc) {
+    function (err, doc) {
       if (err == null) {
         console.log("Modificando registro de wished_places");
         res.status(200);
@@ -398,7 +398,7 @@ app.post("/follow_Wished/:mail/:place", (req, res) => {
   * @param         file.mimetype     {String}  Tipo del archivo subido
   *                cb                             Función callback
  */
-const fileFilter = function(req, file, cb) {
+const fileFilter = function (req, file, cb) {
   const allowedType = ["image/jpeg", "image/png", "image/gif"];
 
   if (!allowedType.includes(file.mimetype)) {
@@ -445,7 +445,7 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
   var user_monid = ""
   //1
   try {
-    await UserData.findOne({ mail: req.params.mail }, function(err, doc) {
+    await UserData.findOne({ mail: req.params.mail }, function (err, doc) {
       user_monid = doc._id;
       for (var i = 0; i < doc.visited_places.length; i++) {
         var array_ = doc.visited_places;
@@ -455,7 +455,7 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
         }
       }
     });
-  } 
+  }
   catch (err) {
     console.log(err);
   }
@@ -464,7 +464,7 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
     UserData.findOneAndUpdate(
       { mail: req.params.mail },
       { $push: { visited_places: visited_place } },
-      function(err, doc) {
+      function (err, doc) {
         console.log(err);
       }
     );
@@ -496,7 +496,7 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
       UserData.findOneAndUpdate(
         { mail: req.params.mail },
         { $push: { uploadsphotos: `${dirPath}/${file.originalname}` } },
-        function(err, doc) {
+        function (err, doc) {
           console.log(err);
         }
       );
@@ -506,10 +506,10 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
   }
   //3
   try {
-    PlaceData.findOne({ place: visited_place }, function(err, doc) {
+    PlaceData.findOne({ place: visited_place }, function (err, doc) {
       if (doc == null) {
         //El lugar no existe y se crea
-        UserData.findOne({ mail: req.params.mail }, function(err, doc) {
+        UserData.findOne({ mail: req.params.mail }, function (err, doc) {
           var data = new PlaceData({
             place: visited_place,
             content: [{ user_id: doc._id, photo: files_, date: new Date() }],
@@ -517,9 +517,9 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
           });
           data.save();
         });
-      } 
+      }
       else {
-        UserData.findOne({ mail: req.params.mail }, function(err, doc) {
+        UserData.findOne({ mail: req.params.mail }, function (err, doc) {
           if (err) {
             console.log("error al encontrar el usuario: " + err);
           }
@@ -535,7 +535,7 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
                 }
               }
             },
-            function(err, doc) {
+            function (err, doc) {
               if (err) {
                 console.log("error al hacer el update" + err);
               }
@@ -561,9 +561,9 @@ app.post("/delete_Wished/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
     { $pull: { wished_places: req.params.place } },
-    function(err, doc) {
+    function (err, doc) {
       console.log("Modificando registro ...");
-      console.log(doc); 
+      console.log(doc);
     }
   );
   res.send(200);
@@ -580,9 +580,9 @@ app.post("/delete_Visited/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
     { $pull: { visited_places: req.params.place } },
-    function(err, doc) {
+    function (err, doc) {
       console.log("Modificando registro ...");
-      console.log(doc); 
+      console.log(doc);
     }
   );
   res.status(200);
@@ -598,16 +598,17 @@ app.post("/delete_Visited/:mail/:place", (req, res) => {
 app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
   fs.unlinkSync(
     __dirname.split("server")[0] +
-      "static//uploads/" +
-      req.params.mail +
-      "/" +
-      req.params.place.toUpperCase() +
-      "/" +
-      req.params.photo
+    "static//uploads/" +
+    req.params.mail +
+    "/" +
+    req.params.place.toUpperCase() +
+    "/" +
+    req.params.photo
   );
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
-    { $pull: {
+    {
+      $pull: {
         uploadsphotos:
           __dirname.split("server")[0] +
           "static/uploads/" +
@@ -618,7 +619,7 @@ app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
           req.params.photo
       }
     },
-    function(err, doc) {
+    function (err, doc) {
       console.log("Borrando foto ...");
       console.log(doc); //Esto si funciona perfecto
     }
@@ -642,7 +643,7 @@ app.post("/add_group/:author_name/:place", async (req, res) => {
     await UserData.findOneAndUpdate(
       { name: req.params.name },
       { $push: { groupsTravel: req.params.group } },
-      function(err, doc) {
+      function (err, doc) {
         console.log("Aqui se añade un grupo a los del user...");
       }
     );
@@ -651,7 +652,7 @@ app.post("/add_group/:author_name/:place", async (req, res) => {
   }
 
   try {
-    await PlaceData.findOne({ place: req.params.place }, function(err, doc) {
+    await PlaceData.findOne({ place: req.params.place }, function (err, doc) {
       photo_group = doc.photos[0];
       console.log("Aqui se añade una foto al grupo...");
     });
@@ -667,7 +668,7 @@ app.post("/add_group/:author_name/:place", async (req, res) => {
     photos: photo_group,
     date: new Date()
   });
-  data.save().then(function() {
+  data.save().then(function () {
     res.send(200);
   });
 });
@@ -682,7 +683,7 @@ app.post("/delete_group/:mail/:group", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
     { $pull: { groupsTravel: req.params.group } },
-    function(err, doc) {
+    function (err, doc) {
       console.log("Aqui se elimina un grupo...");
     }
   );
@@ -699,7 +700,7 @@ app.post("/follow_group/:mail/:group", (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
     { $push: { groupsTravel: req.params.group } },
-    function(err, doc) {
+    function (err, doc) {
       console.log("Aqui se añade un grupo a los del user...");
     }
   );
@@ -715,12 +716,12 @@ app.post("/follow_group/:mail/:group", (req, res) => {
 app.get("/groups/", async (req, res) => {
   try {
     var response = [];
-    await GroupTravel.find({}, function(err, doc) {
+    await GroupTravel.find({}, function (err, doc) {
       response.push(doc);
     });
 
     res.send(response);
-  } catch (err) {}
+  } catch (err) { }
 });
 
 /**
@@ -732,10 +733,10 @@ app.get("/groups/", async (req, res) => {
 app.get("/groups/:mail/", (req, res) => {
   var response = [];
   var aux = [];
-  UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
+  UserData.findOne({ mail: req.params.mail }, async function (err, doc) {
     for (var i = 0; i < doc.wished_places.length; i++) {
       try {
-        await GroupTravel.findOne({ place: doc.wished_places[i] }, function(
+        await GroupTravel.findOne({ place: doc.wished_places[i] }, function (
           err,
           docs
         ) {
@@ -755,7 +756,7 @@ app.get("/groups/:mail/", (req, res) => {
 /**
   * @summary       Manejo de errores en la subida de archivos por formato y tamaño
  */
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   if (err.code === "LIMIT_FILE_TYPES") {
     res
       .status(422)
@@ -777,7 +778,7 @@ app.use(function(err, req, res, next) {
  */
 app.get("/comprobar", (req, res) => {
 
-  UserData.findOne({ mail: req.body.mail }, function(err, docs) {
+  UserData.findOne({ mail: req.body.mail }, function (err, docs) {
     if (docs == null) {
       console.log("documento:" + docs);
       res.send(docs);
@@ -794,11 +795,11 @@ app.get("/comprobar", (req, res) => {
   * @param         req.body.mail      {String}        Email del usuario
   *                req.params.new     {String}        Nuevo nickname para el usuario
  */
-app.post("/change_name/:new/:mail", async(req, res) => {
+app.post("/change_name/:new/:mail", async (req, res) => {
   UserData.findOneAndUpdate(
     { mail: req.params.mail },
     { $set: { name: req.params.new } },
-    function(err, docs) {
+    function (err, docs) {
       console.log("Aquí se actualiza el nombre de usuario");
     }
   );
@@ -811,20 +812,20 @@ app.post("/change_name/:new/:mail", async(req, res) => {
   * @param         req.body.mail      {String}        Email del usuario
   *                req.params.new     {String}        Nueva contraseña para el usuario
  */
-app.post("/change_pass/:new/:mail", async(req, res) => {
+app.post("/change_pass/:new/:mail", async (req, res) => {
 
   var pass = "";
-  try{
+  try {
     await UserData.findOneAndUpdate(
-    { mail: req.params.mail },
-    { $set: { password: bcrypt.hashSync(req.params.new, 8) } },
-    function(err, docs) {
-      pass = docs.password;
-      console.log("Aquí se actualiza la pass de usuario");
-    }
-  );
-  res.send(pass);
-  }catch(err){};
+      { mail: req.params.mail },
+      { $set: { password: bcrypt.hashSync(req.params.new, 8) } },
+      function (err, docs) {
+        pass = docs.password;
+        console.log("Aquí se actualiza la pass de usuario");
+      }
+    );
+    res.send(pass);
+  } catch (err) { };
 });
 
 
@@ -836,37 +837,68 @@ app.post("/change_pass/:new/:mail", async(req, res) => {
  */
 
 app.get("/sites/:place", async (req, res) => {
-  
+
   var response = [];
   try {
-    await PlaceData.findOne({ place: req.params.place}, function(err, doc) {
+    await PlaceData.findOne({ place: req.params.place }, function (err, doc) {
       response = doc.content;
     });
     res.send(response);
-  } 
-  catch (err) {
-    console.log(err);
-  }  
-});
-
-
-app.get("/get_name/:user_id", async (req, res) => {
-  
-  var response = [];
-  try {
-    await UserData.findOne({ _id: req.params.user_id}, function(err, doc) {
-      response = doc.name;
-      console.log(doc.mail)
-    });
-    res.send(response);
-  } 
+  }
   catch (err) {
     console.log(err);
   }
 });
 
 
-let server = app.listen(process.env.PORT || 8081, function(err) {
+app.get("/get_name/:user_id", async (req, res) => {
+
+  var response = [];
+  try {
+    await UserData.findOne({ _id: req.params.user_id }, function (err, doc) {
+      response = doc.name;
+      console.log(doc.mail)
+    });
+    res.send(response);
+  }
+  catch (err) {
+    console.log(err);
+  }
+});
+
+
+app.get("/get_photos_place/:user_id/:place", async (req, res) => {
+
+  var response = [];
+  var photos = [];
+  var dir = __dirname.split("server")[0] + "static/uploads/" + req.params.user_id + "/" + req.params.place;
+  console.log(dir)
+  try {
+    await PlaceData.findOne({ place: req.params.place }, function (err, doc) {
+
+      doc.content.forEach(function (content) {
+        console.log(content.user_id)
+        if (content.user_id == req.params.user_id) {
+          content.photo.forEach(function (photo) {
+            var aux = {
+              photo: photo,
+              fecha: content.date,
+            }
+            response.push(aux);
+          });
+        }
+      });
+    });
+    res.send(response);
+
+  }
+  catch (err) {
+    console.log(err);
+  }
+});
+
+
+let server = app.listen(process.env.PORT || 8081, function (err) {
   if (err) {
     console.log(err);
   }

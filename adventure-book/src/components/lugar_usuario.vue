@@ -83,14 +83,14 @@ export default {
                     'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'],
 	      codigo: '3',
         nombre: "Andalucía",
-        fotos: null /*[
+        fotos: [], /*[
                   {
                     src: require('../C.jpg'),
                     fecha: "12/12/12",
                     usuario: "Mireia"
                   }
 
-        ]*/,
+        ],*/
     }
   },
   props: ['test'],
@@ -112,6 +112,7 @@ export default {
           JSON.parse(localStorage.getItem("user"))._id + "/" + this.codigo)
           .then(async response => {
             try{
+              console.log(response.data)
              response.data.forEach(await function(res){
                   var aux = {
                     src: res.photo.split("adventure-book")[1],

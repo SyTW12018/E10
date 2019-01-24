@@ -875,10 +875,10 @@ app.get("/get_photos_place/:user_id/:place", async (req, res) => {
   console.log(dir)
   try {
     await PlaceData.findOne({ place: req.params.place }, function (err, doc) {
-
+      
       doc.content.forEach(function (content) {
-        console.log(content.user_id)
         if (content.user_id == req.params.user_id) {
+          console.log(content.photo)
           content.photo.forEach(function (photo) {
             var aux = {
               photo: photo,

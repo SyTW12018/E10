@@ -95,9 +95,9 @@
             </b-row>
 
             <b-row>
-              <p>{{ sitios_visitados[0].descripcion }}</p>
+              <p>{{sitios_visitados[0].descripcion }}</p>
             </b-row>
-            <b-row>
+            <b-row >
               <div v-for="(sitio,index) in sitios_visitados[0].sitios" :key="index">
                 <div class="card" style="width: 16rem;">
                   <img class="card-img-top" :src="sitios_visitados_fotos[index]" alt="Card image">
@@ -114,7 +114,7 @@
               <h2>Lugares deseados</h2>
             </b-row>
             <b-row class="w-100">
-              <b-list-group class="w-100">
+              <b-list-group class="w-100" >
                 <div v-for="sitio in sitios_deseados[0].sitios" :key="sitio">
                   <b-list-group-item class="w-100">{{ sitio }}</b-list-group-item>
                 </div>
@@ -133,15 +133,15 @@ import _ from "lodash";
 import Foto from "./Require_photo.vue";
 
 export default {
-  data: function() {
+  data: function(){
     return {
-      user_: JSON.parse(localStorage.getItem("user")),
-      name: JSON.parse(localStorage.getItem("user")).name,
-      mail: JSON.parse(localStorage.getItem("user")).mail,
+      user_: "",//JSON.parse(localStorage.getItem("user")),
+      name: "",//JSON.parse(localStorage.getItem("user")).name,
+      mail: "",//JSON.parse(localStorage.getItem("user")).mail,
       files: [],
       uploadFiles: [],
       error: false,
-      err_msg: "",
+      err_msg: "error message",
       uploading: false,
       uploadedFiles: [],
       progress: 0,
@@ -165,16 +165,25 @@ export default {
           sitios: []
         }
       ]
-    };
+    }
+  
   },
 
   methods: {
-    log_out() {
+    log_out(){
       window.localStorage.clear();
+      this.mail = ""
+      this.user_ = ""
+      this.name = ""
       this.$router.push("/");
     },
 
-    get_photo(index) {
+    upload(){
+        this.$router.push('/userboard/upload');
+        this.subir_foto = 1;
+    },
+
+    get_photo(index){
       console.log(this.sitios_visitados_fotos[index]);
       return "http//:localhost:3000/static/prueba/CANTABRIA/coche3.jpg";
       //return this.sitios_visitados_fotos[index];
@@ -259,8 +268,8 @@ export default {
     this.subir_foto = 0;
 
     if (
-      localStorage.getItem("jwt") == null ||
-      localStorage.getItem("jwt") == "undefined"
+      window.localStorage.getItem("jwt") == null ||
+      window.localStorage.getItem("jwt") == "undefined"
     ) {
       this.$router.push("/");
     }
@@ -276,12 +285,7 @@ export default {
         });
     } catch (err) {}
   },
-  methods: {
-    upload(){
-        this.$router.push('/userboard/upload');
-        this.subir_foto = 1;
-    },
-  },
+
   components: {
 
   }

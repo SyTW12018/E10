@@ -1,3 +1,23 @@
 # Enlaces para el despliegue en el Iaas
 # 1 -> https://docs.travis-ci.com/user/encrypting-files/
 # 2 -> https://www.debuntu.org/how-to-connect-to-a-cisco-vpn-with-vpnc/
+
+# VPN Cisco config for ULL
+# Usage:
+#   copy this file (ULL.conf) to /etc/vpnc
+#   Connect: vpnc ULL
+#   Disconnect: vpnc-disconnect
+#
+#   Encrypt Travis-CI, 
+#   travis encrypt-file   ULL.conf --add
+
+# This VPN uses just a pre-shared key and no certificate
+IPSec gateway vpn.ull.es
+
+# Group auth
+IPSec ID ULL 
+IPSec secret usu4r10s
+
+# User auth
+Xauth username aluXXXX
+Xauth password mypassword

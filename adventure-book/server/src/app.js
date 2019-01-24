@@ -374,21 +374,26 @@ app.get("/userboard/:mail", async (req, res) => {
   * @param         req.params.mail      {String}  Email recogido en Front-End
   *                req.params.place     {String}  Nombre del lugar recogido en Front-End
  */
-app.post("/follow_Wished/:mail/:place", (req, res) => {
-  UserData.findOneAndUpdate(
-    { name: req.params.mail },
-    { $push: { wished_places: req.params.place } },
-    function(err, doc) {
-      if (err == null) {
-        console.log("Modificando registro de wished_places");
-        res.status(200);
-      } else {
-        console.log("Hubo un error");
-        console.log(err);
-      }
-    }
-  );
+app.get("/get_wished_place/:mail/", async (req, res) => {
+  
+  try{
+    UserData.findOne({mail:req.params.mail}, function(err,doc){
+     res.send(doc.wished_places);
+    });
+  }catch(err){console.log(err)}
 });
+
+app.post("/update_wished_place/:mail/:sites", async (req, res) => {
+  console.log(req.params.sites);
+  try{
+    UserData.findOneAndUpdate({mail:req.params.mail},{wished_places:req.params.sites}, function(err,doc){
+     res.send("OK");
+    });
+  }catch(err){console.log(err)}
+});
+
+
+
 
 
 /**
@@ -551,23 +556,6 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
   res.json({ files: files_ });
 });
 
-/**
-  * @summary       Función para borrar un lugar deseado
-  * @requires      UserData
-  * @param         req.params.place  {String}     Nombre del lugar deseado
-  *                req.params.mail   {String}     Email del usuario que se apunta a dicho lugar
- */
-app.post("/delete_Wished/:mail/:place", (req, res) => {
-  UserData.findOneAndUpdate(
-    { mail: req.params.mail },
-    { $pull: { wished_places: req.params.place } },
-    function(err, doc) {
-      console.log("Modificando registro ...");
-      console.log(doc); 
-    }
-  );
-  res.send(200);
-});
 
 /**
   * @summary       Función para borrar un lugar visitado

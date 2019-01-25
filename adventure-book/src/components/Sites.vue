@@ -192,7 +192,7 @@ export default {
       ]
     };
   },
-  sitios_deseados: [],
+  sitios_deseados: [""],
   methods: {
     route(lugar) {
       this.$router.push("/sitios/" + lugar);
@@ -202,7 +202,7 @@ export default {
       if (document.getElementById(cod).src == require("../assets/fav.png")) {
         // Quitar el sitio con codigo cod de sitios deseados
         var index = this.sitios_deseados.indexOf(cod);
-        if (index !== -1) this.sitios_deseados.splice(cod, 1);
+        if (index !== -1) this.sitios_deseados.splice(index, 1);
         document.getElementById(cod).src = require("../assets/unfav.png");
       } else if (
         document.getElementById(cod).src == require("../assets/unfav.png")
@@ -235,8 +235,8 @@ export default {
     ) {
       this.$router.push("/");
     }
-
     // BACKEND:
+    this.sitios_deseados = []
 
     try {
       await this.$http
@@ -245,17 +245,17 @@ export default {
             JSON.parse(localStorage.getItem("user")).mail
         )
         .then(response => {
-          this.sitios_deseados = response.data[0].split(',');
+          var aux = response.data[0].split(',');
 
-          for (var i = 0; i < this.sitios_deseados.length; i++) {
-            this.sitios_deseados[i] = this.sitios_deseados[i].toString();
+          for (var i = 0; i < aux.length; i++) {
+            this.sitios_deseados.push(aux[i].toString());
             document.getElementById(
               this.sitios_deseados[i]
             ).src = require("../assets/fav.png");
-          }   
+          }
         });
     } catch (err) {}
-    
+
 
     // En este bucle
 
@@ -269,7 +269,6 @@ export default {
             this.comunidades_autonomas[
               i
             ].photo = response.data[1].photo[0].split("adventure-book")[1];
-            console.log(this.comunidades_autonomas[i].photo);
           });
       } catch (err) {}
     }

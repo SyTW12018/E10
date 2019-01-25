@@ -37,6 +37,17 @@
   border: solid white;
   margin-top: 20px;
 }
+.pic_item{
+  margin: 15px;
+}
+
+.details{
+  font-weight: bold;
+  text-align: left;
+  font-weight: normal;
+  padding: 0px 0px 0px 10px;
+}
+
 </style>
 
 <template>
@@ -52,17 +63,18 @@
               <img @click="close()" src="../close.png" alt="cerrar">
             </b-col>
           </b-row>
-          <br>
-          <b-row class="justify-content-md-center">
+          <b-row>
             <div v-for="foto in fotos" :key="foto">
-              <b-row class="foto">
-                <img :src="foto.src" height="200">
-              </b-row>
-              <b-row class="foto">
-                <b-col style="text-align">
-                  <p>{{foto.usuario}} - {{ foto.fecha}}</p>
-                </b-col>
-              </b-row>
+              <div class="pic_item">
+                <b-row class="foto">
+                  <img :src="foto.src" height="200">
+                </b-row>
+                <b-row class="details" align-h="between">
+                  <b-col cols="">
+                    <div> Subida por {{foto.usuario}} <span style="color:lightgrey"> ({{ foto.fecha}}) </span> </div>
+                  </b-col>
+                </b-row>
+              </div>
             </div>
           </b-row>
         </div>

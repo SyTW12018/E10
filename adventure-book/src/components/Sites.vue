@@ -244,10 +244,7 @@ export default {
           "http://localhost:8081/get_wished_place/" +
             JSON.parse(localStorage.getItem("user")).mail
         )
-        .then(response => {
-          console.log(response.data)
-          console.log(response.data[0])
-          
+        .then(response => {  
           if(response.data[0] == undefined){
             this.sitios_deseados = []
           }

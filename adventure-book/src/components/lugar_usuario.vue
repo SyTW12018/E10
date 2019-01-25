@@ -107,27 +107,33 @@ export default {
     console.log(JSON.parse(localStorage.getItem("user"))._id);
     this.nombre = this.comunidades[window.location.pathname.split("/").pop()]
     try{
-        await this.$http
-          .get("http://localhost:8081/get_photos_place/" + 
-          JSON.parse(localStorage.getItem("user"))._id + "/" + this.codigo)
-          .then(async response => {
-            try{
-              console.log(response.data)
-             response.data.forEach(await function(res){
-                  var aux = {
-                    src: res.photo.split("adventure-book")[1],
-                    fecha: res.fecha.split('T')[0],
-                    usuario: "Tú"
-                  };
-                //console.log(aux);  
-                //console.log(this.fotos);
-                console.log(this.codigo);
-                //this.fotos.push(data);
-              });
-            }catch(err){};
+      var photo_array = []
+      await this.$http
+        .get("http://localhost:8081/get_photos_place/" + 
+        JSON.parse(localStorage.getItem("user"))._id + "/" + this.codigo)
+        .then(async response => {
+          try{
+            console.log(response.data)
+            response.data.forEach(await function(res){
+                var aux = {
+                  src: res.photo.split("adventure-book")[1],
+                  fecha: res.fecha.split('T')[0],
+                  usuario: "Tú"
+                };
+              //console.log(aux);  
+              //console.log(this.fotos);
+              //console.log(this.codigo);
+              photo_array.push(data);
+            });
+            this.fotos = photo_array
+          }catch(err){
+            console.log(err)
+          };
             
-          });
-      }catch(err){};
+        });
+    }catch(err){
+      console.log(err)
+    };
       
   },
   components: {

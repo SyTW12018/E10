@@ -1265,8 +1265,7 @@ app.get("/get_photos_place/:user_id/:place", async (req, res) => {
   var dir = __dirname.split("server")[0] + "static/uploads/" + req.params.user_id + "/" + req.params.place;
   console.log(dir)
   try {
-    await PlaceData.findOne({ place: req.params.place }, function (err, doc) {
-      
+    await PlaceData.findOne({ place: req.params.place }, function (err, doc) {  
       doc.content.forEach(function (content) {
         if (content.user_id == req.params.user_id) {
           console.log(content.photo)
@@ -1279,9 +1278,8 @@ app.get("/get_photos_place/:user_id/:place", async (req, res) => {
           });
         }
       });
-    });
-    res.send(response);
-
+      res.send(response);
+    });    
   }
   catch (err) {
     console.log(err);

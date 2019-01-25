@@ -134,9 +134,9 @@ import Foto from "./Require_photo.vue";
 export default {
   data: function(){
     return {
-      user_: "",//JSON.parse(localStorage.getItem("user")),
-      name: "",//JSON.parse(localStorage.getItem("user")).name,
-      mail: "",//JSON.parse(localStorage.getItem("user")).mail,
+      user_: JSON.parse(localStorage.getItem("user")),
+      name: JSON.parse(localStorage.getItem("user")).name,
+      mail: JSON.parse(localStorage.getItem("user")).mail,
       files: [],
       uploadFiles: [],
       error: false,

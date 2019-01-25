@@ -52,7 +52,8 @@
               <img @click="close()" src="../close.png" alt="cerrar">
             </b-col>
           </b-row>
-          <b-row>
+          <br>
+          <b-row class="justify-content-md-center">
             <div v-for="foto in fotos" :key="foto">
               <b-row class="foto">
                 <img :src="foto.src" height="200">
@@ -119,26 +120,26 @@ export default {
             this.nombre = this.comunidades[this.codigo]
            // console.log(this.nombre)
             for (var i =0; i < response.data.length; i++){
-              for (var j =0; j < response.data[i].photo.length; j++){ 
+              for (var j =0; j < response.data[i].photo.length; j++){
                 try{
                     await this.$http
                     .get("http://localhost:8081/get_name/" + response.data[i].user_id)
-                    .then(res => { 
+                    .then(res => {
                       if(res.data == ""){
                         var data = {
                           src : response.data[i].photo[j].split("adventure-book")[1],
                           fecha : response.data[i].date.split('T')[0],
                           usuario: "Anónimo"
-                        }; 
+                        };
                       }else{
                         var data = {
                           src : response.data[i].photo[j].split("adventure-book")[1],
                           fecha : response.data[i].date.split('T')[0],
                           usuario: res.data
-                        }; 
+                        };
                       }
                       console.log(data);
-                      this.fotos.push(data); 
+                      this.fotos.push(data);
                   });
                 }catch(err){}
               }

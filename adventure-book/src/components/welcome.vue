@@ -1,11 +1,6 @@
 <style>
 	body {
 		height:100%;
-		background-image:url('../C.jpg');
-		background-repeat: no-repeat;
-		background-position: center center;
-		background-attachment: fixed;
-		background-size: cover;
 	}
 
 	#mainrow{
@@ -17,7 +12,6 @@
 	#dif{
 		display: flex;
     align-items: center;
-		transform: translatey(10%);
 	}
 
 
@@ -28,43 +22,45 @@
 
 	}
 
-	@media (min-width: 768px) {
-		#contenedor{
-				transform: translatey(25%);
-		}
-	}
+	.main {
+    padding: 100px;
+    background-color: white;
+  }
+
 
 </style>
 
 <template>
-  <div id="contenedor">
-    <b-row id="mainrow">
-      <b-col md="4" offset-md="4">
-        <b-row>
-          <b-col>
-						<img src="../assets/avion.png" height="100px"/>
-					</b-col>
+	<div>
+    <div class="main">
+		    <b-row id="mainrow">
+		      <b-col md="4" offset-md="4">
+		        <b-row>
+		          <b-col>
+								<img src="../assets/avion.png" height="100px"/>
+							</b-col>
+						</b-row>
+						<b-row>
+							<b-col>
+								<h1> Adventure Book </h1>
+							</b-col>
+						</b-row>
+						<b-row>
+							<b-col md="10" offset-md="1">
+								<p> La red social en la que compartir tus experiencias y encontrar nuevas aventuras</p>
+							</b-col>
+						</b-row>
+						<b-row>
+							<b-col cols="5">
+								<login></login>
+							</b-col>
+							<b-col cols="6" offset="1">
+								<signup></signup>
+							</b-col>
+						</b-row>
+		      </b-col>
 				</b-row>
-				<b-row>
-					<b-col>
-						<h1> Adventure Book </h1>
-					</b-col>
-				</b-row>
-				<b-row>
-					<b-col md="10" offset-md="1">
-						<p> La red social en la que compartir tus experiencias y encontrar nuevas aventuras</p>
-					</b-col>
-				</b-row>
-				<b-row>
-					<b-col cols="5">
-						<login></login>
-					</b-col>
-					<b-col cols="6" offset="1">
-						<signup></signup>
-					</b-col>
-				</b-row>
-      </b-col>
-		</b-row>
+			</div>
 	</div>
 </template>
 

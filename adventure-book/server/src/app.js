@@ -428,13 +428,14 @@ app.get("/userboard/:mail", async (req, res) => {
   * @param         req.params.mail      {String}  Email recogido en Front-End
   *                req.params.place     {String}  Nombre del lugar recogido en Front-End
  */
-app.post("/follow_Wished/:mail/:place", (req, res) => {
+
+/*app.post("/follow_Wished/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate({ name: req.params.mail }, { $push: { wished_places: req.params.place } },
     function(err, doc) {
 
     }
   );
-});
+});*/
 
 app.post("/follow_Wished/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate(
@@ -450,6 +451,23 @@ app.post("/follow_Wished/:mail/:place", (req, res) => {
       }
     }
   );
+});
+
+app.get("/get_wished_place/:mail/", async (req, res) => {  
+  try{
+    UserData.findOne({mail:req.params.mail}, function(err,doc){
+     res.send(doc.wished_places);
+    });
+  }catch(err){console.log(err)}
+});
+
+app.post("/update_wished_place/:mail/:sites", async (req, res) => {
+  console.log(req.params.sites);
+  try{
+    UserData.findOneAndUpdate({mail:req.params.mail},{wished_places:req.params.sites}, function(err,doc){
+     res.send("OK");
+    });
+  }catch(err){console.log(err)}
 });
 
 
@@ -471,6 +489,7 @@ const fileFilter = function (req, file, cb) {
   }
   cb(null, true);
 };
+
 
 /**
   * @summary       Estructura de subida de ficheros
@@ -1146,7 +1165,6 @@ app.use(function(err, req, res, next) {
   * @param         req.body.mail      {String}        Email del usuario  
  */
 app.get("/comprobar", (req, res) => {
-
   UserData.findOne({ mail: req.body.mail }, function (err, docs) {
     if (docs == null) {
       console.log("documento:" + docs);
@@ -1157,6 +1175,7 @@ app.get("/comprobar", (req, res) => {
     }
   });
 });
+
 
 /**
   * @summary       Función para cambiar el nickname del usuario
@@ -1175,6 +1194,7 @@ app.post("/change_name/:new/:mail", async (req, res) => {
   res.send(200);
 });
 
+
 /**
   * @summary       Función para cambiar la contraseña del usuario
   * @requires      UserData
@@ -1182,7 +1202,6 @@ app.post("/change_name/:new/:mail", async (req, res) => {
   *                req.params.new     {String}        Nueva contraseña para el usuario
  */
 app.post("/change_pass/:new/:mail", async (req, res) => {
-
   var pass = "";
   try {
     await UserData.findOneAndUpdate(
@@ -1206,7 +1225,6 @@ app.post("/change_pass/:new/:mail", async (req, res) => {
  */
 
 app.get("/sites/:place", async (req, res) => {
-
   var response = [];
   try {
     await PlaceData.findOne({ place: req.params.place }, function (err, doc) {

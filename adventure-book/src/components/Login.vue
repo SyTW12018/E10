@@ -54,9 +54,6 @@ export default {
         .catch(function(err){
           console.log(err.response);
         })
-				if(localStorage.getItem('jwt') == null){
-					this.error_ = "Las credenciales no son válidas";
-				}
 			}
     }
   }

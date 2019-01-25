@@ -245,8 +245,16 @@ export default {
             JSON.parse(localStorage.getItem("user")).mail
         )
         .then(response => {
-          this.sitios_deseados = response.data[0].split(',');
-
+          console.log(response.data)
+          console.log(response.data[0])
+          
+          if(response.data[0] == undefined){
+            this.sitios_deseados = []
+          }
+          else{
+            this.sitios_deseados = response.data[0].split(',');
+          }
+          
           for (var i = 0; i < this.sitios_deseados.length; i++) {
             this.sitios_deseados[i] = this.sitios_deseados[i].toString();
             document.getElementById(

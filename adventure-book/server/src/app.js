@@ -285,8 +285,6 @@ app.post("/signup", (req, res) => {
   *                req.body.pass  {String}  Contraseña del usuario
  */
 app.post("/login", (req, res) => {
-  console.log(req.body.mail);
-  console.log(req.body.pass);
   UserData.findOne({ mail: req.body.mail }, function (err, user) {
     //Error del servidor 
     //try catch??
@@ -464,9 +462,12 @@ app.get("/get_wished_place/:mail/", async (req, res) => {
 app.post("/update_wished_place/:mail/:sites", async (req, res) => {
   console.log(req.params.sites);
   try{
-    UserData.findOneAndUpdate({mail:req.params.mail},{wished_places:req.params.sites}, function(err,doc){
-     res.send("OK");
-    });
+    if(req.params.sites != undefined){
+      UserData.findOneAndUpdate({mail:req.params.mail},{wished_places:req.params.sites}, function(err,doc){
+        res.send("OK");
+      });
+    }
+    
   }catch(err){console.log(err)}
 });
 
@@ -935,9 +936,6 @@ app.get("/wished_groups/:mail/", (req, res) => {
                 date_array.push(data_)
               }
               Object.assign(aux, {date: date_array})
-              console.log("aux: ")
-              console.log(aux)
-              aux.push(docs); //Aqui devulevo los grupos que existen que sean al lugar que el user tenga como deseados
             }
           });
         } 
@@ -945,8 +943,7 @@ app.get("/wished_groups/:mail/", (req, res) => {
           console.log(err);
         }
         response.push(aux)
-      }
-      //ESTO A VECES FUNCIONA, ES MAGIA    
+      }  
     });
     res.send(response);
   }
@@ -1225,10 +1222,19 @@ app.post("/change_pass/:new/:mail", async (req, res) => {
  */
 
 app.get("/sites/:place", async (req, res) => {
+  console.log(req.params.place)
   var response = [];
   try {
     await PlaceData.findOne({ place: req.params.place }, function (err, doc) {
-      response = doc.content;
+      if(err){
+        console.log(err);
+      }
+      else{
+        console.log(doc)
+        if(doc != null){
+          response = doc.content;
+        }
+      }  
     });
     res.send(response);
   }

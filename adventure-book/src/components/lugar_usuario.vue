@@ -37,6 +37,23 @@
   border: solid white;
   margin-top: 20px;
 }
+
+
+.details{
+  font-weight: bold;
+  text-align: left;
+  font-weight: normal;
+  padding: 0px 0px 0px 10px;
+}
+.pic_item{
+  margin: 15px;
+}
+
+.basura{
+  position: relative;
+  left:-16px;
+}
+
 </style>
 
 <template>
@@ -54,14 +71,19 @@
           </b-row>
           <b-row>
             <div v-for="(foto,index) in fotos" :key="index">
-              <b-row class="foto">
-                <img :src="foto.src" height="200">
-              </b-row>
-              <b-row class="foto">
-                <b-col style="text-align">
-                  <p>{{foto.usuario}} - {{ foto.fecha}}</p>
-                </b-col>
-              </b-row>
+              <div class="pic_item">
+                <b-row class="foto">
+                  <img :src="foto.src" height="200">
+                </b-row>
+                <b-row class="details" align-h="between">
+                  <b-col cols="">
+                    <div> Subida por ti <span style="color:lightgrey"> ({{ foto.fecha}}) </span> </div>
+                  </b-col>
+                  <b-col cols="1">
+                    <img class="basura" @click="borrar_foto(index)" src="../assets/basura.png" alt="cerrar">
+                  </b-col>
+                </b-row>
+              </div>
             </div>
           </b-row>
         </div>
@@ -76,33 +98,45 @@
 export default {
   data(){
     return{
-      comunidades : ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
+        comunidades : ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
                     'GALICIA','LA RIOJA','CANTABRIA',
                     'CASTILLA Y LEÓN','CATALUÑA','COMUNIDAD VALENCIANA',
                     'CASTILLA LA MANCHA','EXTREMADURA','REGIÓN DE MURCIA','COMUNIDAD DE MADRID',
                     'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'],
-	      codigo: '3',
+	      codigo: '',
         nombre: "Andalucía",
         fotos: [
         ],
+        fotos_para_borrar: [],
     }
   },
   props: ['test'],
   methods: {
       close(){
           this.$router.push('/userboard/');
+      },
+
+      borrar_foto(index){
+        console.log("borrar la foto #" + index)
+        this.fotos_para_borrar.push (this.fotos.splice(index, 1)[0]);
       }
   },
 
+  beforeDestroy(){
+      console.log("Me van a borrar D:")
+
+      // Las fotos que hay en fotos_para_borrar son las que se tienen que borrar de la bd
+      console.log(this.fotos_para_borrar)
+  },
+
   async mounted() {
-    // Recuperar el código de la id
     this.codigo =  window.location.pathname.split("/").pop();
     this.comunidades = this.comunidades.sort();
     console.log(JSON.parse(localStorage.getItem("user"))._id);
     this.nombre = this.comunidades[window.location.pathname.split("/").pop()]
     try{
         await this.$http
-          .get("http://localhost:8081/get_photos_place/" + 
+          .get("http://localhost:8081/get_photos_place/" +
           JSON.parse(localStorage.getItem("user"))._id + "/" + this.codigo)
           .then(response => {
             console.log(response.data.length)
@@ -116,7 +150,7 @@ export default {
               };
           });
       }catch(err){};
-      
+
   },
   components: {
 

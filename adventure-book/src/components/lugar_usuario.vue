@@ -53,7 +53,7 @@
             </b-col>
           </b-row>
           <b-row>
-            <div v-for="foto in fotos" :key="foto">
+            <div v-for="(foto,index) in fotos" :key="index">
               <b-row class="foto">
                 <img :src="foto.src" height="200">
               </b-row>
@@ -81,70 +81,54 @@ export default {
                     'CASTILLA Y LEÓN','CATALUÑA','COMUNIDAD VALENCIANA',
                     'CASTILLA LA MANCHA','EXTREMADURA','REGIÓN DE MURCIA','COMUNIDAD DE MADRID',
                     'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'],
-	      codigo: '',
+	      codigo: '3',
         nombre: "Andalucía",
-        fotos: [
-                  /*{
+        fotos: [], /*[
+                  {
                     src: require('../C.jpg'),
                     fecha: "12/12/12",
                     usuario: "Mireia"
-                  }*/
+                  }
 
-        ],
+        ],*/
     }
   },
   props: ['test'],
-  watch:{
-    $route (to, from){
-      this.codigo =  window.location.pathname.split("/").pop();
-
-      // búsqueda  del nombre, las fotos en la colección sitios
-      // backend aquiiiii (codigo copiao y pegao)
-    }
-  },
   methods: {
       close(){
-          this.$router.push('/sitios/');
-      },
+          this.$router.push('/userboard/');
+      }
   },
 
   async mounted() {
     // Recuperar el código de la id
     this.codigo =  window.location.pathname.split("/").pop();
     this.comunidades = this.comunidades.sort();
+    console.log(JSON.parse(localStorage.getItem("user"))._id);
+    this.nombre = this.comunidades[window.location.pathname.split("/").pop()]
     try{
         await this.$http
-          .get("http://localhost:8081/sites/" + this.codigo)
+          .get("http://localhost:8081/get_photos_place/" + 
+          JSON.parse(localStorage.getItem("user"))._id + "/" + this.codigo)
           .then(async response => {
-            this.nombre = this.comunidades[this.codigo]
-           // console.log(this.nombre)
-            for (var i =0; i < response.data.length; i++){
-              for (var j =0; j < response.data[i].photo.length; j++){ 
-                try{
-                    await this.$http
-                    .get("http://localhost:8081/get_name/" + response.data[i].user_id)
-                    .then(res => { 
-                      if(res.data == ""){
-                        var data = {
-                          src : response.data[i].photo[j].split("adventure-book")[1],
-                          fecha : response.data[i].date.split('T')[0],
-                          usuario: "Anónimo"
-                        }; 
-                      }else{
-                        var data = {
-                          src : response.data[i].photo[j].split("adventure-book")[1],
-                          fecha : response.data[i].date.split('T')[0],
-                          usuario: res.data
-                        }; 
-                      }
-                      console.log(data);
-                      this.fotos.push(data); 
-                  });
-                }catch(err){}
-              }
-            }
+            try{
+              console.log(response.data)
+             response.data.forEach(await function(res){
+                  var aux = {
+                    src: res.photo.split("adventure-book")[1],
+                    fecha: res.fecha.split('T')[0],
+                    usuario: "Tú"
+                  };
+                //console.log(aux);  
+                //console.log(this.fotos);
+                console.log(this.codigo);
+                //this.fotos.push(data);
+              });
+            }catch(err){};
+            
           });
       }catch(err){};
+      
   },
   components: {
 

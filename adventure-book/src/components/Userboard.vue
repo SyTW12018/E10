@@ -81,7 +81,6 @@
   <div>
     <div class="main">
       <div class="container">
-
           <router-view></router-view>
         <b-row>
           <b-col cols="9" id="mis_sitios">
@@ -99,7 +98,7 @@
             </b-row>
             <b-row >
               <div v-for="(sitio,index) in sitios_visitados[0].sitios" :key="index">
-                <div class="card" style="width: 16rem;">
+                <div class="card" style="width: 16rem;" @click="route(sitio)">
                   <img class="card-img-top" :src="sitios_visitados_fotos[index]" alt="Card image">
                   <div class="card-body">
                     <p class="card-text">{{ sitio }}</p>
@@ -189,6 +188,10 @@ export default {
       //return this.sitios_visitados_fotos[index];
     },
 
+    route(lugar){
+        this.$router.push('/userboard/' + lugar);
+    },
+
     selectFile() {
       //Upload multiple files
       const files = this.$refs.files.files;
@@ -253,7 +256,7 @@ export default {
         for (var j = 0; j < res.data.files.length; j++) {
           this.uploadedFiles.push(res.data.files[j]);
         }
-
+        
         this.uploading = false;
 
         this.files = [];
@@ -273,7 +276,6 @@ export default {
     ) {
       this.$router.push("/");
     }
-    this.sitios_visitados[0].sitios = ["Tamo activo"];
     try {
       await this.$http
         .get("http://localhost:8081/userboard/" + this.mail)
@@ -287,7 +289,6 @@ export default {
   },
 
   components: {
-
   }
 };
 </script>

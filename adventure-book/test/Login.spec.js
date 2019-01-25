@@ -13,7 +13,7 @@ describe("Login.vue", () => {
     it('testing the instance', () => {
         const wrapper = shallowMount(Login)
         //con vm accedemos a la instancia de vue, es decir, podemos acceder al "data, method, etc." del componente
-        expect(wrapper.vm.mail_).toBe("pepe@gmail.com")
+        expect(wrapper.vm.mail_).toBe("")
 
         wrapper.vm.change_mail("jc@gmail.com") //cambiamos el mail usando el método del componente utilizado para ello
         expect(wrapper.vm.mail_).toBe("jc@gmail.com")

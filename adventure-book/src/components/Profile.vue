@@ -31,6 +31,12 @@ h3 {
   top: 5px;
   visibility: hidden;
 }
+
+#update_pass_ {
+  position: relative;
+  top: 15px;
+  visibility: hidden;
+}
 </style>
 
 <template>
@@ -102,9 +108,16 @@ h3 {
             </b-col>
           </b-row>
           <b-row class="left15">
-            <b-col cols="9">
+            <b-col cols="3">
               <b-button v-on:click="change_pass" id="update_pass">Guardar contraseña</b-button>
             </b-col>
+            <b-col cols="1">
+              <img id="update_pass_" src="../ok.png" width="20px" alt="nombre actualizado">
+            </b-col>
+          </b-row>
+          <br>
+          <b-row style="color:red">
+            {{ error_ }}
           </b-row>
         </b-col>
       </b-row>
@@ -124,7 +137,9 @@ export default {
 
 			current_pass_: "",
 			new_pass_: "",
-			new_pass_repeat_: ""
+			new_pass_repeat_: "",
+
+      error_: "",
 		}
   },
   mounted(){
@@ -135,14 +150,11 @@ export default {
     ) {
       this.$router.push("/");
     }
-
     this.name_= JSON.parse(localStorage.getItem("user")).name;
 		this.pass_= JSON.parse(localStorage.getItem("user")).pass;
     this.mail_= JSON.parse(localStorage.getItem("user")).mail;
-
-
 	},
-	
+
 	methods:{
 		async change_name(){
 
@@ -162,27 +174,44 @@ export default {
 
 				});
 			}catch(err){}
-		
+
 		},
 
 	async change_pass(){
 
-		try{
-			await this.$http
-				.post("http://localhost:8081/change_pass/" + this.new_pass_ + "/" + this.mail_)
-				.then(response => {
-					console.log(response.data);
-					var user = JSON.parse(localStorage.getItem("user"));
-					user.password = response.data;
-					localStorage.setItem('user', JSON.stringify(user));
-					console.log(user);
-					this.current_pass_= "";
-					this.new_pass_= "";
-					this.new_pass_repeat_= "";
-					// mostrar el tick verde
-          document.getElementById("update_name").style.visibility = "visible";
-				});
-			}catch(err){}
+    if (this.new_pass_ == "")
+    {
+      this.error_ = "La nueva contraseña no puede ser vacía"
+      return ""
+    }
+    else if (this.new_pass_repeat_ == "")
+    {
+      this.error_ = "Vuelve a escribir la contraseña"
+      return ""
+    }
+    else if (this.new_pass_ != this.new_pass_repeat_)
+    {
+      this.error_ = "Las contraseñas no coinciden"
+      return ""
+    }
+    else{
+  		try{
+  			await this.$http
+  				.post("http://localhost:8081/change_pass/" + this.new_pass_ + "/" + this.mail_)
+  				.then(response => {
+  					console.log(response.data);
+  					var user = JSON.parse(localStorage.getItem("user"));
+  					user.password = response.data;
+  					localStorage.setItem('user', JSON.stringify(user));
+  					console.log(user);
+  					this.current_pass_= "";
+  					this.new_pass_= "";
+  					this.new_pass_repeat_= "";
+  					// mostrar el tick verde
+            document.getElementById("update_pass_").style.visibility = "visible";
+  				});
+  			}catch(err){}
+      }
 	}
 	},
 

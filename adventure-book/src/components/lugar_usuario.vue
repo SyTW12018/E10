@@ -105,8 +105,7 @@ export default {
                     'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'],
 	      codigo: '',
         nombre: "Andalucía",
-        fotos: [
-        ],
+        fotos: [],
         fotos_para_borrar: [],
     }
   },
@@ -119,6 +118,7 @@ export default {
       borrar_foto(index){
         console.log("borrar la foto #" + index)
         this.fotos_para_borrar.push (this.fotos.splice(index, 1)[0]);
+        console.log(this.fotos_para_borrar[0].src)
       }
   },
 
@@ -127,6 +127,19 @@ export default {
 
       // Las fotos que hay en fotos_para_borrar son las que se tienen que borrar de la bd
       console.log(this.fotos_para_borrar)
+      try{
+        this.$http
+        .post("http://localhost:8081/delete_Photo/" +  JSON.parse(localStorage.getItem("user")).mail, {
+          delete_array: this.fotos_para_borrar
+        })
+        .then(response => {
+          console.log(response.data)
+          this.fotos_para_borrar = []
+        });
+      }
+      catch(err){
+        console.log(err)
+      }    
   },
 
   async mounted() {

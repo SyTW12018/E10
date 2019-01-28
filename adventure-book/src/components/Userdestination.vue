@@ -650,21 +650,18 @@ export default {
         await this.$http
         .get("http://localhost:8081/future_trips/" + JSON.parse(localStorage.getItem("user")).mail )
         .then(response => {
-          console.log(response.data);
           this.futuros_viajes = response.data;
         });
 
         await this.$http
         .get("http://localhost:8081/this_month/" + JSON.parse(localStorage.getItem("user")).mail)
         .then(response => {
-          console.log(response.data);
           this.este_mes = response.data;
         });
 
         await this.$http
         .get("http://localhost:8081/all_groups/" + JSON.parse(localStorage.getItem("user")).mail)
         .then(response => {
-          console.log(response.data);
           this.todo_organizado = response.data;
         });
 

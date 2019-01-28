@@ -236,7 +236,6 @@ app.get("/", (req, res) => {
   * @param         req.body.mail  {String}  Email recogido en Front-End
  */
 app.post("/signup", (req, res) => {
-
   //1
   UserData.findOne({ mail: req.body.mail }, (err, user_found) => {
     if (err) {
@@ -652,6 +651,7 @@ app.post("/delete_Wished/:mail/:place", (req, res) => {
   res.send(200);
 });
 
+
 /**
   * @summary       Función para borrar un lugar visitado
   * @requires      UserData
@@ -671,6 +671,36 @@ app.post("/delete_Visited/:mail/:place", (req, res) => {
   res.status(200);
 });
 
+
+app.get("/get_photos_place/:user_id/:place", async (req, res) => {
+  var response = [];
+  var photos = [];
+  var dir = __dirname.split("server")[0] + "static/uploads/" + req.params.user_id + "/" + req.params.place;
+  console.log(dir)
+  try {
+    await PlaceData.findOne({ place: req.params.place }, function (err, doc) {  
+      doc.content.forEach(function (content) {
+        if (content.user_id == req.params.user_id) {
+          console.log(content.photo)
+          content.photo.forEach(function (photo) {
+            var aux = {
+              photo: photo,
+              fecha: content.date,
+            }
+            response.push(aux);
+          });
+        }
+      });
+      res.send(response);
+    });    
+  }
+  catch (err) {
+    console.log(err);
+  }
+});
+
+
+
 /**
   * @summary       Función para borrar una foto del lugar
   * @requires      UserData
@@ -678,35 +708,63 @@ app.post("/delete_Visited/:mail/:place", (req, res) => {
   *                req.params.mail   {String}     Email del usuario que se apunta a dicho lugar
   *                req.params.photo  {String}     Ruta a la foto que se desea borrar
  */
-app.post("/delete_Photo/:mail/:place/:photo", (req, res) => {
+app.post("/delete_Photo/:mail", (req, res) => {
+  console.log("entra en delete photo")
+
+  for(var i = 0; i < req.body.delete_array.length; i++){
+    try{
+      fs.unlinkSync(__dirname.split("server")[0] + req.body.delete_array[i].src.slice(1));
+      var folderArray = (__dirname.split("server")[0] + req.body.delete_array[i].src.slice(1)).split("/")
+      var folderName = ""
+      for (var j = 0; j < (folderArray.length - 1); j++){
+        folderName += folderArray[j];
+        folderName += "/"
+      }
+      console.log(folderName)
+      fs.readdir(folderName, function(err, files) {
+        if (err) {
+           // some sort of error
+        } 
+        else {
+           if (!files.length) {
+              // directory appears to be empty
+              console.log("La carpeta se ha quedado vacía")
+              fs.rmdirSync(folderName);
+
+              UserData.findOneAndUpdate(
+                { mail: req.params.mail },
+                { $pull: { visited_places: folderArray[folderArray.length - 2] }},
+                function (err, doc) {
+                  console.log("Borrando la carpeta de sitios visitados ...");
+                  console.log(doc); //Esto si funciona perfecto
+                }
+              );
+
+           }
+        }
+    });
+    }
+    catch(err){
+      console.log(err)
+    }
+    
+
+    UserData.findOneAndUpdate(
+      { mail: req.params.mail },
+      { $pull: { uploadsphotos: __dirname.split("server")[0] + req.body.delete_array[i].src.slice(1) }},
+      function (err, doc) {
+        console.log("Borrando foto ...");
+        console.log(doc); //Esto si funciona perfecto
+      }
+    );
+  }
+  /*
   fs.unlinkSync(
-    __dirname.split("server")[0] +
-    "static//uploads/" +
-    req.params.mail +
-    "/" +
-    req.params.place.toUpperCase() +
-    "/" +
+    __dirname.split("server")[0] +  "static//uploads/" +  req.params.mail +  "/" + req.params.place.toUpperCase() + "/" +
     req.params.photo
   );
-  UserData.findOneAndUpdate(
-    { mail: req.params.mail },
-    {
-      $pull: {
-        uploadsphotos:
-          __dirname.split("server")[0] +
-          "static/uploads/" +
-          req.params.mail +
-          "/" +
-          place_ +
-          "/" +
-          req.params.photo
-      }
-    },
-    function (err, doc) {
-      console.log("Borrando foto ...");
-      console.log(doc); //Esto si funciona perfecto
-    }
-  );
+  */
+  
   res.status(200);
 });
 
@@ -907,45 +965,54 @@ app.get("/future_trips/:mail/", async (req,res) => {
 })
 
 
-app.get("/wished_groups/:mail/", (req, res) => {
+app.get("/wished_groups/:mail/", async (req, res) => {
   console.log("Entra en el sitios deseados")
+  var comunidades = ['ANDALUCÍA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
+  'GALICIA','LA RIOJA','CANTABRIA','CASTILLA Y LEÓN','CATALUÑA','COMUNIDAD VALENCIANA','CASTILLA LA MANCHA','EXTREMADURA',
+  'REGIÓN DE MURCIA','COMUNIDAD DE MADRID',
+  'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'];
+  comunidades = comunidades.sort();
+  var options = { year: 'numeric', month: 'long', day: 'numeric' };
   var response = [];
   var aux = {};
-  try{
-    UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
-      for (var i = 0; i < doc.wished_places.length; i++) {
-        try {
-          await GroupTravel.find({ place: doc.wished_places[i] }, function(err, docs){
-            if (docs != null) {
 
-              Object.assign(aux,{place: doc.wished_places[i]});
+  try{
+    await UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
+      var sitios_visitados = doc.wished_places[0].split(',')
+      for (var j = 0; j < sitios_visitados.length; j++) {
+        try {
+          await GroupTravel.find({ place: comunidades[parseInt(sitios_visitados[j])] }, function(err, docs){
+            if (docs != null) {
+              Object.assign(aux,{place: comunidades[parseInt(sitios_visitados[j])]});
               Object.assign(aux,{numero_fechas: docs.length});
               Object.assign(aux,{base: true})
               Object.assign(aux,{fecham: false})
               
               var date_array = []
               for(var i = 0; i<docs.length; i++){
-                console.log(docs[i])
                 var date_ = {}
                 Object.assign(date_, {camuflado: false})
-                Object.assign(date_, {fecha:docs[i].date_ini})
-                Object.assign(date_, {fecha_f: docs[i].date_fini})
+                Object.assign(date_, {fecha:docs[i].date_ini.toLocaleDateString('es-ES', options)})
+                Object.assign(date_, {fecha_f: docs[i].date_fini.toLocaleDateString('es-ES', options)})
                 Object.assign(date_, {personas:docs[i].members.length})
                 Object.assign(date_, {members:docs[i].members})
                 Object.assign(date_, {id: docs[i]._id})
-                date_array.push(data_)
+                date_array.push(date_)
               }
               Object.assign(aux, {date: date_array})
+              response.push(aux)
+              aux = {}
             }
           });
         } 
         catch (err) {
           console.log(err);
-        }
-        response.push(aux)
-      }  
+        }        
+      }
+      //console.log(response)
+      res.send(response);
     });
-    res.send(response);
+    
   }
   catch(err){
     console.log(err)
@@ -961,12 +1028,10 @@ app.get("/this_month/:mail", async (req, res) => {
   var today = new Date();
   var lastDayOfMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
 
-
   try{
     //await GroupTravel.find({$and:[{memebers: {$ne: req.params.mail}}, {date_ini: {"$gte": today, "$lt": lastDayOfMonth}}] }, function(err, docs){
     //await GroupTravel.find({date_ini: {"$gte": today, "$lt": lastDayOfMonth} }, function(err, docs){
     await GroupTravel.find({$and:[{"members":{ "$not":{"$all": [req.params.mail]}}}, {date_ini:{"$gte":today, "$lt": lastDayOfMonth}}]}, function(err, docs){
-
       if(err){
         console.log(err)
       }
@@ -1053,16 +1118,14 @@ app.get("/all_groups/:mail", async (req, res) => {
   var today = new Date();
   var lastDayOfMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
 
-
   try{
     await GroupTravel.find({$and:[{"members":{ "$not":{"$all": [req.params.mail]}}}, {date_ini:{"$gte": lastDayOfMonth}}]}, function(err, docs){
     //await GroupTravel.find({ $and: [{date_ini: {"$gte": lastDayOfMonth}}, {memebers: {$ne: req.params.mail} }] }).sort({'date': -1}).limit(5).exec(function(err, docs){
     //await GroupTravel.find({date_ini: {"$gte": lastDayOfMonth}}).sort({'date': -1}).limit(5).exec(function(err, docs){
-  
-      if(err){
-        console.log(err)
-      }
-      console.log(docs)
+    if(err){
+      console.log(err)
+    }
+
       if (docs != null) {
         for(var i = 0; i < docs.length; i++){
           if(response.length == 0){
@@ -1220,7 +1283,6 @@ app.post("/change_pass/:new/:mail", async (req, res) => {
   * @param         req.params.place     {String}  Nombre del lugar recogido en Front-End
   *                doc.content          {Array}   Contenido del lugar (Nombre, Autor, Foto, Fecha, etc)
  */
-
 app.get("/sites/:place", async (req, res) => {
   console.log(req.params.place)
   var response = [];
@@ -1252,34 +1314,6 @@ app.get("/get_name/:user_id", async (req, res) => {
       console.log(doc.mail)
     });
     res.send(response);
-  }
-  catch (err) {
-    console.log(err);
-  }
-});
-
-
-app.get("/get_photos_place/:user_id/:place", async (req, res) => {
-  var response = [];
-  var photos = [];
-  var dir = __dirname.split("server")[0] + "static/uploads/" + req.params.user_id + "/" + req.params.place;
-  console.log(dir)
-  try {
-    await PlaceData.findOne({ place: req.params.place }, function (err, doc) {  
-      doc.content.forEach(function (content) {
-        if (content.user_id == req.params.user_id) {
-          console.log(content.photo)
-          content.photo.forEach(function (photo) {
-            var aux = {
-              photo: photo,
-              fecha: content.date,
-            }
-            response.push(aux);
-          });
-        }
-      });
-      res.send(response);
-    });    
   }
   catch (err) {
     console.log(err);

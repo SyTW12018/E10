@@ -75,10 +75,15 @@
     text-align: left;
   }
 
-.imagen {
-  width: 300px;
-  height: 200px;
-}
+  .imagen {
+    width: 300px;
+    height: 200px;
+  }
+
+  .fav1{
+    position: relative;
+    top:5px;
+  }
 </style>
 
 <template>
@@ -119,7 +124,22 @@
             <b-row class="w-100">
               <b-list-group class="w-100" >
                 <div v-for="sitio in sitios_deseados[0].sitios" :key="sitio">
-                  <b-list-group-item class="w-100">{{ sitio }}</b-list-group-item>
+                  <b-list-group-item class="w-100">
+                    <b-row>
+                      <b-col cols="10">
+                        {{ comunidades[sitio] }}
+                      </b-col>
+                      <b-col cols="2">
+                        <img
+                          v-bind:id="sitio"
+                          class="fav1"
+                          @click="fav(sitio)"
+                          src="../assets/fav.png"
+                          alt="cerrar"
+                        >
+                      </b-col>
+                    </b-row>
+                  </b-list-group-item>
                 </div>
               </b-list-group>
             </b-row>
@@ -164,22 +184,37 @@ export default {
         {
           nombre: "Mis Sitios",
           descripcion:
-            "Aquí aparecerán los lugares en los que has etiquetado tus fotos",
-          sitios: []
+            "Tus lugarea deseados son aquellos destinos a los que deseas viajar próximamente. Añade ",
+          sitios: [],
+          quitar: [],
         }
       ],
 
-      comunidades : ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
-                    'GALICIA','LA RIOJA','CANTABRIA',
-                    'CASTILLA Y LEÓN','CATALUÑA','COMUNIDAD VALENCIANA',
-                    'CASTILLA LA MANCHA','EXTREMADURA','REGIÓN DE MURCIA','COMUNIDAD DE MADRID',
-                    'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'],
+      comunidades : ["Andalucía","Aragón","Cantabria","Castilla la Mancha","Castilla y León","Cataluña","Ceuta","Comunidad de Madrid",
+                     "Comunidad Foral de Navarra","Comunidad Valenciana","Extremadura","Galicia","Islas Baleares","Islas Canarias",
+                     "La Rioja","Melilla","Pais Vasco","Principado de Asturias","Región de Murcia"],
+
 
     }
 
   },
 
   methods: {
+    fav(cod) {
+      if (document.getElementById(cod).src == require("../assets/fav.png")) {
+        // Quitar el sitio con codigo cod de sitios deseados
+        this.sitios_deseados[0].quitar.push(cod);
+        document.getElementById(cod).src = require("../assets/unfav.png");
+      }
+      else if (document.getElementById(cod).src == require("../assets/unfav.png")) {
+        // Poner el sitio con codigo cod en sitios deseados
+        var index = this.sitios_deseados[0].quitar.indexOf(cod);
+        if (index !== -1) this.sitios_deseados[0].quitar.splice(index, 1);
+
+        document.getElementById(cod).src = require("../assets/fav.png");
+      }
+      console.log(this.sitios_deseados[0].quitar)
+    },
 
     upload(){
         this.$router.push('/userboard/upload');
@@ -264,6 +299,31 @@ export default {
       }
     }
   },
+  async beforeDestroy() {
+    console.log("me van a cerrar D:");
+    console.log(this.sitios_deseados);
+
+    var update = 0
+    for (var i=0; i<this.sitios_deseados[0].quitar.length; i++)
+    {
+      update = 1;
+      var index = this.sitios_deseados[0].sitios.indexOf(this.sitios_deseados[0].quitar[i]);
+      if (index !== -1) this.sitios_deseados[0].sitios.splice(index, 1);
+    }
+
+    if (update == 1)
+    {
+      try {
+        await this.$http
+          .post(
+            "http://localhost:8081/update_wished_place/" +
+              JSON.parse(localStorage.getItem("user")).mail + "/" + this.sitios_deseados[0].sitios
+          )
+      }catch(err){}
+    }
+
+  },
+
 
   async mounted() {
     this.subir_foto = 0;
@@ -292,9 +352,12 @@ export default {
           }
 
           this.sitios_visitados_fotos = response.data[1];
-          this.sitios_deseados[0].sitios = response.data[2];
+          this.sitios_deseados[0].sitios = response.data[2][0].split(',');
+
         });
     } catch (err) {}
+
+
   },
 
   components: {

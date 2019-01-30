@@ -84,6 +84,27 @@
     position: relative;
     top:5px;
   }
+
+  .left15 {
+    position: relative;
+    left: -15px;
+  }
+
+  #icon_desc{
+    opacity: 0.4;
+  }
+
+  #icon_desc p{
+    margin-left: 5px;
+    font-size: 14px;
+  }
+
+  .consejo{
+    border-radius: 10px;
+    background-color: lightgrey;
+    padding: 15px 15px 0px 15px;
+  }
+
 </style>
 
 <template>
@@ -94,16 +115,17 @@
         <b-row>
           <b-col cols="9" id="mis_sitios">
             <b-row>
-              <b-col>
                 <h2>{{ sitios_visitados[0].nombre }}</h2>
-              </b-col>
-              <b-col cols="1">
-                <img @click="upload()" width="20px" src="../upload.png" alt="cerrar">
-              </b-col>
+            </b-row>
+            <b-row id="icon_desc">
+                <img @click="upload()" width="18px" height="18px" src="../upload.png" alt="cerrar">
+                <p> Subir una foto </p>
             </b-row>
 
-            <b-row>
-              <p>{{sitios_visitados[0].descripcion }}</p>
+            <b-row v-if="sitios_visitados[0].sitios.length == 0">
+              <b-col cols="9" class="consejo">
+                <p>{{sitios_visitados[0].descripcion }}</p>
+              </b-col>
             </b-row>
             <b-row >
               <div v-for="(sitio,index) in sitios_visitados[0].sitios" :key="index">
@@ -120,6 +142,20 @@
           <b-col id="futuros sitios" class="w-100">
             <b-row>
               <h2>Lugares deseados</h2>
+            </b-row>
+            <b-row v-if="sitios_deseados[0].sitios.length == 0">
+              <b-col class="consejo">
+                <b-row>
+                  <b-col>
+                    <p>{{sitios_deseados[0].descripcion }}</p>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                   <p> Añade tus destinos deseados desde en 'Mis sitios'.</p>
+                 </b-col>
+                </b-row>
+              </b-col>
             </b-row>
             <b-row class="w-100">
               <b-list-group class="w-100" >
@@ -176,15 +212,15 @@ export default {
         {
           nombre: "Mis Sitios",
           descripcion:
-            "Aquí aparecerán los lugares en los que has etiquetado tus fotos",
+            "Los lugares en los que etiquetas tus fotos son 'Tus sitios'. ¡Sube una foto para probar!",
           sitios: []
         }
       ],
       sitios_deseados: [
         {
-          nombre: "Mis Sitios",
+          nombre: "Destinos deseados",
           descripcion:
-            "Tus lugarea deseados son aquellos destinos a los que deseas viajar próximamente. Añade ",
+            "Tus destinos deseados son aquellos lugares a los que deseas viajar próximamente.",
           sitios: [],
           quitar: [],
         }
@@ -328,7 +364,7 @@ export default {
             "http://localhost:8081/update_wished_place/" +
               JSON.parse(localStorage.getItem("user")).mail + "/" + "empty"
           )
-        }  
+        }
       }catch(err){}
     }
 
@@ -364,7 +400,7 @@ export default {
           if(response.data[1].length != 0){
             this.sitios_visitados_fotos = response.data[1];
           }
-          
+
           this.sitios_deseados[0].sitios = response.data[2][0].split(',');
 
         });

@@ -68,8 +68,12 @@
     background-color: blueviolet;
   }
 
-
-
+  .c {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    text-align: left;
+  }
 
 .imagen {
   width: 300px;
@@ -98,10 +102,10 @@
             </b-row>
             <b-row >
               <div v-for="(sitio,index) in sitios_visitados[0].sitios" :key="index">
-                <div class="card" style="width: 16rem;" @click="route(sitio)">
+                <div class="card" style="width: 16rem;" @click="route(sitio.cod)">
                   <img class="card-img-top" :src="sitios_visitados_fotos[index]" alt="Card image">
-                  <div class="card-body">
-                    <p class="card-text">{{ sitio }}</p>
+                  <div class="card-body c">
+                    <p class="card-text">{{ sitio.nombre }}</p>
                   </div>
                 </div>
               </div>
@@ -163,29 +167,23 @@ export default {
             "Aquí aparecerán los lugares en los que has etiquetado tus fotos",
           sitios: []
         }
-      ]
+      ],
+
+      comunidades : ['ANDALUCIA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
+                    'GALICIA','LA RIOJA','CANTABRIA',
+                    'CASTILLA Y LEÓN','CATALUÑA','COMUNIDAD VALENCIANA',
+                    'CASTILLA LA MANCHA','EXTREMADURA','REGIÓN DE MURCIA','COMUNIDAD DE MADRID',
+                    'CEUTA','MELILLA','COMUNIDAD FORAL DE NAVARRA'],
+
     }
-  
+
   },
 
   methods: {
-    log_out(){
-      window.localStorage.clear();
-      this.mail = ""
-      this.user_ = ""
-      this.name = ""
-      this.$router.push("/");
-    },
 
     upload(){
         this.$router.push('/userboard/upload');
         this.subir_foto = 1;
-    },
-
-    get_photo(index){
-      console.log(this.sitios_visitados_fotos[index]);
-      return "http//:localhost:3000/static/prueba/CANTABRIA/coche3.jpg";
-      //return this.sitios_visitados_fotos[index];
     },
 
     route(lugar){
@@ -281,7 +279,18 @@ export default {
         .get("http://localhost:8081/userboard/" + this.mail)
         .then(response => {
           this.user_data = response.data;
-          this.sitios_visitados[0].sitios = response.data[0];
+
+          var codigos = response.data[0];
+          for (var i=0; i<codigos.length; i++)
+          {
+            var sitio_visitado = {
+                nombre : this.comunidades[codigos[i]],
+                cod :    codigos[i]
+            };
+
+            this.sitios_visitados[0].sitios.push(sitio_visitado)
+          }
+
           this.sitios_visitados_fotos = response.data[1];
           this.sitios_deseados[0].sitios = response.data[2];
         });

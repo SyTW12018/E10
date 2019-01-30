@@ -314,11 +314,21 @@ export default {
     if (update == 1)
     {
       try {
-        await this.$http
+        if(this.sitios_deseados[0].sitios.length > 0){
+          console.log("Entra en el if del userboard")
+          await this.$http
           .post(
             "http://localhost:8081/update_wished_place/" +
               JSON.parse(localStorage.getItem("user")).mail + "/" + this.sitios_deseados[0].sitios
           )
+        }
+        else{
+          await this.$http
+          .post(
+            "http://localhost:8081/update_wished_place/" +
+              JSON.parse(localStorage.getItem("user")).mail + "/" + "empty"
+          )
+        }  
       }catch(err){}
     }
 
@@ -351,7 +361,10 @@ export default {
             this.sitios_visitados[0].sitios.push(sitio_visitado)
           }
 
-          this.sitios_visitados_fotos = response.data[1];
+          if(response.data[1].length != 0){
+            this.sitios_visitados_fotos = response.data[1];
+          }
+          
           this.sitios_deseados[0].sitios = response.data[2][0].split(',');
 
         });

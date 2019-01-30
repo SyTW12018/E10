@@ -220,11 +220,23 @@ export default {
 
     // BACKEND:
     try {
-      await this.$http
-        .post(
-          "http://localhost:8081/update_wished_place/" +
-            JSON.parse(localStorage.getItem("user")).mail + "/" + this.sitios_deseados
-        )
+      console.log(this.sitios_deseados.length)
+        if(this.sitios_deseados.length > 0){
+          console.log("Entra en el if del userboard")
+          await this.$http
+          .post(
+            "http://localhost:8081/update_wished_place/" +
+              JSON.parse(localStorage.getItem("user")).mail + "/" + this.sitios_deseados
+          )
+        }
+        else{
+          console.log("Entra en el else del userboard")
+          await this.$http
+          .post(
+            "http://localhost:8081/update_wished_place/" +
+              JSON.parse(localStorage.getItem("user")).mail + "/" + "empty"
+          )
+        }
     }catch(err){}
   },
 

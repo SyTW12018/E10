@@ -415,6 +415,12 @@ app.get("/userboard/:mail", async (req, res) => {
         res.send(enviar);
       }
     }
+    else{
+      response.push([])
+      response.push([])
+      response.push(doc.wished_places);
+      res.send(response);
+    }
 
   });
 });
@@ -459,7 +465,24 @@ app.get("/get_wished_place/:mail/", async (req, res) => {
 });
 
 app.post("/update_wished_place/:mail/:sites", async (req, res) => {
+  console.log("dentro del update_wished: " + req.params.sites)
   console.log(req.params.sites);
+  try{
+    if(req.params.sites != "empty"){
+      UserData.findOneAndUpdate({mail:req.params.mail},{wished_places:req.params.sites}, function(err,doc){
+        res.send("OK");
+      });
+    }else{
+      UserData.findOneAndUpdate({mail:req.params.mail},{wished_places: []}, function(err,doc){
+        res.send("OK");
+      });
+    }   
+  }catch(err){console.log(err)}
+});
+
+/*
+app.post("/update_wished_place/:mail/", async (req, res) => {
+  console.log("dentro del update_wished vacío")
   try{
     if(req.params.sites != undefined){
       UserData.findOneAndUpdate({mail:req.params.mail},{wished_places:req.params.sites}, function(err,doc){
@@ -469,7 +492,7 @@ app.post("/update_wished_place/:mail/:sites", async (req, res) => {
     
   }catch(err){console.log(err)}
 });
-
+*/
 
 
 /**
@@ -713,14 +736,45 @@ app.post("/delete_Photo/:mail", (req, res) => {
 
   for(var i = 0; i < req.body.delete_array.length; i++){
     try{
-      fs.unlinkSync(__dirname.split("server")[0] + req.body.delete_array[i].src.slice(1));
+      var photoName = __dirname.split("server")[0] + req.body.delete_array[i].src.slice(1)
+      try{
+        fs.unlinkSync(__dirname.split("server")[0] + req.body.delete_array[i].src.slice(1));
+      }
+      catch(err){
+
+      }      
       var folderArray = (__dirname.split("server")[0] + req.body.delete_array[i].src.slice(1)).split("/")
       var folderName = ""
       for (var j = 0; j < (folderArray.length - 1); j++){
         folderName += folderArray[j];
         folderName += "/"
       }
-      console.log(folderName)
+      
+
+      UserData.findOne({ mail: req.params.mail }, function (err, doc) {
+        if(err){
+          console.log(err)
+        }
+        else{
+          PlaceData.findOneAndUpdate({ place: folderArray[folderArray.length - 2] },
+            { $pull: {
+                content: {
+                  user_id: doc._id,
+                  photo: photoName
+                }
+              }
+            },
+            function (err, doc) {
+              if (err) {
+                console.log("error al hacer el update" + err);
+              }
+            }
+          );
+        }          
+      });
+      
+
+
       fs.readdir(folderName, function(err, files) {
         if (err) {
            // some sort of error
@@ -978,39 +1032,44 @@ app.get("/wished_groups/:mail/", async (req, res) => {
 
   try{
     await UserData.findOne({ mail: req.params.mail }, async function(err, doc) {
-      var sitios_visitados = doc.wished_places[0].split(',')
-      for (var j = 0; j < sitios_visitados.length; j++) {
-        try {
-          await GroupTravel.find({ place: comunidades[parseInt(sitios_visitados[j])] }, function(err, docs){
-            if (docs != null) {
-              Object.assign(aux,{place: comunidades[parseInt(sitios_visitados[j])]});
-              Object.assign(aux,{numero_fechas: docs.length});
-              Object.assign(aux,{base: true})
-              Object.assign(aux,{fecham: false})
-              
-              var date_array = []
-              for(var i = 0; i<docs.length; i++){
-                var date_ = {}
-                Object.assign(date_, {camuflado: false})
-                Object.assign(date_, {fecha:docs[i].date_ini.toLocaleDateString('es-ES', options)})
-                Object.assign(date_, {fecha_f: docs[i].date_fini.toLocaleDateString('es-ES', options)})
-                Object.assign(date_, {personas:docs[i].members.length})
-                Object.assign(date_, {members:docs[i].members})
-                Object.assign(date_, {id: docs[i]._id})
-                date_array.push(date_)
+      if(doc.wished_places.length != 0){
+        var sitios_visitados = doc.wished_places[0].split(',')
+        for (var j = 0; j < sitios_visitados.length; j++) {
+          try {
+            await GroupTravel.find({ place: comunidades[parseInt(sitios_visitados[j])] }, function(err, docs){
+              if (docs != null) {
+                Object.assign(aux,{place: comunidades[parseInt(sitios_visitados[j])]});
+                Object.assign(aux,{numero_fechas: docs.length});
+                Object.assign(aux,{base: true})
+                Object.assign(aux,{fecham: false})
+                
+                var date_array = []
+                for(var i = 0; i<docs.length; i++){
+                  var date_ = {}
+                  Object.assign(date_, {camuflado: false})
+                  Object.assign(date_, {fecha:docs[i].date_ini.toLocaleDateString('es-ES', options)})
+                  Object.assign(date_, {fecha_f: docs[i].date_fini.toLocaleDateString('es-ES', options)})
+                  Object.assign(date_, {personas:docs[i].members.length})
+                  Object.assign(date_, {members:docs[i].members})
+                  Object.assign(date_, {id: docs[i]._id})
+                  date_array.push(date_)
+                }
+                Object.assign(aux, {date: date_array})
+                response.push(aux)
+                aux = {}
               }
-              Object.assign(aux, {date: date_array})
-              response.push(aux)
-              aux = {}
-            }
-          });
-        } 
-        catch (err) {
-          console.log(err);
-        }        
+            });
+          } 
+          catch (err) {
+            console.log(err);
+          }        
+        }
+        //console.log(response)
+        res.send(response);
       }
-      //console.log(response)
-      res.send(response);
+      else{
+        res.send(response)
+      }
     });
     
   }

@@ -22,7 +22,7 @@
   display: table-cell;
   vertical-align: middle;
 }
-.contenedor {
+.contenedor1 {
   width: 80%;
   margin: 0px auto;
   padding: 20px 30px;
@@ -53,7 +53,7 @@
 <template>
   <div class="fondo">
     <div class="cuadrado">
-      <div class="contenedor">
+      <div class="contenedor1">
         <div id="lugar" class="w-100">
           <b-row>
             <b-col>

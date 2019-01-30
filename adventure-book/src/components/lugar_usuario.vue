@@ -22,7 +22,7 @@
   display: table-cell;
   vertical-align: middle;
 }
-.contenedor {
+.contenedor2 {
   width: 80%;
   margin: 0px auto;
   padding: 20px 30px;
@@ -59,7 +59,7 @@
 <template>
   <div class="fondo">
     <div class="cuadrado">
-      <div class="contenedor">
+      <div class="contenedor2">
         <div id="lugar" class="w-100">
           <b-row>
             <b-col>
@@ -139,7 +139,7 @@ export default {
       }
       catch(err){
         console.log(err)
-      }    
+      }
   },
 
   async mounted() {

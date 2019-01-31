@@ -131,9 +131,9 @@
             <b-row>
                 <h2>{{ sitios_visitados[0].nombre }}</h2>
             </b-row>
-            <b-row id="icon_desc">
-                <img @click="upload()" width="18px" height="18px" src="../upload.png" alt="cerrar">
-                <p @click="upload()" > Subir una foto </p>
+            <b-row id="icon_desc" @click="upload()">
+                <img  width="18px" height="18px" src="../upload.png" alt="cerrar">
+                <p> Subir una foto </p>
             </b-row>
 
             <b-row v-if="sitios_visitados[0].sitios.length == 0">

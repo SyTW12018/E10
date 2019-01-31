@@ -162,6 +162,7 @@ body {
 </style>
 
 <template>
+  <!-- Este componente se dedicará a la parte de viajes que el usuario puede realizar o crear -->
   <div class="main">
     <transition v-if="cuestionario">
       <div class="fondo">
@@ -515,11 +516,12 @@ export default {
     },
 
 	methods: {
-
+      /* Permite cambiar el valor de miembros, ya que si esta true te muestra los miembros participantes a ese viaje y a false no te muestra nada */
       cambiar_estado: function(objecto,vector){
         this.miembros=false;
       },
 
+      /* Este metodo añade a una persona que se ha apuntado a uno de los viajes propuestos */
 			personaapuntada: async function(object,vector){
         this.aux2 =[];
         this.aux = [];
@@ -546,7 +548,6 @@ export default {
         if(cont==this.futuros_viajes.length){
            this.futuros_viajes.push({place:object.place,numero_fechas:1,fecham:false,base:true,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas, id:vector.id}]});
         }
-        console.log(this.futuros_viajes)
         try {
           var usermail = JSON.parse(localStorage.getItem("user")).mail
           await this.$http.post("http://localhost:8081/follow_group/" + usermail +"/"+  vector.id)
@@ -556,6 +557,7 @@ export default {
         } catch(err) {}
       },
 
+      /* Esta funcion permite eliminar a un usuario que se ha desapuntado del viaje */
 			personadesapuntada: async function(object,vector){
         vector.personas = vector.personas-1;
         var cont=0;
@@ -586,7 +588,8 @@ export default {
           });
         } catch(err) {}
       },
-
+    
+      /* Esta funcion te permite añadir un nuevo viaje a que el propio usuario que lo creo estará apuntado y se mostrará a los otros usuarios */
       nuevoviaje: async function(){
         var cont = 0;
         var options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -625,7 +628,7 @@ export default {
       },
       
     
-
+    /* Esta funcion permite que cuando una fecha ya ha sido seleccionada por el usuario se ponga a false y asi no la muestre*/
     mostrarfechas: function(object){
       object.fecham=!object.fecham;
       for (var i=0;i<object.date.length;i++){

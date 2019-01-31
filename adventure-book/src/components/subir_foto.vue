@@ -14,6 +14,7 @@
   background: lightskyblue;
 }
 .dropzone .call-to-action {
+  width: inherit;
   font-size: 1.2rem;
   text-align: center;
   padding: 70px;
@@ -23,10 +24,13 @@
   padding: 60px 10px;
 }
 .input-field {
+  left: 0;
+  top: 0;
+  position: absolute;
+  background-color: red;
   opacity: 0;
   width: 100%;
-  height: 200px;
-  position: absolute;
+  height: 100%;
   cursor: pointer;
 }
 .delete {
@@ -65,10 +69,15 @@
   border: solid white;
   margin-top: 20px;
 }
-
 .error{
   color: red;
   font-weight: normal;
+}
+
+@media (max-width: 720px) {
+  .contenedor{
+    width: 90%;  
+  }
 }
 
 </style>
@@ -85,15 +94,17 @@
             <img @click="close()" src="../close.png" alt="cerrar">
           </b-col>
         </b-row>
-        <form @submit.prevent="sendFiles" enctype="multipart/form-data">
-          <div class="dropzone">
-            <input multiple type="file" ref="files" class="input-field" @change="selectFile">
+        <form @submit.prevent="sendFiles" enctype="multipart/form-data" class="w-100">
+          <b-row class="w-100">
+            <div class="dropzone w-100" >
+              <input multiple type="file" ref="files" class="input-field" @change="selectFile">
 
-            <p v-if="!uploading" class="call-to-action">Arrasta tus archivos</p>
-            <p v-if="uploading" class="progress-bar">
-              <progress class="progress is-primary" :value="progress" max="100">{{progress}}%</progress>
-            </p>
-          </div>
+              <p v-if="!uploading" class="call-to-action">Arrasta tus archivos</p>
+              <p v-if="uploading" class="progress-bar">
+                <progress class="progress is-primary" :value="progress" max="100">{{progress}}%</progress>
+              </p>
+            </div>
+          </b-row>
 
           <div class="field">
             <div v-for="(file, index) in files" :key="index" class="level">

@@ -113,7 +113,10 @@
           <br>
           <b-row align-h="between">
             <b-col cols="4">
-              <b-form-select v-model="place_" :options="options" class="mb-3">
+              <b-form-select v-model="place_" :options="options" >
+		            <template slot="first">
+                  <option :value="null" disabled> Lugar </option>
+                </template>
               </b-form-select>
             </b-col>
             <b-col cols="3">
@@ -139,7 +142,6 @@ export default {
     return {
       place_: null,
       options: [
-        { value: null, text: 'Lugar' },
         { value: '0', text: 'Andalucía' },
         { value: '1', text: 'Aragón' },
         { value: '2', text: 'Cantabria' },

@@ -16,6 +16,7 @@
     font-size: 14px;
     text-align: center;
     border-radius: 0px;
+    width: 16rem;
   }
 
   .card:hover {
@@ -72,7 +73,7 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    text-align: left;
+    text-align: center;
   }
 
   .imagen {
@@ -105,6 +106,24 @@
     padding: 15px 15px 0px 15px;
   }
 
+  @media (max-width: 720px) {
+    .card {
+      width: 9.5rem;
+      font-size: 12px;
+    }
+    .main {
+      padding: 30px;
+    }
+    #mis_sitios{
+      margin-top: 30px;
+    }
+    #futuros_sitios{
+      margin-top: 30px;
+    }
+
+  }
+
+
 </style>
 
 <template>
@@ -113,7 +132,7 @@
       <div class="container">
           <router-view></router-view>
         <b-row>
-          <b-col cols="9" id="mis_sitios">
+          <b-col lg="9" id="mis_sitios">
             <b-row>
                 <h2>{{ sitios_visitados[0].nombre }}</h2>
             </b-row>
@@ -129,7 +148,7 @@
             </b-row>
             <b-row >
               <div v-for="(sitio,index) in sitios_visitados[0].sitios" :key="index">
-                <div class="card" style="width: 16rem;" @click="route(sitio.cod)">
+                <div class="card" @click="route(sitio.cod)">
                   <img class="card-img-top" :src="sitios_visitados_fotos[index]" alt="Card image">
                   <div class="card-body c">
                     <p class="card-text">{{ sitio.nombre }}</p>
@@ -139,9 +158,9 @@
             </b-row>
           </b-col>
 
-          <b-col id="futuros sitios" class="w-100">
+          <b-col id="futuros_sitios" class="w-100">
             <b-row>
-              <h2>Lugares deseados</h2>
+              <h2> {{ sitios_deseados[0].nombre}} </h2>
             </b-row>
             <b-row v-if="sitios_deseados[0].sitios.length == 0">
               <b-col class="consejo">

@@ -50,14 +50,6 @@
     padding: 60px 10px;
   }
 
-  .input-field {
-    opacity: 0;
-    width: 100%;
-    height: 200px;
-    position: absolute;
-    cursor: pointer;
-  }
-
   .imagen {
     width: 300px;
     height: 200px;
@@ -105,7 +97,10 @@
     background-color: lightgrey;
     padding: 15px 15px 0px 15px;
   }
-
+  .card-body {
+    padding: 5px 20px 5px 20px;
+    height: 55px;
+  }
   @media (max-width: 720px) {
     .card {
       width: 9.5rem;

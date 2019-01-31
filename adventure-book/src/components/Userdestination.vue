@@ -125,7 +125,7 @@ body {
 }
 
 .form{
-  margin:12px;
+  margin:8px;
   border: 2px solid rgb(84, 194, 195);
 }
 
@@ -159,9 +159,17 @@ body {
   margin-bottom: 20px;
 }
 
+.consejo{
+  border-radius: 10px;
+  background-color: lightgrey;
+  padding: 15px 15px 0px 15px;
+  margin-bottom:12px;
+}
+
 </style>
 
 <template>
+  <!-- Este componente se dedicará a la parte de viajes que el usuario puede realizar o crear -->
   <div class="main">
     <transition v-if="cuestionario">
       <div class="fondo">
@@ -177,10 +185,13 @@ body {
             </b-col></b-row>
             <div class="contenido3">
               <h4> Añadir lugar </h4>
-              <b-form-select v-model="place_" :options="options" class="mb-3">
+              <b-form-select class="form" v-model="place_" :options="options">
+                <template slot="first">
+                  <option :value="null" disabled>-- Please select a place --</option>
+                </template>
               </b-form-select>
-              <b-form-input class= "form" type="date" placeholder="Fecha viaje" v-model="fecha_"></b-form-input>
-              <b-form-input class= "form" type="date" placeholder="Fecha final viaje" v-model="fechaf_"></b-form-input>
+              <b-form-input class= "form" type="date" v-model="fecha_"></b-form-input>
+              <b-form-input class= "form" type="date" v-model="fechaf_"></b-form-input>
               <b-button type="submit" class="boton" v-on:click= "nuevoviaje">
                 Añadir
               </b-button>
@@ -222,6 +233,11 @@ body {
         <b-col cols="6" id="sitio_deseados">
           <b-row>
             <h2>Destinos deseados</h2>
+          </b-row>
+          <b-row v-if="destinos_deseados.length==0">
+            <b-col cols="9" class="consejo">
+              <p> "Tus destinos deseados son aquellos lugares a los que deseas viajar." </p>
+            </b-col>
           </b-row>
           <div v-for="sitio in destinos_deseados" :key="sitio" class="contenido" v-if="sitio.base">
             <b-row>
@@ -274,6 +290,11 @@ body {
           <b-row class="mb-3">
             <h2 class="Titulo">Este mes</h2>
           </b-row>
+          <b-row v-if="este_mes.length==0">
+            <b-col cols="9" class="consejo">
+              <p> "Aqui aparecerán los viajes organizados para este mes." </p>
+            </b-col>
+          </b-row>
           <div v-for="sitio in este_mes" :key="sitio" class="contenido" v-if="sitio.base">
             <b-row>
               <div @click="mostrarfechas(sitio)">
@@ -324,6 +345,11 @@ body {
           </div>
           <b-row>
             <h2>Todos los viajes organizados</h2>
+          </b-row>
+          <b-row v-if="todo_organizado.length==0">
+            <b-col cols="9" class="consejo">
+              <p> "Aqui aparecerán todos los viajes que se están organizando." </p>
+            </b-col>
           </b-row>
           <div v-for="sitio in todo_organizado" :key="sitio" class="contenido" v-if="sitio.base">
             <b-row>
@@ -383,6 +409,11 @@ body {
               <img  class="card-img-top Plus" src="../assets/add.png">
               Añade un viaje
             </div>
+          </b-row>
+          <b-row v-if="futuros_viajes.length==0">
+            <b-col cols="9" class="consejo">
+              <p> "Aqui aparecerán tus futuros viajes en los que vas a participar" </p>
+            </b-col>
           </b-row>
           <div v-for="sitio in futuros_viajes" :key="sitio" class="contenido" v-if="sitio.base">
             <b-row>
@@ -454,9 +485,8 @@ export default {
         aux: [],
 
         aux2:[],
-
+        place_:null,
         options: [
-        { value: null, text: 'Lugar' },
         { value: 'ANDALUCÍA', text: 'Andalucía' },
         { value: 'ARAGÓN', text: 'Aragón' },
         { value: 'CANTABRIA', text: 'Cantabria' },
@@ -495,7 +525,7 @@ export default {
           {place: 'Cantabria', pais: 'España',numero_fechas:2,codigo:'3',base:true,fecham:false,date:[{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 3 de Marzo de 2019',fecha_f: '28 de Marzo de 2019', personas:3},{añadir:false,members:["juan@g.com","david@g.com"],cantidad:true,camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
         ],
         */
-        todo_organizado: [], 
+        todo_organizado: [],
         /*
 				todo_organizado: [
           {correcto:false,place: 'Venecia', pais: 'Italia',numero_fechas:2,fecham:false,base:true,codigo:'5',date:[{añadir:false,members:["juan@g.com","david@g.com"],camuflado:false,fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:5},{añadir:false,members:["juan@g.com","david@g.com"],fecha:' 27 de Marzo de 2019',fecha_f: '5 de Abril de 2019', personas:3}]},
@@ -515,11 +545,12 @@ export default {
     },
 
 	methods: {
-
+      /* Permite cambiar el valor de miembros, ya que si esta true te muestra los miembros participantes a ese viaje y a false no te muestra nada */
       cambiar_estado: function(objecto,vector){
         this.miembros=false;
       },
 
+      /* Este metodo añade a una persona que se ha apuntado a uno de los viajes propuestos */
 			personaapuntada: async function(object,vector){
         this.aux2 =[];
         this.aux = [];
@@ -546,7 +577,6 @@ export default {
         if(cont==this.futuros_viajes.length){
            this.futuros_viajes.push({place:object.place,numero_fechas:1,fecham:false,base:true,date:[{camuflado:false,fecha:vector.fecha,fecha_f:vector.fecha_f, personas:vector.personas, id:vector.id}]});
         }
-        console.log(this.futuros_viajes)
         try {
           var usermail = JSON.parse(localStorage.getItem("user")).mail
           await this.$http.post("http://localhost:8081/follow_group/" + usermail +"/"+  vector.id)
@@ -556,6 +586,7 @@ export default {
         } catch(err) {}
       },
 
+      /* Esta funcion permite eliminar a un usuario que se ha desapuntado del viaje */
 			personadesapuntada: async function(object,vector){
         vector.personas = vector.personas-1;
         var cont=0;
@@ -587,45 +618,48 @@ export default {
         } catch(err) {}
       },
 
+      /* Esta funcion te permite añadir un nuevo viaje a que el propio usuario que lo creo estará apuntado y se mostrará a los otros usuarios */
       nuevoviaje: async function(){
         var cont = 0;
         var options = { year: 'numeric', month: 'long', day: 'numeric' };
-        if ((this.place_!= undefined) && (this.fecha_!= undefined) && (this.fechaf_!= undefined)){
-          var new_id = ""
-          try {
-            var usermail = JSON.parse(localStorage.getItem("user")).mail
-            await this.$http.post("http://localhost:8081/add_group/" + usermail +"/"+  this.place_ +"/"+ this.fecha_ +"/"+ this.fechaf_)
-            .then(response => {
-              new_id = response.data
-              console.log(response.data);
-          });
-          } 
-          catch(err) {
+        if ((this.place_== null)){
+          alert("No pueden existir campos vacíos")
+        }else{
+          if((this.fecha_>this.fechaf_) || (this.fecha_==this.fechaf_)){
+            alert("Las fechas introducidas son incorrectas")
+          }else{
+            var new_id = ""
+            try {
+              var usermail = JSON.parse(localStorage.getItem("user")).mail
+              await this.$http.post("http://localhost:8081/add_group/" + usermail +"/"+  this.place_ +"/"+ this.fecha_ +"/"+ this.fechaf_)
+              .then(response => {
+                new_id = response.data
+                console.log(response.data);
+            });
+            }
+            catch(err) {
 
-          }
-          this.cuestionario=!this.cuestionario;
-          for(var i=0;i<this.futuros_viajes.length;i++){
-            if(this.futuros_viajes[i].place==this.place_){
-              this.futuros_viajes[i].date.push({camuflado:false,fecha:(new Date(this.fecha_)).toLocaleDateString('es-ES', options), fecha_f:(new Date(this.fechaf_)).toLocaleDateString('es-ES', options), personas:1, id:new_id});
-              this.futuros_viajes[i].numero_fechas=this.futuros_viajes[i].numero_fechas+1;
-              i=this.futuros_viajes.length;
-            }else{
-              cont++;
+            }
+            this.cuestionario=!this.cuestionario;
+            for(var i=0;i<this.futuros_viajes.length;i++){
+              if(this.futuros_viajes[i].place==this.place_){
+                this.futuros_viajes[i].date.push({camuflado:false,fecha:(new Date(this.fecha_)).toLocaleDateString('es-ES', options), fecha_f:(new Date(this.fechaf_)).toLocaleDateString('es-ES', options), personas:1, id:new_id});
+                this.futuros_viajes[i].numero_fechas=this.futuros_viajes[i].numero_fechas+1;
+                i=this.futuros_viajes.length;
+              }else{
+                cont++;
+              }
+            }
+            if(cont==this.futuros_viajes.length){
+              this.futuros_viajes.push({place:this.place_, fecham:false, numero_fechas:1, mostrar:false, base:true, camuflado:false, date:[{fecha:(new Date(this.fecha_)).toLocaleDateString('es-ES', options), fecha_f:(new Date(this.fechaf_)).toLocaleDateString('es-ES', options), personas:1, id:new_id}]});
             }
           }
-          if(cont==this.futuros_viajes.length){
-            this.futuros_viajes.push({place:this.place_, fecham:false, numero_fechas:1, mostrar:false, base:true, camuflado:false, date:[{fecha:(new Date(this.fecha_)).toLocaleDateString('es-ES', options), fecha_f:(new Date(this.fechaf_)).toLocaleDateString('es-ES', options), personas:1, id:new_id}]});
-          }
-          //this.todo_organizado.push({place:this.place_,pais: 'España',numero_fechas:1,mostrar:false,base:true,camuflado:false,codigo:'9',date:[{fecha:this.fecha_,fecha_f:this.fechaf_, personas:1}]});
-          //Creo que no deberia salir aqui, osea deberia añadise a todo organizado menos asi mismo no?
-        }else{
-          alert("No pueden existir campos vacíos")
         }
-        
-      },
-      
-    
 
+      },
+
+
+    /* Esta funcion permite que cuando una fecha ya ha sido seleccionada por el usuario se ponga a false y asi no la muestre*/
     mostrarfechas: function(object){
       object.fecham=!object.fecham;
       for (var i=0;i<object.date.length;i++){
@@ -633,7 +667,7 @@ export default {
       }
     }
   },
-  
+
   async mounted(){
     //if (localStorage.getItem("jwt") == null || localStorage.getItem("jwt") == "undefined"){
       //this.$router.push("/");

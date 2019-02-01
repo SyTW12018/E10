@@ -57,7 +57,7 @@ const sharp = require("sharp");
   * @summary       Conexión a la base de datos
   * @requires      mongoose.connect
  */
-Mongoose.connect("mongodb://localhost:27017/test");
+Mongoose.connect("mongodb://myUserAdmin:abc123@172.16.121.2:27017/test");
 
 //revisar app.use
 //Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');

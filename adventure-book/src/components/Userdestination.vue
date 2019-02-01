@@ -420,9 +420,9 @@ body {
             </div>
           </div>
         </b-col>
-        <b-col class="w-100 contenidofuturo" lg="6" id="proximos_viajes" >
-          <b-row>
-            <h2 >Tus proximos viajes</h2>
+        <b-col ls="6" id="proximos_viajes">
+          <b-row class="Titulo2">
+            <h2>Tus proximos viajes</h2>
           </b-row>
           <b-row>
             <div class="contenido" @click="cuestionario=true">

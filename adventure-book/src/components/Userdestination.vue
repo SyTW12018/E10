@@ -2,12 +2,35 @@
 body {
   background-color: white !important;
 }
-.main {
+
+@media screen and (max-width : 480px) {
+  .Plus{
+    height: 15px !important;
+    width: 15px !important;
+  }
+
+  .Fecha{
+    font-size: 10px !important;
+  }
+}
+
+.blocks {
   padding: 30px;
   background-color: white;
 }
 
 .contenido {
+  background-color: white;
+  color: #54c2c3;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+  border-width: 2px;
+  border: solid white;
+  margin-bottom: 20px;
+}
+
+.contenidofuturo {
   background-color: white;
   color: #54c2c3;
   font-weight: bold;
@@ -48,9 +71,11 @@ body {
   width: 20px;
 }
 
-.Echis {
-  height: 17px;
-  width: 17px;
+.cuadro {
+  margin-left:230px;
+  margin-top:-10px;
+  height: 20px;
+  width: 20px;
 }
 
 .avion{
@@ -67,7 +92,7 @@ body {
   background-color:rgb(84, 194, 195, 0.2);
 }
 
-.card {
+.tarjeta {
   width: 1.5rem;
 }
 
@@ -141,6 +166,7 @@ body {
   margin-top:8px;
 }
 
+
 .participante{
   color: rgb(84, 194, 195,0.7);
   font-weight: bold;
@@ -149,17 +175,11 @@ body {
   margin-bottom: 20px;
 }
 
-.Equis{
-  margin-left:230px;
-  margin-top:-10px;
-}
-
 .Titulo2{
   text-align: center;
-  margin-bottom: 20px;
 }
 
-.consejo{
+.advice{
   border-radius: 10px;
   background-color: lightgrey;
   padding: 15px 15px 0px 15px;
@@ -170,15 +190,15 @@ body {
 
 <template>
   <!-- Este componente se dedicará a la parte de viajes que el usuario puede realizar o crear -->
-  <div class="main">
+  <div class="blocks">
     <transition v-if="cuestionario">
       <div class="fondo">
         <div class="cuadrado">
           <div class="contenedor">
-            <b-row><b-col class="Equis">
+            <b-row><b-col>
               <img
                 @click="cuestionario=false"
-                class="card-img-top Plus"
+                class="card-img-top cuadro"
                 src="../assets/echis.png"
                 alt="Card image"
               >
@@ -228,14 +248,14 @@ body {
       </div>
     </transition>
 
-    <div class="container">
+    <div>
       <b-row>
-        <b-col cols="6" id="sitio_deseados">
-          <b-row>
+        <b-col ls="6" id="sitio_deseados">
+          <b-row class="Titulo2">
             <h2>Destinos deseados</h2>
           </b-row>
           <b-row v-if="destinos_deseados.length==0">
-            <b-col cols="9" class="consejo">
+            <b-col lg="9" class="advice">
               <p> "Tus destinos deseados son aquellos lugares a los que deseas viajar." </p>
             </b-col>
           </b-row>
@@ -270,8 +290,8 @@ body {
                   <b-row>
                     <b-col cols="1" class="margin"> {{fech.personas}} </b-col>
                     <b-col cols="1">
-                      <div class="card">
-                        <img class="card-img-top" src="../assets/person.png" alt="Card image">
+                      <div class="tarjeta">
+                        <img class="card-img-top Plus" src="../assets/person.png" alt="Card image">
                       </div>
                     </b-col>
                     <b-col>
@@ -287,11 +307,11 @@ body {
               </b-row>
             </div>
           </div>
-          <b-row class="mb-3">
-            <h2 class="Titulo">Este mes</h2>
+          <b-row >
+            <h2 >Este mes</h2>
           </b-row>
           <b-row v-if="este_mes.length==0">
-            <b-col cols="9" class="consejo">
+            <b-col lg="9" class="advice">
               <p> "Aqui aparecerán los viajes organizados para este mes." </p>
             </b-col>
           </b-row>
@@ -326,8 +346,8 @@ body {
                   <b-row>
                     <b-col cols="1" class="margin"> {{fech.personas}} </b-col>
                     <b-col cols="1">
-                      <div class="card">
-                        <img class="card-img-top" src="../assets/person.png" alt="Card image">
+                      <div class="tarjeta">
+                        <img class="card-img-top Plus" src="../assets/person.png" alt="Card image">
                       </div>
                     </b-col>
                     <b-col>
@@ -347,7 +367,7 @@ body {
             <h2>Todos los viajes organizados</h2>
           </b-row>
           <b-row v-if="todo_organizado.length==0">
-            <b-col cols="9" class="consejo">
+            <b-col lg="9" class="advice">
               <p> "Aqui aparecerán todos los viajes que se están organizando." </p>
             </b-col>
           </b-row>
@@ -382,8 +402,8 @@ body {
                   <b-row>
                     <b-col cols="1" class="margin"> {{fech.personas}} </b-col>
                     <b-col cols="1">
-                      <div class="card">
-                        <img class="card-img-top" src="../assets/person.png" alt="Card image">
+                      <div class="tarjeta">
+                        <img class="card-img-top Plus" src="../assets/person.png" alt="Card image">
                       </div>
                     </b-col>
                     <b-col>
@@ -400,9 +420,9 @@ body {
             </div>
           </div>
         </b-col>
-        <b-col cols="6" id="proximos_viajes" class="w-100">
+        <b-col class="w-100 contenidofuturo" lg="6" id="proximos_viajes" >
           <b-row>
-            <h2 class="Titulo">Tus proximos viajes</h2>
+            <h2 >Tus proximos viajes</h2>
           </b-row>
           <b-row>
             <div class="contenido" @click="cuestionario=true">
@@ -411,7 +431,7 @@ body {
             </div>
           </b-row>
           <b-row v-if="futuros_viajes.length==0">
-            <b-col cols="9" class="consejo">
+            <b-col lg="9" class="advice">
               <p> "Aqui aparecerán tus futuros viajes en los que vas a participar" </p>
             </b-col>
           </b-row>
@@ -436,8 +456,8 @@ body {
                   </b-row>
                   <b-row>
                     <col>
-                      <div class="card">
-                        <img class="card-img-top" src="../assets/vije.png" alt="Card image">
+                      <div class="tarjeta">
+                        <img class="card-img-top Plus" src="../assets/vije.png" alt="Card image">
                       </div>
                     </col>
                     <col class="avion">
@@ -456,8 +476,8 @@ body {
                   <b-row>
                     <b-col cols="1" class="margin"> {{fech.personas}} </b-col>
                     <b-col cols="1">
-                      <div class="card">
-                        <img class="card-img-top" src="../assets/person.png" alt="Card image">
+                      <div class="tarjeta">
+                        <img class="card-img-top Plus" src="../assets/person.png" alt="Card image">
                       </div>
                     </b-col>
                     <b-col>

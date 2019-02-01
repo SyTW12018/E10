@@ -25,12 +25,14 @@
   * @requires      cors
   * @requires      morgan
   * @requires      mongoose
+  * @requires      connect-history-api-fallback
  */
 var express = require("express");
 var bodyParse = require("body-parser");
 var cors = require("cors");
 var morgan = require("morgan");
 var Mongoose = require("mongoose");
+var history = require("connect-history-api-fallback")
 /**
   * Módulos para la autentificación y el registro
   * @requires      config
@@ -63,6 +65,7 @@ Mongoose.connect("mongodb://localhost:27017/test");
 //Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
 Mongoose.set("useFindAndModify", false);
 var app = express();
+app.use(history());
 app.use("/uploads", express.static(path.join("/home/sergio/E10/adventure-book", "uploads")));
 app.use(morgan("combined"));
 app.use(bodyParse.urlencoded({ extended: true }));

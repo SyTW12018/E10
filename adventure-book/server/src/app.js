@@ -59,7 +59,8 @@ const sharp = require("sharp");
   * @summary       Conexión a la base de datos
   * @requires      mongoose.connect
  */
-Mongoose.connect("mongodb://localhost:27017/test");
+//Mongoose.connect("mongodb://localhost:27017/test");
+Mongoose.connect("mongodb://admin_ab:admin_ab5@ds261644.mlab.com:61644/heroku_s165j89l")
 
 //revisar app.use
 //Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');

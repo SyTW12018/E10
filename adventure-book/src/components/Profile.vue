@@ -37,6 +37,14 @@ h3 {
   top: 15px;
   visibility: hidden;
 }
+
+@media (max-width: 720px) {
+  .main {
+    padding: 50px;
+  }
+}
+
+
 </style>
 
 <template>

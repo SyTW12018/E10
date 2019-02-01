@@ -76,8 +76,9 @@
 
 @media (max-width: 720px) {
   .contenedor{
-    width: 90%;  
+    width: 90%;
   }
+  
 }
 
 </style>

@@ -23,6 +23,8 @@
   vertical-align: middle;
 }
 .contenedor1 {
+  overflow-y: scroll;
+  height: 80%;
   width: 80%;
   margin: 0px auto;
   padding: 20px 30px;

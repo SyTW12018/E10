@@ -8,6 +8,7 @@ body {
 }
 
 .card {
+  position:relative;
   margin: 0px 8px 8px 0px;
   background-color: #54c2c3;
   color: white;
@@ -16,6 +17,7 @@ body {
   font-size: 14px;
   text-align: center;
   border-radius: 0px;
+  width: 16rem !important;
 }
 
 .card:hover {
@@ -30,7 +32,7 @@ body {
 
 .fav {
   position: absolute;
-  left: 230px;
+  left: 90%;
 }
 
 .c {
@@ -39,6 +41,22 @@ body {
   flex-wrap: wrap;
   text-align: left;
 }
+
+@media (max-width: 720px) {
+  .card {
+    width: 9.5rem !important;
+  }
+  .item{
+    font-size: 12px !important;
+  }
+  .main {
+    padding: 30px;
+  }
+  .fav{
+    left: 80%;
+  }
+}
+
 </style>
 
 <template>
@@ -58,7 +76,7 @@ body {
 
           <b-row>
             <div v-for="(sitio,index) in comunidades_autonomas" :key="index">
-              <div class="card" style="width: 16rem;">
+              <div class="card">
                 <img
                   @click="route(sitio.cod)"
                   class="card-img-top"
@@ -256,14 +274,14 @@ export default {
           "http://localhost:8081/get_wished_place/" +
             JSON.parse(localStorage.getItem("user")).mail
         )
-        .then(response => {  
+        .then(response => {
           if(response.data[0] == undefined){
             this.sitios_deseados = []
           }
           else{
             this.sitios_deseados = response.data[0].split(',');
           }
-          
+
           for (var i = 0; i < this.sitios_deseados.length; i++) {
             this.sitios_deseados[i] = this.sitios_deseados[i].toString();
             document.getElementById(

@@ -9,7 +9,7 @@ script:
 - npm install
 - npm test
 - npm run build
-- cp $TRAVIS_BUILD_DIR/dist usuario@10.6.129.8:/home/usuario
+- cp $TRAVIS_BUILD_DIR/adventure-book/dist usuario@10.6.129.8:/home/usuario
 notifications:
   slack:
     rooms:

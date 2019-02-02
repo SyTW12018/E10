@@ -5,7 +5,7 @@ import Userboard from '../src/components/Userboard.vue'
 
 describe("Userboard.vue", () => {
     
-    it('testing the username', () => {        
+    it('testing the username in userboard', () => {        
         const wrapper = mount(Userboard, {sync: false});
         wrapper.setData({user_:"jc"})
         expect(wrapper.vm.user_).toBe("jc")        

@@ -68,7 +68,8 @@ Mongoose.connect("mongodb://admin_ab:admin_ab5@ds261644.mlab.com:61644/heroku_s1
 Mongoose.set("useFindAndModify", false);
 var app = express();
 app.use(history());
-app.use("/", serveStatic(path.join(__dirname,'/dist')))
+app.use(express.static(__dirname + "/dist/"))
+//app.use("/", serveStatic(path.join(__dirname,'/dist')))
 app.use("/uploads", express.static(path.join("/home/sergio/E10/adventure-book", "uploads")));
 app.use(morgan("combined"));
 app.use(bodyParse.urlencoded({ extended: true }));
@@ -225,11 +226,18 @@ async function seek_places (docs, response, options){
 
 /*Here start de application*/
 
+app.get(/.*/, function(req,res) {
+  res.sendFile(__dirname + "/dist/index.html")
+})
+
+
 app.get("/", (req, res) => {
-  var directorio = __dirname;
+  /*var directorio = __dirname;
   var aux = __dirname.split("server");
   console.log(aux[0]);
   res.sendFile(aux[0] + "/client/" + "index.html");
+  */
+ res.sendFile(__dirname + "/dist/index.html")
 });
 
 /**

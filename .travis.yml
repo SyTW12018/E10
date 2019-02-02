@@ -1,6 +1,12 @@
+language: node_js
+node_js:
+- node
 deploy:
   - provider: script
     skip_cleanup: true
     script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/dist usuario@10.6.129.8:/home/usuario
     on:
       branch: desp-iaas
+before_install:
+- openssl aes-256-cbc -K $encrypted_4adc998b3a13_key -iv $encrypted_4adc998b3a13_iv
+  -in ULL.conf.enc -out ULL.conf -d

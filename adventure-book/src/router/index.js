@@ -10,6 +10,7 @@ Vue.use(Router);
 
 //export default
 let router = new Router({
+  mode: "history",
   routes: [
     {
       path: "/",

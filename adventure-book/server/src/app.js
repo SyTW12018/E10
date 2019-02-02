@@ -25,12 +25,15 @@
   * @requires      cors
   * @requires      morgan
   * @requires      mongoose
+  * @requires      connect-history-api-fallback
  */
 var express = require("express");
+const serveStatic = require("serve-static")
 var bodyParse = require("body-parser");
 var cors = require("cors");
 var morgan = require("morgan");
 var Mongoose = require("mongoose");
+var history = require("connect-history-api-fallback")
 /**
   * Módulos para la autentificación y el registro
   * @requires      config
@@ -57,12 +60,16 @@ const sharp = require("sharp");
   * @summary       Conexión a la base de datos
   * @requires      mongoose.connect
  */
-Mongoose.connect("mongodb://localhost:27017/test");
+//Mongoose.connect("mongodb://localhost:27017/test");
+Mongoose.connect("mongodb://admin_ab:admin_ab5@ds261644.mlab.com:61644/heroku_s165j89l")
 
 //revisar app.use
 //Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
 Mongoose.set("useFindAndModify", false);
 var app = express();
+app.use(history());
+app.use(express.static(__dirname + "/dist/"))
+//app.use("/", serveStatic(path.join(__dirname,'/dist')))
 app.use("/uploads", express.static(path.join("/home/sergio/E10/adventure-book", "uploads")));
 app.use(morgan("combined"));
 app.use(bodyParse.urlencoded({ extended: true }));
@@ -219,11 +226,18 @@ async function seek_places (docs, response, options){
 
 /*Here start de application*/
 
+app.get(/.*/, function(req,res) {
+  res.sendFile(__dirname + "/dist/index.html")
+})
+
+
 app.get("/", (req, res) => {
-  var directorio = __dirname;
+  /*var directorio = __dirname;
   var aux = __dirname.split("server");
   console.log(aux[0]);
   res.sendFile(aux[0] + "/client/" + "index.html");
+  */
+ res.sendFile(__dirname + "/dist/index.html")
 });
 
 /**

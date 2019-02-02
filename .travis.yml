@@ -8,6 +8,9 @@ script:
 - cd adventure-book
 - npm install
 - npm test
+- npm run build
+- cp ./adventure-book/dist usuario@10.6.129.8:/home/usuario/Sh_Files
+- cp ./adventure-book/server usuario@10.6.129
 - cd ..
 - sonar-scanner
 deploy:

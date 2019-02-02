@@ -9,7 +9,7 @@ script:
 - npm install
 - npm test
 - npm run build
-- rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/dist usuario@10.6.129.8:/home/usuario
+- cp adventure-book/dist usuario@10.6.129.8:/home/usuario
 notifications:
   slack:
     rooms:

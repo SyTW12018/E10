@@ -59,7 +59,7 @@ const sharp = require("sharp");
  */
 Mongoose.connect("mongodb://localhost:27017/test");
 
-//revisar app.use
+
 //Mongoose.connect('mongodb://sergioDev:sergio123@172.16.107.2:27017/test');
 Mongoose.set("useFindAndModify", false);
 var app = express();
@@ -107,9 +107,9 @@ var UserData = Mongoose.model("UserData", UserDataSchema);
   * @requires      collection placeData
   * @param         place                  {String}        Nombre del lugar
   * @param         content                {Array}         Vector de contenido del lugar
-  *                content.user_id        {String}        ID del usuario
-  *                content.photo          {String}        Foto del lugar
-  *                content.date           {Date}          Fecha de subida de la foto
+  * @param         content.user_id        {String}        ID del usuario
+  * @param         content.photo          {String}        Foto del lugar
+  * @param         content.date           {Date}          Fecha de subida de la foto
  */
 var PlaceDataSchema = new Schema(
   {
@@ -172,6 +172,10 @@ for(var i = 0; i < comunidades.length; i++){
     data.save()
 }*/
 
+/**
+  * @summary       Función para ayudar a recoger los datos de los grupos del usuario
+  * @param         docs   {Array}   Vector de String con los nombres de los lugares
+ */
 async function seek_places (docs, response, options){
   var in_response = false
   var aux = {}  
@@ -216,8 +220,6 @@ async function seek_places (docs, response, options){
   
   return response
 }
-
-/*Here start de application*/
 
 app.get("/", (req, res) => {
   var directorio = __dirname;
@@ -281,12 +283,10 @@ app.post("/signup", (req, res) => {
   *                2-Uso de bcrypt para comparar su contraseña cifrada
   * @requires      UserData
   * @param         req.body.mail  {String}  Email recogido en Front-End
-  *                req.body.pass  {String}  Contraseña del usuario
+  * @param         req.body.pass  {String}  Contraseña del usuario
  */
 app.post("/login", (req, res) => {
   UserData.findOne({ mail: req.body.mail }, function (err, user) {
-    //Error del servidor 
-    //try catch??
     if (err) {
       console.log(err);
       return res.status(500).send("Problema para encontrar el usuario");
@@ -333,16 +333,14 @@ app.post("/waiting", (req, res) => {
   *                2-Leemos la carpeta de cada lugar para buscar una foto que mostrar
   * @requires      UserData
   * @param         req.body.mail      {String}  Email recogido en Front-End
-  *                doc._id            {String}  ID del usuario
-  *                doc.visited_places {Array}   Vector de lugares visitados por el usuario
+  * @param         doc._id            {String}  ID del usuario
+  * @param         doc.visited_places {Array}   Vector de lugares visitados por el usuario
  */
 app.get("/userboard/:mail", async (req, res) => {
   var aux = [];
   var response = [];
 
   await UserData.findOne({ mail: req.params.mail }, async function (err, doc) {
-    //Server error
-    //try catch??
     if (err) {
       console.log(err);
       return res.status(500).send("Problema para encontrar el usuario");
@@ -429,17 +427,8 @@ app.get("/userboard/:mail", async (req, res) => {
   * @summary       Función para añadir un lugar a favoritos
   * @requires      UserData
   * @param         req.params.mail      {String}  Email recogido en Front-End
-  *                req.params.place     {String}  Nombre del lugar recogido en Front-End
+  * @param         req.params.place     {String}  Nombre del lugar recogido en Front-End
  */
-
-/*app.post("/follow_Wished/:mail/:place", (req, res) => {
-  UserData.findOneAndUpdate({ name: req.params.mail }, { $push: { wished_places: req.params.place } },
-    function(err, doc) {
-
-    }
-  );
-});*/
-
 app.post("/follow_Wished/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate(
     { name: req.params.mail },
@@ -456,6 +445,12 @@ app.post("/follow_Wished/:mail/:place", (req, res) => {
   );
 });
 
+/**
+  * @summary       Función para devolver los lugares deseados
+  * @requires      UserData
+  * @param         req.params.mail      {String}  Email recogido en Front-End
+  * @param         doc.wished_places    {Array}   Lugares deseaos 
+ */
 app.get("/get_wished_place/:mail/", async (req, res) => {  
   try{
     UserData.findOne({mail:req.params.mail}, function(err,doc){
@@ -464,6 +459,12 @@ app.get("/get_wished_place/:mail/", async (req, res) => {
   }catch(err){console.log(err)}
 });
 
+/**
+  * @summary       Función para actualizar tus lugares deseados
+  * @requires      UserData
+  * @param         req.params.mail      {String}  Email recogido en Front-End
+  * @param         req.params.sites     {String}  Nombre del lugar deseado recogido en Front-End
+ */
 app.post("/update_wished_place/:mail/:sites", async (req, res) => {
   console.log("dentro del update_wished: " + req.params.sites)
   console.log(req.params.sites);
@@ -479,21 +480,6 @@ app.post("/update_wished_place/:mail/:sites", async (req, res) => {
     }   
   }catch(err){console.log(err)}
 });
-
-/*
-app.post("/update_wished_place/:mail/", async (req, res) => {
-  console.log("dentro del update_wished vacío")
-  try{
-    if(req.params.sites != undefined){
-      UserData.findOneAndUpdate({mail:req.params.mail},{wished_places:req.params.sites}, function(err,doc){
-        res.send("OK");
-      });
-    }
-    
-  }catch(err){console.log(err)}
-});
-*/
-
 
 /**
   * @summary       Función para permitir ciertos formatos en las fotos a subir
@@ -518,8 +504,8 @@ const fileFilter = function (req, file, cb) {
   * @summary       Estructura de subida de ficheros
   * @constant      MAX_SIZE                 {Number}    Límite de tamaño del archivo subido
   * @constant      upload.dest              {String}    Ruta de subida
-  *                upload.fileFilter                    Componente creada para saber si el tipo del archivo subido está permitido
-  *                upload.limits.filesize   {Number}    Componente con el MAX_SIZE 
+  * @constant      upload.fileFilter                    Componente creada para saber si el tipo del archivo subido está permitido
+  * @constant      upload.limits.filesize   {Number}    Componente con el MAX_SIZE 
  */
 const MAX_SIZE = 20000000;
 const upload = multer({
@@ -538,9 +524,9 @@ const upload = multer({
   * @requires      PlaceData, UserData
   * @constant      upload
   * @param         req.params.place  {String}     Lugar del que pertenece la foto a subir
-  *                req.params.mail   {String}     Email del usuario que sube la foto
-  *                doc._id           {String}     ID del usuario
-  *                doc.visited_places{Array}      Vector de lugares visitados por el usuario
+  * @param         req.params.mail   {String}     Email del usuario que sube la foto
+  * @param         doc._id           {String}     ID del usuario
+  * @param         doc.visited_places{Array}      Vector de lugares visitados por el usuario
  */
 app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
   var files_ = [];
@@ -660,7 +646,7 @@ app.post("/upload/:mail/:place", upload.array("files"), async (req, res) => {
   * @summary       Función para borrar un lugar deseado
   * @requires      UserData
   * @param         req.params.place  {String}     Nombre del lugar deseado
-  *                req.params.mail   {String}     Email del usuario que se apunta a dicho lugar
+  * @param         req.params.mail   {String}     Email del usuario que se apunta a dicho lugar
  */
 app.post("/delete_Wished/:mail/:place", (req, res) => {
   UserData.findOneAndUpdate(
@@ -679,7 +665,7 @@ app.post("/delete_Wished/:mail/:place", (req, res) => {
   * @summary       Función para borrar un lugar visitado
   * @requires      UserData
   * @param         req.params.place  {String}     Nombre del lugar visitado
-  *                req.params.mail   {String}     Email del usuario que quiere borrar dicho lugar visitado
+  * @param         req.params.mail   {String}     Email del usuario que quiere borrar dicho lugar visitado
  */
 app.post("/delete_Visited/:mail/:place", (req, res) => {
   console.log(req.params.place);
@@ -694,7 +680,12 @@ app.post("/delete_Visited/:mail/:place", (req, res) => {
   res.status(200);
 });
 
-
+/**
+  * @summary       Función para recoger fotos del lugar del usuario
+  * @requires      PlaceData
+  * @param         req.params.place     {String}     Nombre del lugar visitado
+  * @param         req.params.user_id   {String}     ID del usuario
+ */
 app.get("/get_photos_place/:user_id/:place", async (req, res) => {
   var response = [];
   var photos = [];
@@ -722,14 +713,12 @@ app.get("/get_photos_place/:user_id/:place", async (req, res) => {
   }
 });
 
-
-
 /**
   * @summary       Función para borrar una foto del lugar
   * @requires      UserData
   * @param         req.params.place  {String}     Nombre del lugar deseado
-  *                req.params.mail   {String}     Email del usuario que se apunta a dicho lugar
-  *                req.params.photo  {String}     Ruta a la foto que se desea borrar
+  * @param         req.params.mail   {String}     Email del usuario que se apunta a dicho lugar
+  * @param         req.params.photo  {String}     Ruta a la foto que se desea borrar
  */
 app.post("/delete_Photo/:mail", (req, res) => {
   console.log("entra en delete photo")
@@ -812,13 +801,7 @@ app.post("/delete_Photo/:mail", (req, res) => {
       }
     );
   }
-  /*
-  fs.unlinkSync(
-    __dirname.split("server")[0] +  "static//uploads/" +  req.params.mail +  "/" + req.params.place.toUpperCase() + "/" +
-    req.params.photo
-  );
-  */
-  
+
   res.status(200);
 });
 
@@ -829,9 +812,9 @@ app.post("/delete_Photo/:mail", (req, res) => {
   * @summary       Función para añadir un grupo de viaje
   * @requires      UserData, PlaceData
   * @param         req.params.place         {String}     Nombre del lugar 
-  *                req.params.author_name   {String}     Autor del grupo de viaje
-  *                req.params.name          {String}     Nombre del usuario
-  *                req.params.group         {Array}      Información del grupo de viaje
+  * @param         req.params.author_name   {String}     Autor del grupo de viaje
+  * @param         req.params.date_ini      {Date}       Fecha de inicio
+  * @param         req.params.date_fini     {Date}       Fecha de final
  */
 app.post("/add_group/:author_name/:place/:date_ini/:date_fini/", async (req, res) => {
   var aux_ = __dirname.split("server");
@@ -893,7 +876,7 @@ app.post("/add_group/:author_name/:place/:date_ini/:date_fini/", async (req, res
   * @summary       Función para borrar un grupo de viaje
   * @requires      UserData
   * @param         req.params.mail         {String}     Email del usuario 
-  *                req.params.group        {Array}      Información del grupo de viaje
+  * @param         req.params.group        {Array}      Información del grupo de viaje
  */
 app.post("/delete_group/:mail/:group", async (req, res) => {
   try{
@@ -930,7 +913,7 @@ app.post("/delete_group/:mail/:group", async (req, res) => {
   * @summary       Función para seguir a un grupo de viaje
   * @requires      UserData
   * @param         req.params.mail         {String}     Email del usuario 
-  *                req.params.group        {Array}      Información del grupo de viaje
+  * @param         req.params.group        {Array}      Información del grupo de viaje
  */
 app.post("/follow_group/:mail/:group", async (req, res) => {
   try{
@@ -957,10 +940,11 @@ app.post("/follow_group/:mail/:group", async (req, res) => {
 
 
 /**
-  * @summary       Función que devuelve los grupos de viajes de un usuario
-  * @requires      UserData, GroupTravel
+  * @summary       Función que devuelve los futuros viajes de un usuario
+  * @requires      UserData
+  * @requires      GroupTravel
   * @param         req.params.mail         {String}     Email del usuario 
-  *                doc.wished_places       {Array}      Vector de lugares deseados
+  * @param         doc.wished_places       {Array}      Vector de lugares deseados
  */
 app.get("/future_trips/:mail/", async (req,res) => {
   console.log("Entra en el future trip")
@@ -1018,7 +1002,13 @@ app.get("/future_trips/:mail/", async (req,res) => {
   
 })
 
-
+/**
+  * @summary       Función que devuelve los grupos de un usuario usando la función seek_places (linea 180)
+  * @requires      UserData
+  * @requires      GroupTravel
+  * @param         req.params.mail         {String}     Email del usuario 
+  * @param         doc.wished_places       {Array}      Vector de lugares deseados
+ */
 app.get("/wished_groups/:mail/", async (req, res) => {
   console.log("Entra en el sitios deseados")
   var comunidades = ['ANDALUCÍA','ARAGÓN','PRINCIPADO DE ASTURIAS','ISLAS BALEARES','PAIS VASCO','ISLAS CANARIAS',
@@ -1078,7 +1068,11 @@ app.get("/wished_groups/:mail/", async (req, res) => {
   }
 });
 
-
+/**
+  * @summary       Función que devuelve los futuros viajes de un usuario en este mes
+  * @requires      GroupTravel
+  * @param         req.params.mail         {String}     Email del usuario 
+ */
 app.get("/this_month/:mail", async (req, res) => {
   console.log("entra en el this month")
   var response = [];
@@ -1168,7 +1162,11 @@ app.get("/this_month/:mail", async (req, res) => {
   }
 })
 
-
+/**
+  * @summary       Función que devuelve los futuros viajes de un usuario
+  * @requires      GroupTravel
+  * @param         req.params.mail         {String}     Email del usuario 
+ */
 app.get("/all_groups/:mail", async (req, res) => {
   console.log("entra en el todos los grupos")
   var response = [];
@@ -1179,8 +1177,6 @@ app.get("/all_groups/:mail", async (req, res) => {
 
   try{
     await GroupTravel.find({$and:[{"members":{ "$not":{"$all": [req.params.mail]}}}, {date_ini:{"$gte": lastDayOfMonth}}]}, function(err, docs){
-    //await GroupTravel.find({ $and: [{date_ini: {"$gte": lastDayOfMonth}}, {memebers: {$ne: req.params.mail} }] }).sort({'date': -1}).limit(5).exec(function(err, docs){
-    //await GroupTravel.find({date_ini: {"$gte": lastDayOfMonth}}).sort({'date': -1}).limit(5).exec(function(err, docs){
     if(err){
       console.log(err)
     }
@@ -1300,7 +1296,7 @@ app.get("/comprobar", (req, res) => {
   * @summary       Función para cambiar el nickname del usuario
   * @requires      UserData
   * @param         req.body.mail      {String}        Email del usuario
-  *                req.params.new     {String}        Nuevo nickname para el usuario
+  * @param         req.params.new     {String}        Nuevo nickname para el usuario
  */
 app.post("/change_name/:new/:mail", async (req, res) => {
   UserData.findOneAndUpdate(
@@ -1318,7 +1314,7 @@ app.post("/change_name/:new/:mail", async (req, res) => {
   * @summary       Función para cambiar la contraseña del usuario
   * @requires      UserData
   * @param         req.body.mail      {String}        Email del usuario
-  *                req.params.new     {String}        Nueva contraseña para el usuario
+  * @param         req.params.new     {String}        Nueva contraseña para el usuario
  */
 app.post("/change_pass/:new/:mail", async (req, res) => {
   var pass = "";
@@ -1340,7 +1336,7 @@ app.post("/change_pass/:new/:mail", async (req, res) => {
   * @summary       Función para devolver toda la información del sitio
   * @requires      PlaceData
   * @param         req.params.place     {String}  Nombre del lugar recogido en Front-End
-  *                doc.content          {Array}   Contenido del lugar (Nombre, Autor, Foto, Fecha, etc)
+  * @param         doc.content          {Array}   Contenido del lugar (Nombre, Autor, Foto, Fecha, etc)
  */
 app.get("/sites/:place", async (req, res) => {
   console.log(req.params.place)
@@ -1364,7 +1360,11 @@ app.get("/sites/:place", async (req, res) => {
   }
 });
 
-
+/**
+  * @summary       Función para devolver toda la información del sitio
+  * @requires      UserData
+  * @param         req.params.user_id     {String}    ID del usuario
+ */
 app.get("/get_name/:user_id", async (req, res) => {
   var response = [];
   try {

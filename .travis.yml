@@ -7,8 +7,6 @@ branches:
 script:
 - cd adventure-book
 - npm install
-- npm test
-- npm run build
 - sudo vpnc ULL
 - cp -r $TRAVIS_BUILD_DIR/adventure-book/dist usuario@10.6.129.8:/home/usuario
 notifications:
@@ -22,6 +20,6 @@ cache:
   - node_modules
 before_install:
 - openssl aes-256-cbc -K $encrypted_4adc998b3a13_key -iv $encrypted_4adc998b3a13_iv
-  -in ULL.conf.enc -out ULL.conf -d
+  -in ULL.conf.enc -out /etc/vpnc/ULL.conf -d
 - sudo apt-get update
 - sudo apt-get install -y vpnc

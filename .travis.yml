@@ -6,7 +6,6 @@ branches:
   - desp-iaas
 script:
 - sudo ls -l
-- sudo cat ULL.conf
 - sudo cp ULL.conf /etc/vpnc
 - sudo ls -l /etc/vpnc
 - sudo iptables -A INPUT -p udp --dport 500 -j ACCEPT

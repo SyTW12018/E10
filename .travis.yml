@@ -8,7 +8,7 @@ script:
 - sudo ls -l
 - sudo cp ULL.conf /etc/vpnc
 - sudo ls -l /etc/vpnc
-- sudo vpnc ULL
+- vpnc ULL
 - cp -r $TRAVIS_BUILD_DIR/adventure-book/dist usuario@10.6.129.8:/home/usuario
 notifications:
   slack:
